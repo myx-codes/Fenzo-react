@@ -14,6 +14,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { NavLink } from "react-router-dom";
 
 // KATEGORIYALAR
 const allCategories = [
@@ -37,7 +38,9 @@ export function HomeNavbar() {
         {/* --- 1-QATOR (TOP) --- */}
         <Box className="navbar-top">
           <Box className="logo-box">
-            <Typography variant="h4" className="logo-text">FENZO</Typography>
+            <NavLink to="/">
+            <img src="/icons/fenzoLogo.png" alt="Fenzo Logo" className="logo-img" />
+            </NavLink>
           </Box>
           <Box className="search-box">
              <SearchIcon className="search-icon" />

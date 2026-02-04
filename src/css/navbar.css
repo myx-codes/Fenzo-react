@@ -25,11 +25,12 @@
 }
 
 .logo-box { cursor: pointer; }
-.logo-text {
-    font-weight: 900 !important;
-    color: white;
-    font-size: 2.2rem !important;
-    letter-spacing: 1px !important;
+
+.logo-img {
+    height: 70px;
+    width: auto;
+    border-radius: 15px;
+    filter:  invert(200%); 
 }
 
 /* KATTA QIDIRUV MAYDONI */
@@ -185,5 +186,46 @@
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- OTHER NAVBAR (Ichki sahifalar uchun) --- */
+.other-navbar {
+    width: 100%;
+    height: auto; /* Balandlik avtomatik (Karusel yo'q) */
+    min-height: 160px; /* Logo + Menu sig'adigan joy */
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    position: sticky; /* Sahifa pastga tushganda yopishib turishi uchun (ixtiyoriy) */
+    top: 0;
+    z-index: 100;
+}
+
+/* User Actions qismidagi ikonka tugmalar */
+.nav-icon-btn {
+    margin-right: 10px !important;
+    transition: 0.3s !important;
+}
+
+.nav-icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.1);
+}
+
+/* Profil Avatar qutisi */
+.profile-box {
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    padding: 2px;
+    transition: all 0.3s ease;
+}
+
+.profile-box:hover {
+    border-color: #ffca28; /* Sariq hoshiya */
+    box-shadow: 0 0 10px rgba(255, 202, 40, 0.5);
 }
 
