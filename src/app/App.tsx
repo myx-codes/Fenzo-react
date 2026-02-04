@@ -7,14 +7,16 @@ import { OrdersPage } from "./screens/ordersPage";
 import { UserPage } from "./screens/userPage";
 import { HomeNavbar } from "./components/headers/HomeNavbar";
 import { OtherNavbar } from "./components/headers/OtherNavbar";
-import { Footer } from "./components/footers";
+import { Footer } from "./components/footer";
+import "../css/app.css"
+import "../css/navbar.css"
+import "../css/footer.css"
 
 function App() {
   const location = useLocation();
-  console.log("location", location);
   return (
     <>
-    {location.pathname === "/" ? <HomeNavbar/>: <OtherNavbar/> }
+    {location.pathname === "/" ? <HomeNavbar/> : <OtherNavbar/> }
         <Switch>
           <Route path="/products">
             <ProducstPage />

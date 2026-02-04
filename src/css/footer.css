@@ -1,0 +1,161 @@
+/* UMUMIY FOOTER FON VA TUZILISHI */
+.footer {
+    width: 100%;
+    /* Header bilan bir xil gradient */
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding-top: 60px;
+    margin-top: auto; /* Sahifaning eng tagiga tushirish uchun */
+    position: relative;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+}
+
+.footer-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- YUQORI QISM (GRID) --- */
+.footer-top {
+    display: flex;
+    flex-wrap: wrap; /* Mobil versiyada pastga tushib ketishi uchun */
+    justify-content: space-between;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Yupqa chiziq */
+}
+
+/* USTUNLAR (Columns) */
+.footer-col {
+    flex: 1;
+    min-width: 200px; /* Juda kichrayib ketmasin */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* LOGO & MATN */
+.footer-logo {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.footer-desc, .footer-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* SARLAVHALAR */
+.footer-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+/* LINKLAR */
+.footer-link {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #ffca28; /* Headerdagi tugma rangi (sariq) */
+    transform: translateX(5px); /* O'ngga biroz siljiydi */
+}
+
+/* SOCIAL MEDIA */
+.footer-socials {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.social-btn {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    transition: 0.3s !important;
+}
+
+.social-btn:hover {
+    background: #ffca28 !important;
+    color: #1e3c72 !important;
+    transform: translateY(-3px);
+}
+
+/* NEWSLETTER INPUT */
+.newsletter-box {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.newsletter-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px;
+    color: white;
+    outline: none;
+}
+
+.newsletter-box input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.newsletter-box button {
+    background: #ffca28;
+    color: #1e3c72;
+    border: none;
+    padding: 0 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.newsletter-box button:hover {
+    background: white;
+}
+
+/* --- PASTKI QISM (COPYRIGHT) --- */
+.footer-bottom {
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.payment-cards span {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .footer-top {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
