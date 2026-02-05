@@ -39,7 +39,7 @@ export function HomeNavbar() {
         <Box className="navbar-top">
           <Box className="logo-box">
             <NavLink to="/">
-            <img src="/icons/fenzoLogo.png" alt="Fenzo Logo" className="logo-img" />
+            <img src="/icons/logo2.png" alt="Fenzo Logo" className="logo-img" />
             </NavLink>
           </Box>
           <Box className="search-box">

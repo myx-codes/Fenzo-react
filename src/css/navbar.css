@@ -27,10 +27,9 @@
 .logo-box { cursor: pointer; }
 
 .logo-img {
-    height: 70px;
+    height: 140px;
     width: auto;
-    border-radius: 15px;
-    filter:  invert(200%); 
+    filter: brightness(0) invert(1);
 }
 
 /* KATTA QIDIRUV MAYDONI */

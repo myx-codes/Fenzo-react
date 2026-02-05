@@ -65,7 +65,7 @@ export function OtherNavbar() {
           {/* Logo (HomeNavbar bilan bir xil) */}
           <Box className="logo-box">
             <NavLink to="/">
-            <img src="/icons/fenzoLogo.png" alt="Fenzo Logo" className="logo-img" />
+            <img src="/icons/logo2.png" alt="Fenzo Logo" className="logo-img" />
             </NavLink>
           </Box>
 
