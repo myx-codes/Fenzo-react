@@ -13,7 +13,9 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  Divider,
+  ListItemIcon
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -21,7 +23,9 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import MenuIcon from "@mui/icons-material/Menu";
 import Logout from "@mui/icons-material/Logout";
-import PersonIcon from "@mui/icons-material/Person";
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'; 
+
 import { NavLink } from "react-router-dom";
 
 // KATEGORIYALAR
@@ -29,6 +33,16 @@ const allCategories = [
   "Electronics", "Computers", "Smart Home", "Arts & Crafts", 
   "Automotive", "Baby", "Beauty and Personal Care", "Women's Fashion",
   "Men's Fashion", "Health and Household", "Home and Kitchen"
+];
+
+const menuItems = [
+  { label: "Home", path: "/" },
+  { label: "Electronics", path: "/products/electronics" },
+  { label: "Men's Fashion", path: "/products/mens-fashion" },
+  { label: "Women's Fashion", path: "/products/womens-fashion" },
+  { label: "Kids", path: "/products/kids" },
+  { label: "Big Sales", path: "/products/big-sales" },
+  { label: "Help", path: "/help" }, 
 ];
 
 export function OtherNavbar() {
@@ -101,7 +115,7 @@ export function OtherNavbar() {
             >
                 <Avatar 
                     alt="User Name" 
-                    src="/img/avatar.png" // Agar rasm bo'lmasa harf chiqadi
+                    src="/img/yujong.jpg" // Agar rasm bo'lmasa harf chiqadi
                     sx={{ width: 35, height: 35, bgcolor: '#ffca28', color: '#1e3c72' }}
                 >
                     U
@@ -111,43 +125,60 @@ export function OtherNavbar() {
             {/* Profil Menyusi (Dropdown) */}
             <Menu
               anchorEl={anchorEl}
+              id="account-menu"
               open={open}
               onClose={handleClose}
+              onClick={handleClose}
               PaperProps={{
                 elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  mt: 1.5,
-                  '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
-                  '&:before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
-                },
+                className: "profile-menu-paper", // Asosiy klass
               }}
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <MenuItem onClick={handleClose}>
-                <PersonIcon style={{ marginRight: '10px', color: '#666' }} /> Profile
+              {/* Header */}
+              <MenuItem onClick={handleClose} className="menu-header">
+                <Avatar 
+                className="menu-avatar"
+                src="/img/yujong.jpg" 
+                 />
+                <Box>
+                    <Typography className="menu-username">Yujong</Typography>
+                    <Typography className="menu-email">user@example.com</Typography>
+                </Box>
               </MenuItem>
-              <MenuItem onClick={handleClose}>
-                <Badge badgeContent={2} color="error" style={{ marginRight: '15px' }}>
-                    <ShoppingCartIcon style={{ color: '#666' }} />
-                </Badge> 
+
+              <Divider />
+
+              {/* Items */}
+              <NavLink to="/profile">
+                <MenuItem onClick={handleClose} className="menu-item">
+                  <ListItemIcon>
+                    <PersonOutlineIcon fontSize="small" />
+                  </ListItemIcon>
+                  Profile
+                </MenuItem>
+              </NavLink>
+
+              <MenuItem onClick={handleClose} className="menu-item">
+                <ListItemIcon>
+                  <Badge badgeContent={2} color="error" className="menu-badge">
+                    <ShoppingBagOutlinedIcon fontSize="small" />
+                  </Badge>
+                </ListItemIcon>
                 My Orders
               </MenuItem>
-              <MenuItem onClick={handleLogout} style={{ color: 'red' }}>
-                <Logout style={{ marginRight: '10px' }} /> Logout
+
+              {/* ... Settings ... */}
+
+              <Divider className="menu-divider" />
+
+              {/* Logout */}
+              <MenuItem onClick={handleLogout} className="menu-item logout-item">
+                <ListItemIcon>
+                  <Logout fontSize="small" className="logout-icon" />
+                </ListItemIcon>
+                Logout
               </MenuItem>
             </Menu>
 
@@ -157,16 +188,24 @@ export function OtherNavbar() {
 
         {/* --- 2-QATOR: MENU LINKS --- */}
         <Box className="navbar-menu">
-          <Button 
-            className="nav-link sidebar-btn" 
+          <Button
+            className="nav-link sidebar-btn"
             onClick={toggleSidebar}
             startIcon={<MenuIcon />}
-          >
-          </Button>
-          {["Home", "Electronics", "hdoiwhd",  "dhoqhfo", "dhoqhfo",  "Fashion", "Help"].map((item) => (
-            <Button key={item} className="nav-link">{item}</Button>
+          />
+
+          {menuItems.map((item) => (
+            <Button
+              key={item.label}
+              component={NavLink}
+              to={item.path}
+              className="nav-link"
+            >
+              {item.label}
+            </Button>
           ))}
         </Box>
+
 
         {/* --- HERO SECTION VA ICHKI SIDEBAR --- */}
         <Box className="hero-section">
@@ -178,9 +217,14 @@ export function OtherNavbar() {
                 <List>
                   {allCategories.map((text) => (
                     <ListItem key={text} disablePadding>
-                      <ListItemButton className="category-item">
+                      <ListItemButton
+                        component={NavLink}
+                        to={`/products/${text.replace(/\s+/g, "-").toLowerCase()}`}
+                        className="category-item"
+                        onClick={() => setSidebarOpen(false)}
+                      >
                         <ListItemText primary={text} />
-                        <ArrowForwardIosIcon style={{ fontSize: '12px', color: '#888' }} />
+                        <ArrowForwardIosIcon sx={{ fontSize: 12, color: "#888" }} />
                       </ListItemButton>
                     </ListItem>
                   ))}
