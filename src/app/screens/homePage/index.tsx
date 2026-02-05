@@ -1,5 +1,8 @@
 import { Container } from "@mui/material";
+import Statistics from "./Statistics";
 
 export function HomePage() {
-  return <Container>HomePage</Container>;
+  return <div className="homepage">
+    <Statistics/>
+  </div>;
 }

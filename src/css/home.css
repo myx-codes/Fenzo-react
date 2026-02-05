@@ -1,0 +1,61 @@
+
+.stats-section {
+    padding: 80px 0; /* Tepadan va pastdan joy tashlash */
+    background-color: #f8f9fa; /* Juda och kulrang fon, rasmga o'xshash */
+    width: 100%;
+    height: auto;
+}
+
+/* Grid Tizimi */
+.stats-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px; /* Elementlar orasidagi masofa */
+  text-align: center; /* Hamma narsani o'rtaga joylash */
+}
+
+/* Har bir element uchun konteyner (endi kartochka emas) */
+.stat-item {
+  padding: 10px 20px;
+  /* Flexbox yordamida ustun shaklida joylaymiz */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Katta ko'k raqamlar (300, 70, 30) */
+.stat-value {
+  font-size: 5rem !important; /* Juda katta shrift */
+  font-weight: 700 !important;
+  color: #2b7ffc; /* Rasmdagi yorqin ko'k rang */
+  margin: 0 !important;
+  line-height: 1 !important; /* Raqamlar orasini zichroq qilish */
+  font-size: 50px !important;
+}
+
+/* Qora sarlavha (Projects, Hours, Support) */
+.stat-label {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #2c3e50; /* To'q kulrang/qora */
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+  text-transform: capitalize;
+}
+
+/* Pastdagi izoh matni */
+.stat-desc {
+  font-size: 1rem !important;
+  color: #7f8c8d; /* Och kulrang */
+  line-height: 1.6 !important;
+  max-width: 300px; /* Matn juda cho'zilib ketmasligi uchun */
+  margin: 0 auto !important; /* Markazda turishi uchun */
+  font-weight: 400 !important;
+}
+
+/* Mobil qurilmalar uchun moslashtirish */
+@media (max-width: 600px) {
+  .stat-value {
+    font-size: 3.5rem !important; /* Mobilda raqamlarni biroz kichraytiramiz */
+  }
+}

@@ -4,6 +4,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import { NavLink } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -31,7 +32,9 @@ export function Footer() {
           {/* 2. TEZ LINKLAR */}
           <Box className="footer-col">
             <h3 className="footer-title">Quick Links</h3>
-            <a href="#" className="footer-link">Home</a>
+            <NavLink to="/">
+              <a href="#" className="footer-link">Home</a>
+            </NavLink>
             <a href="#" className="footer-link">Electronics</a>
             <a href="#" className="footer-link">Fashion</a>
             <a href="#" className="footer-link">Accessories</a>
@@ -41,7 +44,9 @@ export function Footer() {
           {/* 3. MIJOZLAR UCHUN */}
           <Box className="footer-col">
             <h3 className="footer-title">Customer Care</h3>
-            <a href="#" className="footer-link">My Account</a>
+            <NavLink to="/profile">
+              <a href="#" className="footer-link">My Account</a>
+            </NavLink>
             <a href="#" className="footer-link">Order History</a>
             <a href="#" className="footer-link">Track Order</a>
             <a href="#" className="footer-link">Terms & Conditions</a>
