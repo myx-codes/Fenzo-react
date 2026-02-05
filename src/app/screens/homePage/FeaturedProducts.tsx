@@ -74,6 +74,40 @@ const products = [
     reviews: 2,
     img: "/img/jacket.webp",
   },
+   {
+    id: 9,
+    name: "Winter Coat Elegant",
+    price: "$85.00",
+    oldPrice: "$120.00",
+    rating: 4.5,
+    reviews: 12,
+    img: "/img/winter-coat.webp",
+  },
+  {
+    id: 10,
+    name: "Casual Denim Jacket",
+    price: "$55.00",
+    rating: 4.0,
+    reviews: 8,
+    img: "/img/jacket.webp",
+  },
+  {
+    id: 11,
+    name: "Classic Leather Bag",
+    price: "$140.00",
+    oldPrice: "$180.00",
+    rating: 5.0,
+    reviews: 25,
+    img: "/img/classic-bag.webp",
+  },
+  {
+    id: 12,
+    name: "Running Sneakers",
+    price: "$95.00",
+    rating: 4.5,
+    reviews: 40,
+    img: "/img/nike-sneakers.avif",
+  },
 ];
 
 export function FeaturedProducts() {

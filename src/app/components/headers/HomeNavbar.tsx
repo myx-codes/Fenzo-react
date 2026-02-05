@@ -1,39 +1,70 @@
-import React, { useState } from "react";
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
   Paper,
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemText, 
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
   Divider,
   MenuItem,
   IconButton,
   Badge,
   Avatar,
   Menu,
-  ListItemIcon
+  ListItemIcon,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { NavLink } from "react-router-dom";
-import PersonIcon from "@mui/icons-material/Person";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Logout from "@mui/icons-material/Logout";
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'; 
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 
+// ===== HERO SLIDES =====
+const heroSlides = [
+  {
+    id: 1,
+    title: "",
+    subtitle: "Best quality, Best prices.",
+    btn: "Shop Now",
+    image: "/img/image.jpg",
+  },
+  {
+    id: 2,
+    title: "",
+    subtitle: "Big Sales for Electronics",
+    btn: "Explore",
+    image: "/img/sale.jpg",
+  },
+  {
+    id: 3,
+    title: "",
+    subtitle: "Fashion Sale 80%",
+    btn: "Buy Now",
+    image: "/img/sale2.jpg",
+  },
+];
 
-// KATEGORIYALAR
+// ===== KATEGORIYALAR =====
 const allCategories = [
-  "Electronics", "Computers", "Smart Home", "Arts & Crafts", 
-  "Automotive", "Baby", "Beauty and Personal Care", "Women's Fashion",
-  "Men's Fashion", "Health and Household", "Home and Kitchen"
+  "Electronics",
+  "Computers",
+  "Smart Home",
+  "Arts & Crafts",
+  "Automotive",
+  "Baby",
+  "Beauty and Personal Care",
+  "Women's Fashion",
+  "Men's Fashion",
+  "Health and Household",
+  "Home and Kitchen",
 ];
 
 const menuItems = [
@@ -46,143 +77,145 @@ const menuItems = [
   { label: "Help", path: "/help" },
 ];
 
-
 export function HomeNavbar() {
-  const authUser = true;
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const authUser = false;
 
-  // Sidebarni ochib-yopish
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const open = Boolean(anchorEl);
+
+  // ===== HERO CAROUSEL AUTO SLIDE =====
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+
+  const handleClose = () => setAnchorEl(null);
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-  function handleClose(event: React.MouseEvent<HTMLElement>): void {
+  const handleLogout = () => {
     setAnchorEl(null);
-  }
-
-  function handleProfileClick(event: React.MouseEvent<HTMLDivElement>): void {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleLogout(event: React.MouseEvent<HTMLLIElement>): void {
-    setAnchorEl(null);
-  }
+  };
 
   return (
     <div className="home-navbar">
       <Container className="navbar-container">
-        
-        {/* --- 1-QATOR (TOP) --- */}
-        <Box className="navbar-top">
-          <Box className="logo-box">
-            <NavLink to="/">
-            <img src="/icons/logo2.png" alt="Fenzo Logo" className="logo-img" />
-            </NavLink>
+        {/* ===== TOP BAR ===== */}
+        {/* ===== TOP BAR ===== */}
+<Box className="navbar-top">
+  <Box className="logo-box">
+    <NavLink to="/">
+      <img src="/icons/logo2.png" alt="Fenzo Logo" className="logo-img" />
+    </NavLink>
+  </Box>
+
+  <Box className="search-box">
+    <SearchIcon className="search-icon" />
+    <input type="text" placeholder="Search..." className="search-input" />
+  </Box>
+
+  {/* ===== AUTH ACTIONS ===== */}
+  {authUser ? (
+    <Box className="action-box">
+      {/* Like */}
+      <IconButton className="nav-icon-btn">
+        <FavoriteBorderIcon sx={{ color: "#fff" }} />
+      </IconButton>
+
+      {/* Cart */}
+      <IconButton className="nav-icon-btn">
+        <Badge badgeContent={3} color="secondary">
+          <ShoppingCartIcon sx={{ color: "#fff" }} />
+        </Badge>
+      </IconButton>
+
+      {/* Profile */}
+      <Box className="profile-box" onClick={handleProfileClick}>
+        <Avatar
+          src="/img/yujong.jpg"
+          sx={{ width: 35, height: 35 }}
+        />
+      </Box>
+
+      {/* Profile Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+      >
+        <MenuItem>
+          <Avatar src="/img/yujong.jpg" />
+          <Box ml={1}>
+            <Typography>Yujong</Typography>
+            <Typography variant="caption">user@example.com</Typography>
           </Box>
-          <Box className="search-box">
-             <SearchIcon className="search-icon" />
-             <input type="text" placeholder="Search..." className="search-input" />
-          </Box>
-          {!authUser ? (
-            <Box className="action-box">
-            <Button variant="contained" className="login-btn">Login</Button>
-            <Button variant="contained" className="login-btn">Signup</Button>
-          </Box>
-          ) : (
-            <Box className="action-box">
-            
-            {/* Sevimlilar (Like) */}
-            <IconButton className="nav-icon-btn">
-                <FavoriteBorderIcon style={{ color: 'white' }} />
-            </IconButton>
+        </MenuItem>
 
-            {/* Savatcha (Basket) */}
-            <IconButton className="nav-icon-btn">
-              <Badge badgeContent={3} color="secondary">
-                <ShoppingCartIcon style={{ color: 'white' }} />
-              </Badge>
-            </IconButton>
+        <Divider />
 
-            {/* Profil tugmasi */}
-            <Box 
-                className="profile-box" 
-                onClick={handleProfileClick}
-            >
-                <Avatar 
-                    alt="User Name" 
-                    src="/img/yujong.jpg" // Agar rasm bo'lmasa harf chiqadi
-                    sx={{ width: 35, height: 35, bgcolor: '#ffca28', color: '#1e3c72' }}
-                >
-                    U
-                </Avatar>
-            </Box>
+        <MenuItem>
+          <ListItemIcon>
+            <PersonOutlineIcon fontSize="small" />
+          </ListItemIcon>
+          Profile
+        </MenuItem>
 
-            {/* Profil Menyusi (Dropdown) */}
-            <Menu
-              anchorEl={anchorEl}
-              id="account-menu"
-              open={open}
-              onClose={handleClose}
-              onClick={handleClose}
-              PaperProps={{
-                elevation: 0,
-                className: "profile-menu-paper", // Asosiy klass
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              {/* Header */}
-              <MenuItem onClick={handleClose} className="menu-header">
-                <Avatar 
-                className="menu-avatar"
-                src="/img/yujong.jpg" 
-                 />
-                <Box>
-                    <Typography className="menu-username">Yujong</Typography>
-                    <Typography className="menu-email">user@example.com</Typography>
-                </Box>
-              </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <ShoppingBagOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          My Orders
+        </MenuItem>
 
-              <Divider />
+        <Divider />
 
-              {/* Items */}
-              <MenuItem onClick={handleClose} className="menu-item">
-                <ListItemIcon>
-                  <PersonOutlineIcon fontSize="small" />
-                </ListItemIcon>
-                Profile
-              </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
+    </Box>
+  ) : (
+    /* ===== LOGIN / SIGNUP ===== */
+    <Box className="action-box">
+        <Button
+          component={NavLink}
+          to="/home/"
+          variant="contained"
+          className="login-btn"
+        >
+          Login
+        </Button>
 
-              <MenuItem onClick={handleClose} className="menu-item">
-                <ListItemIcon>
-                  <Badge badgeContent={2} color="error" className="menu-badge">
-                    <ShoppingBagOutlinedIcon fontSize="small" />
-                  </Badge>
-                </ListItemIcon>
-                My Orders
-              </MenuItem>
+        <Button
+          component={NavLink}
+          to="/signup"
+          variant="contained"
+          className="signup-btn"
+        >
+          Sign Up
+        </Button>
+      </Box>
 
-              {/* ... Settings ... */}
+  )}
+</Box>
 
-              <Divider className="menu-divider" />
 
-              {/* Logout */}
-              <MenuItem onClick={handleLogout} className="menu-item logout-item">
-                <ListItemIcon>
-                  <Logout fontSize="small" className="logout-icon" />
-                </ListItemIcon>
-                Logout
-              </MenuItem>
-            </Menu>
-
-          </Box>
-          )}
-        </Box>
-
-        {/* --- 2-QATOR (MENU) --- */}
+        {/* ===== MENU BAR ===== */}
         <Box className="navbar-menu">
           <Button
             className="nav-link sidebar-btn"
@@ -201,47 +234,50 @@ export function HomeNavbar() {
             </Button>
           ))}
         </Box>
-        {/* --- HERO SECTION VA ICHKI SIDEBAR --- */}
+
+        {/* ===== HERO + SIDEBAR ===== */}
         <Box className="hero-section">
-           
-           {/* --- SHU YERDA SIDEBAR JOYLASHADI --- */}
-           {/* Agar sidebarOpen true bo'lsa, bu quti ko'rinadi */}
-           {sidebarOpen && (
-             <Paper className="category-sidebar-inner" elevation={3}>
-                <List>
-                  {allCategories.map((text) => (
-                    <ListItem key={text} disablePadding>
-                      <ListItemButton
-                        component={NavLink}
-                        to={`/products/${text.replace(/\s+/g, "-").toLowerCase()}`}
-                        className="category-item"
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        <ListItemText primary={text} />
-                        <ArrowForwardIosIcon sx={{ fontSize: 12, color: "#888" }} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
+          {sidebarOpen && (
+            <Paper className="category-sidebar-inner">
+              <List>
+                {allCategories.map((cat) => (
+                  <ListItem key={cat} disablePadding>
+                    <ListItemButton
+                      component={NavLink}
+                      to={`/products/${cat.replace(/\s+/g, "-").toLowerCase()}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <ListItemText primary={cat} />
+                      <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          )}
 
-             </Paper>
-           )}
+          {/* ===== HERO CAROUSEL ===== */}
+          <Box
+            className="hero-carousel"
+            style={{
+              backgroundImage: `url(${heroSlides[activeSlide].image})`,
+            }}
+          >
+            <Box className="hero-content-wrapper">
+              <Typography variant="h4" className="hero-title">
+                {heroSlides[activeSlide].title}
+              </Typography>
 
-           {/* Hero Content (Carousel o'rniga hozircha matn) */}
-           <Box className="hero-content-wrapper">
-               <Typography variant="h1" className="hero-title">
-                  Modern Life Style
-               </Typography>
-               <Typography variant="h6" className="hero-subtitle">
-                  Best quality, Best prices.
-               </Typography>
-               <Button variant="contained" className="hero-btn">
-                  Shop Now
-               </Button>
-           </Box>
+              <Typography component="div" className="hero-subtitle">
+                {heroSlides[activeSlide].subtitle}
+              </Typography>
 
+              <Button variant="contained" className="hero-btn">
+                {heroSlides[activeSlide].btn}
+              </Button>
+            </Box>
+          </Box>
         </Box>
-
       </Container>
     </div>
   );
