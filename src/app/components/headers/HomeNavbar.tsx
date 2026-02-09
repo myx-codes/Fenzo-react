@@ -111,7 +111,6 @@ export function HomeNavbar() {
     <div className="home-navbar">
       <Container className="navbar-container">
         {/* ===== TOP BAR ===== */}
-        {/* ===== TOP BAR ===== */}
 <Box className="navbar-top">
   <Box className="logo-box">
     <NavLink to="/">
@@ -257,7 +256,9 @@ export function HomeNavbar() {
           )}
 
           {/* ===== HERO CAROUSEL ===== */}
-          <Box
+        </Box>
+      </Container>
+      <Box
             className="hero-carousel"
             style={{
               backgroundImage: `url(${heroSlides[activeSlide].image})`,
@@ -277,8 +278,6 @@ export function HomeNavbar() {
               </Button>
             </Box>
           </Box>
-        </Box>
-      </Container>
     </div>
   );
 }

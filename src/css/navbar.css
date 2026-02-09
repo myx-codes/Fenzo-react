@@ -1,7 +1,6 @@
-/* ... (Asosiy .home-navbar va fon o'zgarishsiz qoladi) ... */
 .home-navbar {
     width: 100%;
-    height: 773px;
+    height: auto;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     background-size: cover;
     background-position: center;
@@ -21,7 +20,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 25px;
-    padding-bottom: 15px;
+    /* padding-bottom: 15px; */
 }
 
 .logo-box { cursor: pointer; }
@@ -110,15 +109,36 @@
 
 /* HERO SECTION */
 .hero-section {
+    width: 100% !important;      /* Majburiy 100% kenglik */
+    max-width: 100% !important;  /* Har qanday cheklovni olib tashlash */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 20px;
+    padding: 0 !important;       /* Ichki bo'shliq (padding)ni olib tashlaymiz */
+    margin-top: 20px;
     position: relative; 
-    overflow: visible !important; 
+    overflow: hidden;            /* Tashqariga chiqib ketishni oldini olish */
 }
-/* ... (Hero title/button stillari o'zgarishsiz) ... */
+
+/* Agar ichida Carousel bo'lsa, u ham 100% bo'lishi kerak */
+.hero-carousel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center; /* Yozuvlarni vertikal markazlash */
+    background-size: cover;
+    background-position: center;
+}
+
+/* Yozuvlar juda chetga yopishib qolmasligi uchun konteyner */
+.hero-content-wrapper {
+    width: 100%;
+    padding-left: 50px; /* Chap tomondan chiroyli masofa */
+    padding-right: 50px;
+    box-sizing: border-box;
+}
+
 .hero-title {
     color: white;
     font-weight: 800 !important;
@@ -183,6 +203,15 @@
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobil qurilmalar uchun (Responsive) */
+@media (max-width: 768px) {
+    .hero-content-wrapper {
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center; /* Mobilda markazga */
+    }
 }
 
 

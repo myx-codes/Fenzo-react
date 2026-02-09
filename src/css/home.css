@@ -1,4 +1,4 @@
-
+/* ---Statistics--- */
 .stats-section {
     padding: 80px 0; /* Tepadan va pastdan joy tashlash */
     background-color: linear-gradient(to right, #f9f9f9 0%, rgba(255, 255, 255, 0) 100%);
@@ -292,7 +292,7 @@
 }
 
 
-/* --- TrustedStores.css --- */
+/* --- Top Brands.css --- */
 
 .trusted-section {
   padding: 50px 0;

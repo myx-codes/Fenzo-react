@@ -1,7 +1,6 @@
 import React from "react";
 import { Container, Typography } from "@mui/material";
 
-// Sellerlar logolari (Hozircha placeholder rasm qo'ydim)
 const stores = [
   { id: 1, name: "Adidas", logo: "https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg" },
   { id: 2, name: "Nike", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" },

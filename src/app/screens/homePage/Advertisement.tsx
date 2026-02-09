@@ -1,8 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 
-// Namuna uchun bepul video (Pexels'dan)
-// O'zingizning videongiz bo'lsa: import myVideo from "./video.mp4" qilib ishlating
+
 const videoSrc = "./video/apple-watch.mp4"; 
 
 export default function Advertisement() {
@@ -18,7 +17,6 @@ export default function Advertisement() {
         playsInline
       >
         <source src={videoSrc} type="video/mp4" />
-        {/* Sizning brauzeringiz videoni qo'llab-quvvatlamaydi. */}
       </video>
 
       {/* 2. Qoramtir parda (Overlay) */}
