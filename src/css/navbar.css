@@ -121,10 +121,10 @@
     overflow: hidden;            /* Tashqariga chiqib ketishni oldini olish */
 }
 
+
 /* Agar ichida Carousel bo'lsa, u ham 100% bo'lishi kerak */
 .hero-carousel {
     width: 100%;
-    height: 100%;
     display: flex;
     align-items: center; /* Yozuvlarni vertikal markazlash */
     background-size: cover;
@@ -218,7 +218,7 @@
 /* --- OTHER NAVBAR (Ichki sahifalar uchun) --- */
 .other-navbar {
     width: 100%;
-    height: auto; /* Balandlik avtomatik (Karusel yo'q) */
+    height: 245px; /* Balandlik avtomatik (Karusel yo'q) */
     min-height: 160px; /* Logo + Menu sig'adigan joy */
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     display: flex;

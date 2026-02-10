@@ -1,52 +1,65 @@
 /* --- Products.css --- */
 
-/* Asosiy fon va bo'shliqlar */
-.products-section {
-  padding: 80px 0;
-  /* Siz bergan gradient fon */
-  background: linear-gradient(to right, #f9f9f9 0%, rgba(255, 255, 255, 0) 100%);
+/* Asosiy Wrapper */
+.products-page {
+  padding-top: 40px;
+  padding-bottom: 80px;
+  background-color: #f8f9fa; /* Juda och kulrang fon */
+  min-height: 100vh;
 }
 
-.section-title {
-  text-align: center;
-  font-size: 2.5rem !important;
-  font-weight: 800 !important; /* Biroz qalinroq */
-  color: #2c3e50;
-  margin-bottom: 30px !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.page-title {
+    font-weight: 800 !important;
+    text-align: center;
+    margin-bottom: 40px !important;
+    color: #1a1a1a;
 }
 
-/* --- TABS (Kategoriyalar) --- */
-.fenzo-tabs {
-  margin-bottom: 40px !important;
+/* --- SIDEBAR --- */
+.sidebar-paper {
+    padding: 24px;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+    background-color: #fff;
+    position: sticky;
+    top: 20px; /* Scroll bo'lganda yopishib turadi */
 }
 
-.fenzo-tabs .MuiTab-root {
-  font-weight: 600 !important;
-  text-transform: capitalize !important;
-  font-size: 16px !important;
-  color: #555 !important;
-  transition: 0.3s;
+.category-list .MuiListItemButton-root {
+    border-radius: 8px !important;
+    margin-bottom: 8px !important;
+    padding-left: 16px !important;
 }
 
-.fenzo-tabs .Mui-selected {
-  color: #2b7ffc !important; /* Ko'k rang */
+.category-list .Mui-selected {
+    background-color: #e3f2fd !important; /* Tanlangan fon */
+    color: #1976d2 !important;
+    font-weight: bold !important;
 }
 
-.fenzo-tabs .MuiTabs-indicator {
-  background-color: #2b7ffc !important;
-  height: 3px !important;
-  border-radius: 2px;
+.category-list .MuiListItemText-primary {
+    font-size: 15px !important;
+    font-weight: 500;
 }
 
-/* --- GRID VA KARTA (Siz bergan kod bilan bir xil) --- */
-.products-grid {
+/* --- TOP FILTER BAR --- */
+.top-filter-bar {
+    padding: 16px 24px;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+    margin-bottom: 24px;
+    background-color: #fff;
+}
+
+/* --- PRODUCTS GRID (Custom Grid) --- */
+.products-grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 30px;
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
+/* --- CARD DESIGN --- */
 .product-card {
   background: #fff;
   border-radius: 12px;
@@ -55,70 +68,84 @@
   border: 1px solid #eee;
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  border-color: transparent;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  border-color: #fff;
 }
 
 /* Rasm qismi */
 .product-image-box {
   width: 100%;
-  height: 280px;
-  background-color: #f4f4f4;
-  overflow: hidden;
+  height: 220px;
   position: relative;
-  display: flex;             /* Rasmni markazlash uchun */
-  align-items: center;       /* Rasmni markazlash uchun */
-  justify-content: center;   /* Rasmni markazlash uchun */
+  overflow: hidden;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Yoki contain qilish mumkin */
-  transition: transform 0.5s ease;
+  object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
 .product-card:hover .product-img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-/* Like tugmasi */
+.sale-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #d32f2f;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 2;
+}
+
 .like-btn {
   position: absolute !important;
   top: 10px;
   right: 10px;
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: 0.3s !important;
-  z-index: 5;
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: 0.2s;
+  z-index: 2;
 }
 
 .like-btn:hover {
-  background-color: #fff !important;
-  color: #ff1744 !important;
-  transform: scale(1.1);
+  background: #fff !important;
+  color: #d32f2f;
 }
 
-/* Ma'lumot qismi */
+/* Info qismi */
 .product-info {
-  padding: 20px;
-  text-align: center;
+  padding: 16px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Kartani to'liq egallash uchun */
+}
+
+.product-category-text {
+    font-size: 12px !important;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px !important;
 }
 
 .product-name {
-  font-size: 1.1rem !important;
-  font-weight: 600 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
   color: #333;
   margin-bottom: 8px !important;
   white-space: nowrap;
@@ -126,88 +153,207 @@
   text-overflow: ellipsis;
 }
 
-/* Rating */
 .product-rating {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .review-count {
-  font-size: 0.85rem;
-  color: #888;
-  font-weight: 500;
+    font-size: 12px;
+    color: #777;
 }
 
-/* Narx */
 .product-price {
-  font-size: 1.2rem !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
-  color: #2b7ffc;
-  margin-bottom: 15px !important;
+  color: #2c3e50;
 }
 
 .old-price {
-  font-size: 0.9rem;
-  text-decoration: line-through;
+  font-size: 14px !important;
   color: #999;
-  margin-left: 10px;
-  font-weight: 400;
+  text-decoration: line-through;
+  margin-left: 8px;
 }
 
-/* Tugmalar */
-.action-buttons {
+.btn-add-cart {
+    margin-top: auto !important; /* Buttonni doim pastga tushiradi */
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-color: #2c3e50 !important;
+    color: #2c3e50 !important;
+}
+
+.btn-add-cart:hover {
+    background-color: #2c3e50 !important;
+    color: #fff !important;
+}
+
+/* Load More */
+.load-more-container {
   display: flex;
-  gap: 10px;
-  margin-top: auto; /* Eng pastga tushirish uchun */
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.btn-cart {
-  flex: 1;
-  border: 1px solid #2c3e50 !important;
-  color: #2c3e50 !important;
+/* Mobile responsive */
+@media (max-width: 900px) {
+    .sidebar-paper {
+        position: static; /* Mobilda yopishib turmaydi */
+        margin-bottom: 20px;
+    }
+}
+
+/* --- ProductCards --- */
+.single-product-page {
+  padding-top: 40px;
+  padding-bottom: 80px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.back-btn {
+  margin-bottom: 24px !important;
   text-transform: none !important;
   font-weight: 600 !important;
-  padding: 8px 0 !important;
+  color: #555 !important;
 }
 
-.btn-cart:hover {
-  background-color: #f5f5f5 !important;
-  border-color: #2c3e50 !important;
+.back-btn:hover {
+  background-color: #e0e0e0 !important;
 }
 
-.btn-buy {
-  flex: 1;
-  background-color: #2b7ffc !important;
-  color: white !important;
+/* --- Rasm Qismi (Chap tomon) --- */
+.main-image-wrapper {
+  width: 100%;
+  height: 450px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.product-main-img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-main-img:hover {
+  transform: scale(1.05);
+}
+
+/* Kichik rasmlar (Thumbnails) */
+.thumbnail-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 5px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.thumbnail-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.thumbnail-box:hover {
+  transform: translateY(-3px);
+}
+
+.thumbnail-box.active {
+  border: 2px solid #1976d2; /* Active color */
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+}
+
+/* --- Ma'lumot Qismi (O'ng tomon) --- */
+.product-title {
+  font-weight: 800 !important;
+  color: #1a1a1a;
+  line-height: 1.2 !important;
+}
+
+.price-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.current-price {
+  font-weight: 800 !important;
+  color: #1976d2;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.product-desc {
+  color: #555;
+  line-height: 1.6 !important;
+  margin-bottom: 24px !important;
+}
+
+/* --- Rang Tanlash --- */
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #1976d2; /* Tashqi aylana */
+}
+
+/* --- Soni va Tugmalar --- */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  height: 48px;
+}
+
+.quantity-text {
+  padding: 0 16px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.btn-add-cart {
+  height: 48px !important;
+  font-weight: bold !important;
   text-transform: none !important;
-  font-weight: 600 !important;
-  padding: 8px 0 !important;
-  box-shadow: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(25, 118, 210, 0.3) !important;
 }
 
-.btn-buy:hover {
-  background-color: #1a6fd3 !important;
-  box-shadow: 0 4px 12px rgba(43, 127, 252, 0.4) !important;
-}
-
-/* Load More Button */
-.load-more-conteiner {
-    text-align: center;
-    margin-top: 50px;
-}
-.load-more-btn {
-    border: 2px solid #2b7ffc !important;
-    color: #2b7ffc !important;
-    padding: 10px 40px !important;
-    border-radius: 30px !important;
-    font-weight: bold !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px;
-}
-.load-more-btn:hover {
-    background-color: #2b7ffc !important;
-    color: white !important;
+.btn-fav {
+  height: 48px !important;
+  width: 48px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
 }

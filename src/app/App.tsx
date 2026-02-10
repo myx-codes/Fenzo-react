@@ -14,6 +14,7 @@ import "../css/navbar.css"
 import "../css/footer.css"
 import "../css/home.css"
 import "../css/products.css"
+import "../css/mypage.css"
 
 function App() {
   const location = useLocation();

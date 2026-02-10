@@ -205,34 +205,6 @@ export function OtherNavbar() {
             </Button>
           ))}
         </Box>
-
-
-        {/* --- HERO SECTION VA ICHKI SIDEBAR --- */}
-        <Box className="hero-section">
-           
-           {/* --- SHU YERDA SIDEBAR JOYLASHADI --- */}
-           {/* Agar sidebarOpen true bo'lsa, bu quti ko'rinadi */}
-           {sidebarOpen && (
-             <Paper className="category-sidebar-inner" elevation={3}>
-                <List>
-                  {allCategories.map((text) => (
-                    <ListItem key={text} disablePadding>
-                      <ListItemButton
-                        component={NavLink}
-                        to={`/products/${text.replace(/\s+/g, "-").toLowerCase()}`}
-                        className="category-item"
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        <ListItemText primary={text} />
-                        <ArrowForwardIosIcon sx={{ fontSize: 12, color: "#888" }} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-             </Paper>
-           )}
-        </Box>
-
       </Container>
     </div>
   );

@@ -43,13 +43,6 @@ const heroSlides = [
     btn: "Explore",
     image: "/img/sale.jpg",
   },
-  {
-    id: 3,
-    title: "",
-    subtitle: "Fashion Sale 80%",
-    btn: "Buy Now",
-    image: "/img/sale2.jpg",
-  },
 ];
 
 // ===== KATEGORIYALAR =====
@@ -258,13 +251,18 @@ export function HomeNavbar() {
           {/* ===== HERO CAROUSEL ===== */}
         </Box>
       </Container>
-      <Box
-            className="hero-carousel"
-            style={{
+      <div className="carousel-container">
+        <Box
+              className="hero-carousel"
+            sx={{
+              // BU YERDA BALANDLIKNI O'ZGARTIRING
+              height: { xs: "400px", md: "400px", lg: "600px" }, 
               backgroundImage: `url(${heroSlides[activeSlide].image})`,
             }}
           >
-            <Box className="hero-content-wrapper">
+            <Box className="hero-content-wrapper"
+            marginTop={"350px"}
+            >
               <Typography variant="h4" className="hero-title">
                 {heroSlides[activeSlide].title}
               </Typography>
@@ -278,6 +276,8 @@ export function HomeNavbar() {
               </Button>
             </Box>
           </Box>
+      </div>
     </div>
   );
 }
+
