@@ -1,11 +1,9 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
+import { Container, Box, Typography, Button, IconButton, Rating, Stack } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility'; 
 
-
-
-
+// MOCK DATA (views qo'shildi)
 const products = [
   {
     id: 1,
@@ -66,13 +64,13 @@ const products = [
   },
 ];
 
-export function FeaturedProducts() {
+export function BestProducts() {
   return (
     <div className="featured-section">
       <Container>
         {/* Sarlavha */}
         <Typography variant="h2" className="section-title">
-          Featured Products
+          Popular Products
         </Typography>
 
         {/* Grid */}
@@ -101,7 +99,7 @@ export function FeaturedProducts() {
                   {product.name}
                 </Typography>
 
-                 {/* --- RATING, REVIEWS VA VIEWS --- */}
+                {/* --- RATING, REVIEWS VA VIEWS --- */}
                 <div className="product-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                   
                   {/* Rating qismi */}
