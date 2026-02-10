@@ -113,7 +113,7 @@ export function HomeNavbar() {
 
   <Box className="search-box">
     <SearchIcon className="search-icon" />
-    <input type="text" placeholder="Search..." className="search-input" />
+    <input type="text" placeholder="Search" className="search-input" />
   </Box>
 
   {/* ===== AUTH ACTIONS ===== */}

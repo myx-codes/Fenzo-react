@@ -13,7 +13,7 @@ import {
   InputLabel,
   Stack,
   InputAdornment,
-  Grid,
+  Grid, // V6 da Grid2 bo'lishi mumkin, tekshirib ko'ring
   Paper,
   List,
   ListItemButton,
@@ -21,56 +21,65 @@ import {
   Divider,
   Checkbox,
   FormControlLabel,
-  FormGroup
+  FormGroup,
+  Collapse // <--- YANGI: Ochilib yopilishi uchun
 } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from '@mui/icons-material/FilterList';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { SelectChangeEvent } from "@mui/material/Select";
 
-
-// MOCK DATA 
+// ... (MOCK DATA o'zgarishsiz qoladi) ...
 const productsData = [
-  { id: 1, name: "Wireless Headset Pro", category: "Electronics", price: "$120.00", oldPrice: "$150.00", rating: 4.5, reviews: 34, img: "/img/nike-sneakers.avif"},
-  { id: 2, name: "Men's Casual Jacket", category: "Fashion", price: "$85.00", rating: 5.0, reviews: 12, img: "/img/winter-coat.webp" },
-  { id: 3, name: "Smart Watch Series 7", category: "Electronics", price: "$299.00", oldPrice: "$350.00", rating: 4.0, reviews: 88, img: "/img/winter-coat.webp"},
-  { id: 4, name: "Running Sneakers", category: "Fashion", price: "$95.00", rating: 4.5, reviews: 56, img: "/img/classic-bag.webp"},
-  { id: 5, name: "Leather Bag", category: "Fashion", price: "$150.00", oldPrice: "$200.00", rating: 5.0, reviews: 21, img: "/img/nike-sneakers.avif"},
-  { id: 6, name: "Gaming Mouse", category: "Electronics", price: "$45.00", rating: 4.2, reviews: 105, img: "/img/classic-bag.webp"},
-  { id: 7, name: "Digital Camera 4K", category: "Electronics", price: "$650.00", rating: 5.0, reviews: 9, img: "/img/classic-bag.webp"},
-  { id: 8, name: "Modern Sofa", category: "Home", price: "$450.00", oldPrice: "$600.00", rating: 4.6, reviews: 15, img: "/img/jacket.webp"},
-  { id: 9, name: "Wireless Headset Pro 2", category: "Electronics", price: "$130.00", oldPrice: "$160.00", rating: 4.5, reviews: 34, img: "/img/nike-sneakers.avif"},
-  { id: 10, name: "Men's Casual Jacket 2", category: "Fashion", price: "$90.00", rating: 5.0, reviews: 12, img: "/img/winter-coat.webp" },
-  { id: 11, name: "Smart Watch Series 8", category: "Electronics", price: "$310.00", oldPrice: "$360.00", rating: 4.0, reviews: 88, img: "/img/winter-coat.webp"},
-  { id: 12, name: "Running Sneakers 2", category: "Fashion", price: "$100.00", rating: 4.5, reviews: 56, img: "/img/classic-bag.webp"},
-  { id: 13, name: "Leather Bag 2", category: "Fashion", price: "$160.00", oldPrice: "$210.00", rating: 5.0, reviews: 21, img: "/img/nike-sneakers.avif"},
-  { id: 14, name: "Gaming Mouse 2", category: "Electronics", price: "$50.00", rating: 4.2, reviews: 105, img: "/img/classic-bag.webp"},
-  { id: 15, name: "Digital Camera 8K", category: "Electronics", price: "$750.00", rating: 5.0, reviews: 9, img: "/img/classic-bag.webp"},
-  { id: 16, name: "Modern Sofa 2", category: "Home", price: "$550.00", oldPrice: "$700.00", rating: 4.6, reviews: 15, img: "/img/jacket.webp"},
-];
+    { id: 1, name: "Wireless Headset Pro", category: "Electronics", price: "$120.00", oldPrice: "$150.00", rating: 4.5, reviews: 34, img: "/img/nike-sneakers.avif"},
+    { id: 2, name: "Men's Casual Jacket", category: "Fashion", price: "$85.00", rating: 5.0, reviews: 12, img: "/img/winter-coat.webp" },
+    { id: 3, name: "Smart Watch Series 7", category: "Electronics", price: "$299.00", oldPrice: "$350.00", rating: 4.0, reviews: 88, img: "/img/winter-coat.webp"},
+    { id: 4, name: "Running Sneakers", category: "Fashion", price: "$95.00", rating: 4.5, reviews: 56, img: "/img/classic-bag.webp"},
+    { id: 5, name: "Leather Bag", category: "Fashion", price: "$150.00", oldPrice: "$200.00", rating: 5.0, reviews: 21, img: "/img/nike-sneakers.avif"},
+    { id: 6, name: "Gaming Mouse", category: "Electronics", price: "$45.00", rating: 4.2, reviews: 105, img: "/img/classic-bag.webp"},
+    { id: 7, name: "Digital Camera 4K", category: "Electronics", price: "$650.00", rating: 5.0, reviews: 9, img: "/img/classic-bag.webp"},
+    { id: 8, name: "Modern Sofa", category: "Home", price: "$450.00", oldPrice: "$600.00", rating: 4.6, reviews: 15, img: "/img/jacket.webp"},
+    { id: 9, name: "Wireless Headset Pro 2", category: "Electronics", price: "$130.00", oldPrice: "$160.00", rating: 4.5, reviews: 34, img: "/img/nike-sneakers.avif"},
+    { id: 10, name: "Men's Casual Jacket 2", category: "Fashion", price: "$90.00", rating: 5.0, reviews: 12, img: "/img/winter-coat.webp" },
+    { id: 11, name: "Smart Watch Series 8", category: "Electronics", price: "$310.00", oldPrice: "$360.00", rating: 4.0, reviews: 88, img: "/img/winter-coat.webp"},
+    { id: 12, name: "Running Sneakers 2", category: "Fashion", price: "$100.00", rating: 4.5, reviews: 56, img: "/img/classic-bag.webp"},
+    { id: 13, name: "Leather Bag 2", category: "Fashion", price: "$160.00", oldPrice: "$210.00", rating: 5.0, reviews: 21, img: "/img/nike-sneakers.avif"},
+    { id: 14, name: "Gaming Mouse 2", category: "Electronics", price: "$50.00", rating: 4.2, reviews: 105, img: "/img/classic-bag.webp"},
+    { id: 15, name: "Digital Camera 8K", category: "Electronics", price: "$750.00", rating: 5.0, reviews: 9, img: "/img/classic-bag.webp"},
+    { id: 16, name: "Modern Sofa 2", category: "Home", price: "$550.00", oldPrice: "$700.00", rating: 4.6, reviews: 15, img: "/img/jacket.webp"},
+  ];
 
-// Sidebar uchun kategoriyalar
 const categories = [
     { name: "All", label: "All Products" },
     { name: "Electronics", label: "Electronics" },
     { name: "Fashion", label: "Fashion" },
-    { name: "Home", label: "Home & Living" }, // "Home" categorysi ma'lumotlar bazasida bor
+    { name: "Home", label: "Home & Living"},
+    { name: "Parfum", label: "Parfum"}
 ];
 
 export function Products() {
   // STATE
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [visibleCount, setVisibleCount] = useState(9); // Boshlanishiga 9 ta
+  const [visibleCount, setVisibleCount] = useState(8); 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("newest");
-  const [onlySale, setOnlySale] = useState(false); // Faqat chegirmadagilar uchun
+  const [onlySale, setOnlySale] = useState(false); 
+  
+  // --- YANGI STATE: Kategoriyalar ochiq yoki yopiqligi uchun ---
+  const [openCategory, setOpenCategory] = useState(true); 
 
   // HANDLERS
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setVisibleCount(9); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // --- YANGI HANDLER: Toggle qilish uchun ---
+  const handleToggleCategory = () => {
+    setOpenCategory(!openCategory);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,37 +118,49 @@ export function Products() {
   return (
     <div className="products-page"> 
       <Container maxWidth="xl">
-        <Typography variant="h2" className="page-title">
-             Shop Collection
-        </Typography>
-
         <Grid container spacing={4}>
             
             {/* --- SIDEBAR (CHAP TOMON) --- */}
             <Grid size={{xs:12, md:3, lg:2.5 }}>
                 <Paper className="sidebar-paper">
                     
-                    {/* Categories */}
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <FilterListIcon fontSize="small"/> Categories
-                    </Typography>
+                    {/* --- CATEGORIES HEADER (Bosiladigan qildik) --- */}
+                    <Box 
+                        onClick={handleToggleCategory} 
+                        sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between', 
+                            cursor: 'pointer',
+                            mb: 2 
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <FilterListIcon fontSize="small"/> Categories
+                        </Typography>
+                        {/* Ikonka o'zgarib turadi */}
+                        {openCategory ? <ExpandLess /> : <ExpandMore />}
+                    </Box>
                     
-                    <List component="nav" className="category-list">
-                        {categories.map((cat) => (
-                            <ListItemButton
-                                key={cat.name}
-                                selected={selectedCategory === cat.name}
-                                onClick={() => handleCategoryChange(cat.name)}
-                                className="category-item"
-                            >
-                                <ListItemText primary={cat.label} />
-                            </ListItemButton>
-                        ))}
-                    </List>
+                    {/* --- COLLAPSE (Ro'yxatni o'rab oldik) --- */}
+                    <Collapse in={openCategory} timeout="auto" unmountOnExit>
+                        <List component="nav" className="category-list">
+                            {categories.map((cat) => (
+                                <ListItemButton
+                                    key={cat.name}
+                                    selected={selectedCategory === cat.name}
+                                    onClick={() => handleCategoryChange(cat.name)}
+                                    className="category-item"
+                                >
+                                    <ListItemText primary={cat.label} />
+                                </ListItemButton>
+                            ))}
+                        </List>
+                    </Collapse>
 
                     <Divider sx={{ my: 3 }} />
 
-                    {/* Filter Options */}
+                    {/* Filter Options (Buni ham xohlasangiz Collapse qilishingiz mumkin) */}
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                         Filter by
                     </Typography>
@@ -161,6 +182,8 @@ export function Products() {
 
             {/* --- MAIN CONTENT (O'NG TOMON) --- */}
             <Grid size={{xs:12, md:9, lg:9.5 }}>
+                 {/* ... Bu qism o'zgarmadi ... */}
+                 
                 {/* Top Bar: Search & Sort */}
                 <Paper className="top-filter-bar">
                     <Stack 
@@ -199,8 +222,8 @@ export function Products() {
                                     onChange={handleSortChange}
                                 >
                                     <MenuItem value="newest">Newest</MenuItem>
-                                    <MenuItem value="price-asc">Price: Low - High</MenuItem>
-                                    <MenuItem value="price-desc">Price: High - Low</MenuItem>
+                                    <MenuItem value="price-asc">Low Price</MenuItem>
+                                    <MenuItem value="price-desc">High Price</MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>
@@ -245,23 +268,20 @@ export function Products() {
                                         )}
                                     </Box>
 
-                                    <Button 
-                                        fullWidth
-                                        variant="outlined" 
-                                        className="btn-add-cart" 
-                                        startIcon={<ShoppingCartOutlinedIcon />}
-                                    >
-                                        Add to Cart
-                                    </Button>
+                                   <div className="action-buttons">
+                                        <Button variant="outlined" className="btn-cart">
+                                        Add Cart
+                                        </Button>
+                                        <Button variant="contained" className="btn-buy">
+                                        Buy Now
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <Box sx={{ width: '100%', textAlign: 'center', py: 8 }}>
-                            <Typography variant="h5" color="text.secondary">No products found.</Typography>
-                            <Button onClick={() => {setSearchTerm(""); setSelectedCategory("All");}} sx={{ mt: 2 }}>
-                                Clear Filters
-                            </Button>
+                        <Box sx={{ width: '100%', textAlign: 'center', py: 20 }}>
+                            <Typography marginLeft={"500px"} variant="h4" color="text.secondary">No products found.</Typography>
                         </Box>
                     )}
                 </div>

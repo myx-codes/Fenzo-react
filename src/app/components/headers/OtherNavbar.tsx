@@ -88,7 +88,7 @@ export function OtherNavbar() {
              <SearchIcon className="search-icon" />
              <input 
                type="text" 
-               placeholder="Search products..." 
+               placeholder="Search" 
                className="search-input" 
              />
           </Box>
@@ -97,9 +97,11 @@ export function OtherNavbar() {
           <Box className="action-box">
             
             {/* Sevimlilar (Like) */}
-            <IconButton className="nav-icon-btn">
+            <NavLink to={"/mypage"}>
+              <IconButton className="nav-icon-btn">
                 <FavoriteBorderIcon style={{ color: 'white' }} />
             </IconButton>
+            </NavLink>
 
             {/* Savatcha (Basket) */}
             <IconButton className="nav-icon-btn">

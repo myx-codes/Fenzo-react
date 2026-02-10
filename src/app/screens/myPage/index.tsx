@@ -259,13 +259,14 @@ export function MyPage() {
                                     </Typography>
 
                                     {/* Add to Cart Button */}
-                                    <Button 
-                                        variant="outlined" 
-                                        startIcon={<ShoppingCartOutlinedIcon />}
-                                        fullWidth
-                                    >
-                                        Add to Cart
-                                    </Button>
+                                    <div className="action-buttons">
+                                      <Button variant="outlined" className="btn-cart">
+                                        Add Cart
+                                      </Button>
+                                      <Button variant="contained" className="btn-buy">
+                                        Buy Now
+                                      </Button>
+                                    </div>
                                 </Card>
                             </Grid>
                         ))}
