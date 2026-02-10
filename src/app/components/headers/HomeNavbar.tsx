@@ -119,8 +119,8 @@ export function HomeNavbar() {
   {/* ===== AUTH ACTIONS ===== */}
   {authUser ? (
     <Box className="action-box">
-      {/* Like */}
-      <IconButton className="nav-icon-btn">
+      {/* Like → Wishlist */}
+      <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
         <FavoriteBorderIcon sx={{ color: "#fff" }} />
       </IconButton>
 

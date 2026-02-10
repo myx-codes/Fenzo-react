@@ -96,12 +96,10 @@ export function OtherNavbar() {
           {/* USER ACTIONS (Login o'rniga shu qism chiqadi) */}
           <Box className="action-box">
             
-            {/* Sevimlilar (Like) */}
-            <NavLink to={"/mypage"}>
-              <IconButton className="nav-icon-btn">
-                <FavoriteBorderIcon style={{ color: 'white' }} />
+            {/* Like → Wishlist */}
+            <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
+              <FavoriteBorderIcon style={{ color: 'white' }} />
             </IconButton>
-            </NavLink>
 
             {/* Savatcha (Basket) */}
             <IconButton className="nav-icon-btn">

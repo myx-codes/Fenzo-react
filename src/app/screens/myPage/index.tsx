@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { 
   Container, 
   Box, 
@@ -63,7 +64,13 @@ const user = {
 };
 
 export function MyPage() {
-  const [tabValue, setTabValue] = useState("orders");
+  const location = useLocation();
+  const tabFromUrl = new URLSearchParams(location.search).get("tab");
+  const [tabValue, setTabValue] = useState(tabFromUrl === "wishlist" ? "wishlist" : "orders");
+
+  useEffect(() => {
+    if (tabFromUrl === "wishlist") setTabValue("wishlist");
+  }, [tabFromUrl]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
