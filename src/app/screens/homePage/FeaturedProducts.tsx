@@ -1,153 +1,117 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
+import { Container, Box, Typography, Button, IconButton, Rating, Stack } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility'; 
 
+// Redux va Config importlari
+import { retrieveFeaturedProducts } from "./selector";
+import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { Product } from "../../../lib/types/product";
+import { serverApi } from "../../../lib/config"; // 👈 serverApi (http://localhost:3001) shart!
 
-
-
-const products = [
-  {
-    id: 1,
-    name: "Winter Coat Elegant",
-    price: "$85.00",
-    oldPrice: "$120.00",
-    rating: 4.5,
-    reviews: 12,
-    views: 1240, // <--- YANGI
-    img: "/img/winter-coat.webp",
-  },
-  {
-    id: 2,
-    name: "Casual Denim Jacket",
-    price: "$55.00",
-    rating: 4.0,
-    reviews: 8,
-    views: 850, // <--- YANGI
-    img: "/img/jacket.webp",
-  },
-  {
-    id: 3,
-    name: "Classic Leather Bag",
-    price: "$140.00",
-    oldPrice: "$180.00",
-    rating: 5.0,
-    reviews: 25,
-    views: 3200, // <--- YANGI
-    img: "/img/classic-bag.webp",
-  },
-  {
-    id: 4,
-    name: "Running Sneakers",
-    price: "$95.00",
-    rating: 4.5,
-    reviews: 40,
-    views: 560, 
-    img: "/img/nike-sneakers.avif",
-  },
-  {
-    id: 5,
-    name: "Running Sneakers V2",
-    price: "$95.00",
-    rating: 3.5,
-    reviews: 5,
-    views: 120,
-    img: "/img/nike-sneakers.avif",
-  },
-  {
-    id: 6,
-    name: "Classic Leather Bag",
-    price: "$140.00",
-    oldPrice: "$180.00",
-    rating: 4.8,
-    reviews: 110,
-    views: 5000,
-    img: "/img/classic-bag.webp",
-  },
-];
+/** REDUX SELECTOR */
+const featuredProductsRetriever = createSelector(
+  retrieveFeaturedProducts,
+  (featuredProducts) => ({ featuredProducts })
+);
 
 export function FeaturedProducts() {
+  // 1. Reduxdan ma'lumotni olamiz
+  const { featuredProducts } = useSelector(featuredProductsRetriever);
+
+  /** * 2. XAVFSIZLIK TEKSHIRUVI (Fix for "map is not a function")
+   * Agar featuredProducts hali kelmagan bo'lsa (null/undefined), bo'sh array olamiz.
+   */
+  const products = Array.isArray(featuredProducts) ? featuredProducts : [];
+
   return (
     <div className="featured-section">
       <Container>
-        {/* Sarlavha */}
         <Typography variant="h2" className="section-title">
           Featured Products
         </Typography>
 
-        {/* Grid */}
         <div className="products-grid">
-          {products.map((product) => (
-            <Box key={product.id} className="product-card">
-              
-              {/* Rasm qismi */}
-              <div className="product-image-box">
-                <img 
-                  src={product.img}
-                  alt={product.name} 
-                  className="product-img"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; }}
-                />
+          {products.map((product: Product) => {
+            
+            /** * 3. RASM YO'LINI YASASH (Fix for images not showing)
+             * Backenddan rasm nomi keladi: "uploads/products/image.jpg"
+             * Biz unga server manzilini ulaymiz: "http://localhost:3001/uploads/..."
+             */
+            const imagePath = product.productImages && product.productImages.length > 0 
+              ? `${serverApi}/${product.productImages[0]}` 
+              : "/icons/default-product.png"; // Rasm yo'q bo'lsa zaxira rasm
+
+            return (
+              <Box key={product._id} className="product-card">
                 
-                {/* Like Tugmasi */}
-                <IconButton className="like-btn" aria-label="add to favorites">
-                  <FavoriteBorderIcon fontSize="small" />
-                </IconButton>
-              </div>
-
-              {/* Ma'lumot qismi */}
-              <div className="product-info">
-                <Typography className="product-name">
-                  {product.name}
-                </Typography>
-
-                 {/* --- RATING, REVIEWS VA VIEWS --- */}
-                <div className="product-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                {/* Rasm qismi */}
+                <div className="product-image-box">
+                  <img 
+                    src={imagePath}
+                    alt={product.productName} 
+                    className="product-img"
+                    // Agar rasm manzili xato bo'lsa, buzilgan rasm iconi chiqmasligi uchun:
+                    onError={(e) => { 
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; 
+                    }}
+                  />
                   
-                  {/* Rating qismi */}
-                  <div className="product-rating" style={{ display: 'flex', alignItems: 'center' }}>
-                    <Rating 
-                      name="read-only" 
-                      value={product.rating} 
-                      precision={0.5} 
-                      readOnly 
-                      size="small" 
-                    />
-                    <span className="review-count" style={{ marginLeft: '4px', fontSize: '12px', color: '#777' }}>
-                      ({product.reviews})
-                    </span>
+                  <IconButton className="like-btn" aria-label="add to favorites">
+                    <FavoriteBorderIcon fontSize="small" />
+                  </IconButton>
+                </div>
+
+                {/* Ma'lumot qismi */}
+                <div className="product-info">
+                  <Typography className="product-name">
+                    {product.productName}
+                  </Typography>
+
+                  <div className="product-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    
+                    {/* Rating */}
+                    <div className="product-rating" style={{ display: 'flex', alignItems: 'center' }}>
+                      <Rating 
+                        name="read-only" 
+                        value={product.productRating ? product.productRating : 0} 
+                        precision={0.5} 
+                        readOnly 
+                        size="small" 
+                      />
+                      <span className="review-count" style={{ marginLeft: '4px', fontSize: '12px', color: '#777' }}>
+                        ({product.productViews})
+                      </span>
+                    </div>
+
+                    {/* Views */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#555' }}>
+                        <VisibilityIcon sx={{ fontSize: 16 }} />
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                          {product.productViews}
+                        </Typography>
+                    </Box>
+
                   </div>
+                  
+                  <Typography className="product-price">
+                    ${product.productPrice}
+                  </Typography>
 
-                  {/* --- VIEWS  --- */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'dark-blue' }}>
-                      <VisibilityIcon sx={{ fontSize: 16 }} />
-                      <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                        {product.views}
-                      </Typography>
-                  </Box>
-
+                  <div className="action-buttons">
+                    <Button variant="outlined" className="btn-cart">
+                      Add Cart
+                    </Button>
+                    <Button variant="contained" className="btn-buy">
+                      Buy Now
+                    </Button>
+                  </div>
                 </div>
-                
-                <Typography className="product-price">
-                  {product.price}
-                  {product.oldPrice && (
-                    <span className="old-price">{product.oldPrice}</span>
-                  )}
-                </Typography>
 
-                {/* Tugmalar */}
-                <div className="action-buttons">
-                  <Button variant="outlined" className="btn-cart">
-                    Add Cart
-                  </Button>
-                  <Button variant="contained" className="btn-buy">
-                    Buy Now
-                  </Button>
-                </div>
-              </div>
-
-            </Box>
-          ))}
+              </Box>
+            );
+          })}
         </div>
       </Container>
     </div>

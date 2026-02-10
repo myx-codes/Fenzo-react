@@ -11,26 +11,35 @@ import { BestProducts } from "./BestProducts";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "@reduxjs/toolkit";
-import { createSelector } from "@reduxjs/toolkit";
 import { setFeaturedProducts } from "./slice";
-import { retrieveFeaturedProducts} from "./selector"
-import { Product } from "../../../../lib/types/product";
+import { Product } from "../../../lib/types/product";
+import ProductService from "../../services/ProductService";
+import { ProductCollection } from "../../../lib/enums/product.enums";
 
-/** REDUX SLICE & SELECTOR */
+/** REDUX SLICE */
 const actionDispatch = (dispatch: Dispatch) => ({
   setFeaturedProducts: (data: Product[]) => dispatch(setFeaturedProducts(data)),
 });
-const featuredProductsRetrieve = createSelector(
-  retrieveFeaturedProducts,
-  (featuredProducts) => ({featuredProducts})
-);
+
 
 export function HomePage() {
   const { setFeaturedProducts} = actionDispatch(useDispatch());
-  const {featuredProducts} = useSelector(featuredProductsRetrieve)
   // selector: store => data
   
-  useEffect(() => {}, [])
+  useEffect(() => {
+    // backend server data fetch => data
+    const product = new ProductService();
+    product.getProducts({
+      page:1,
+      limit:4,
+      order: "productViews",
+      productCollection: ProductCollection.ELECTRONICS
+    })
+    .then((data) => {
+      setFeaturedProducts(data);
+    })
+    .catch((err) => console.log("error", err))
+  }, [])
 
 
 

@@ -22,7 +22,7 @@ export interface Product {
 }
 
 export interface ProductInquiry {
-  order?: "NEWEST" | "PRICE_ASC" | "PRICE_DESC" | "TOP_RATED";
+  order?: string;
   page: number;
   limit: number;
   productCollection?: ProductCollection;
