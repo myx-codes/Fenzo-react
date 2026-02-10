@@ -44,13 +44,28 @@ export function Footer() {
           {/* 3. MIJOZLAR UCHUN */}
           <Box className="footer-col">
             <h3 className="footer-title">Customer Care</h3>
-            <NavLink to="/profile">
-              <a href="#" className="footer-link">My Account</a>
+            
+            {/* 1. My Account to'g'rilandi */}
+            <NavLink to="/profile" className="footer-link">
+              My Account
             </NavLink>
-            <a href="#" className="footer-link">Order History</a>
-            <a href="#" className="footer-link">Track Order</a>
-            <a href="#" className="footer-link">Terms & Conditions</a>
-            <a href="#" className="footer-link">Privacy Policy</a>
+
+            {/* 2. Boshqalarni ham NavLink yoki Link ga o'tkazish tavsiya qilinadi */}
+            <NavLink to="/orders" className="footer-link">
+              Order History
+            </NavLink>
+            
+            <NavLink to="/track-order" className="footer-link">
+              Track Order
+            </NavLink>
+            
+            <NavLink to="/terms" className="footer-link">
+              Terms & Conditions
+            </NavLink>
+            
+            <NavLink to="/privacy" className="footer-link">
+              Privacy Policy
+            </NavLink>
           </Box>
 
           {/* 4. KONTAKT */}

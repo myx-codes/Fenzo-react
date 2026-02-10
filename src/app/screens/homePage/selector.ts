@@ -4,7 +4,18 @@ import { HomePage } from ".";
 
 
 const selectHomePage = ( state: AppRootState) => state.homePage;
-const retrieveFeaturedProducts = createSelector(
+
+export const retrieveFeaturedProducts = createSelector(
     selectHomePage,
     (HomePage) => HomePage.featuredProducts
-)
+);
+
+export const retrieveTopSellers = createSelector(
+    selectHomePage,
+    (HomePage) => HomePage.topSellers
+);
+
+export const retrieveBestProducts = createSelector(
+    selectHomePage,
+    (HomePage) => HomePage.bestProducts
+);
