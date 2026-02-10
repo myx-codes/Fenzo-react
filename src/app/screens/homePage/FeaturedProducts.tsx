@@ -1,10 +1,9 @@
 import React from "react";
 import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
-// Iconlar
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
-// Static Data (Rating va Reviews qo'shildi)
+
 const products = [
   {
     id: 1,

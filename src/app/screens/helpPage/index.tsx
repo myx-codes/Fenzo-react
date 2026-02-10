@@ -145,7 +145,7 @@ export function HelpPage() {
                     <EmailOutlinedIcon sx={{ fontSize: 50, color: '#1976d2', mb: 2 }} />
                     <Typography variant="h6" fontWeight="bold">Email Us</Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        We usually reply within 24 hours.
+                        We reply within 24 hours.
                     </Typography>
                     <Button variant="outlined" fullWidth>support@fenzo.com</Button>
                 </Paper>
