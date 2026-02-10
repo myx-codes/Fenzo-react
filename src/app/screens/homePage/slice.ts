@@ -12,7 +12,7 @@ const homePageSlice = createSlice({
     initialState,
     reducers: {
         setFeaturedProducts: ( state, action) => {
-            state.featuredProducts = action.payload;
+            state.featuredProducts = Array.isArray(action.payload) ? action.payload : [];
         },
         setTopSellers: ( state, action) => {
             state.topSellers = action.payload;

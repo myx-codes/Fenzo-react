@@ -8,7 +8,7 @@ import { retrieveFeaturedProducts } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Product } from "../../../lib/types/product";
-import { serverApi } from "../../../lib/config"; // 👈 serverApi (http://localhost:3001) shart!
+import { serverApi } from "../../../lib/config"; // 
 
 /** REDUX SELECTOR */
 const featuredProductsRetriever = createSelector(
@@ -69,10 +69,9 @@ export function FeaturedProducts() {
                     {product.productName}
                   </Typography>
 
-                  <div className="product-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    
+                  <div className="product-meta">
                     {/* Rating */}
-                    <div className="product-rating" style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="product-rating">
                       <Rating 
                         name="read-only" 
                         value={product.productRating ? product.productRating : 0} 
@@ -80,19 +79,18 @@ export function FeaturedProducts() {
                         readOnly 
                         size="small" 
                       />
-                      <span className="review-count" style={{ marginLeft: '4px', fontSize: '12px', color: '#777' }}>
+                      <span className="review-count">
                         ({product.productViews})
                       </span>
                     </div>
 
                     {/* Views */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#555' }}>
-                        <VisibilityIcon sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                          {product.productViews}
-                        </Typography>
-                    </Box>
-
+                    <div className="product-views">
+                      <VisibilityIcon />
+                      <Typography variant="caption">
+                        {product.productViews}
+                      </Typography>
+                    </div>
                   </div>
                   
                   <Typography className="product-price">

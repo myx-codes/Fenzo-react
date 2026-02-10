@@ -17,7 +17,8 @@ export function TopBrands() {
         <Typography variant="h4" className="trusted-title">
           Top Brands
         </Typography>
-
+      </Container>
+      <div className="slider-wrapper">
         <div className="slider">
           <div className="slide-track">
             
@@ -41,7 +42,7 @@ export function TopBrands() {
             
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
