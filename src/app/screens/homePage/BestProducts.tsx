@@ -1,151 +1,112 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating, Stack } from "@mui/material";
+import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility'; 
 
-// MOCK DATA (views qo'shildi)
-const products = [
-  {
-    id: 1,
-    name: "Winter Coat Elegant",
-    price: "$85.00",
-    oldPrice: "$120.00",
-    rating: 4.5,
-    reviews: 12,
-    views: 1240, // <--- YANGI
-    img: "/img/winter-coat.webp",
-  },
-  {
-    id: 2,
-    name: "Casual Denim Jacket",
-    price: "$55.00",
-    rating: 4.0,
-    reviews: 8,
-    views: 850, // <--- YANGI
-    img: "/img/jacket.webp",
-  },
-  {
-    id: 3,
-    name: "Classic Leather Bag",
-    price: "$140.00",
-    oldPrice: "$180.00",
-    rating: 5.0,
-    reviews: 25,
-    views: 3200, // <--- YANGI
-    img: "/img/classic-bag.webp",
-  },
-  {
-    id: 4,
-    name: "Running Sneakers",
-    price: "$95.00",
-    rating: 4.5,
-    reviews: 40,
-    views: 560, 
-    img: "/img/nike-sneakers.avif",
-  },
-  {
-    id: 5,
-    name: "Running Sneakers V2",
-    price: "$95.00",
-    rating: 3.5,
-    reviews: 5,
-    views: 120,
-    img: "/img/nike-sneakers.avif",
-  },
-  {
-    id: 6,
-    name: "Classic Leather Bag",
-    price: "$140.00",
-    oldPrice: "$180.00",
-    rating: 4.8,
-    reviews: 110,
-    views: 5000,
-    img: "/img/classic-bag.webp",
-  },
-];
+// Redux va Config importlari
+// 1. Selectorlarni to'g'ri import qilamiz
+import { retrieveBestProducts } from "./selector"; 
+import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { Product } from "../../../lib/types/product";
+import { serverApi } from "../../../lib/config"; 
+
+/** REDUX SELECTOR */
+// Selector faylidan kelgan funksiyani o'rab olamiz
+const bestProductsRetriever = createSelector(
+  retrieveBestProducts,
+  (bestProducts) => ({ bestProducts })
+);
 
 export function BestProducts() {
+  // 2. Reduxdan ma'lumotni olamiz
+  const { bestProducts } = useSelector(bestProductsRetriever);
+  
+  // 3. Xavfsizlik uchun tekshiruv (null kelsa bo'sh array)
+  const products = Array.isArray(bestProducts) ? bestProducts : [];
+
   return (
     <div className="featured-section">
       <Container>
-        {/* Sarlavha */}
         <Typography variant="h2" className="section-title">
           Popular Products
         </Typography>
 
-        {/* Grid */}
         <div className="products-grid">
-          {products.map((product) => (
-            <Box key={product.id} className="product-card">
-              
-              {/* Rasm qismi */}
-              <div className="product-image-box">
-                <img 
-                  src={product.img}
-                  alt={product.name} 
-                  className="product-img"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; }}
-                />
-                
-                {/* Like Tugmasi */}
-                <IconButton className="like-btn" aria-label="add to favorites">
-                  <FavoriteBorderIcon fontSize="small" />
-                </IconButton>
-              </div>
+          {/* 4. MAP FUNKSIYASINI TO'G'IRLASH */}
+          {products.map((product: Product) => {
+             // Jingalak qavs { ochildi, endi o'zgaruvchi yozsa bo'ladi
+             
+             const imagePath = product.productImages && product.productImages.length > 0
+               ? `${serverApi}/${product.productImages[0]}`
+               : "https://via.placeholder.com/300";
 
-              {/* Ma'lumot qismi */}
-              <div className="product-info">
-                <Typography className="product-name">
-                  {product.name}
-                </Typography>
-
-                {/* --- RATING, REVIEWS VA VIEWS --- */}
-                <div className="product-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  
-                  {/* Rating qismi */}
-                  <div className="product-rating" style={{ display: 'flex', alignItems: 'center' }}>
-                    <Rating 
-                      name="read-only" 
-                      value={product.rating} 
-                      precision={0.5} 
-                      readOnly 
-                      size="small" 
+             // Endi esa 'return' so'zi orqali JSX qaytaramiz
+             return (
+                <Box key={product._id} className="product-card">
+                  {/* Rasm qismi */}
+                  <div className="product-image-box">
+                    <img 
+                      src={imagePath}
+                      alt={product.productName} 
+                      className="product-img"
+                      onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; }}
                     />
-                    <span className="review-count" style={{ marginLeft: '4px', fontSize: '12px', color: '#777' }}>
-                      ({product.reviews})
-                    </span>
+                    
+                    <IconButton className="like-btn" aria-label="add to favorites">
+                      <FavoriteBorderIcon fontSize="small" />
+                    </IconButton>
                   </div>
 
-                  {/* --- VIEWS  --- */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'dark-blue' }}>
-                      <VisibilityIcon sx={{ fontSize: 16 }} />
-                      <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                        {product.views}
-                      </Typography>
-                  </Box>
+                  {/* Ma'lumot qismi */}
+                  <div className="product-info">
+                    <Typography className="product-name">
+                      {product.productName}
+                    </Typography>
 
-                </div>
-                
-                <Typography className="product-price">
-                  {product.price}
-                  {product.oldPrice && (
-                    <span className="old-price">{product.oldPrice}</span>
-                  )}
-                </Typography>
+                    <div className="product-meta">
+                      {/* Rating */}
+                      <div className="product-rating">
+                        <Rating 
+                          name="read-only" 
+                          value={product.productRating || 0} 
+                          precision={0.5} 
+                          readOnly 
+                          size="small" 
+                        />
+                        <span className="review-count">
+                          ({product.productViews})
+                        </span>
+                      </div>
 
-                {/* Tugmalar */}
-                <div className="action-buttons">
-                  <Button variant="outlined" className="btn-cart">
-                    Add Cart
-                  </Button>
-                  <Button variant="contained" className="btn-buy">
-                    Buy Now
-                  </Button>
-                </div>
-              </div>
+                      {/* Views */}
+                      <Box className="product-views">
+                          <VisibilityIcon sx={{ fontSize: 16 }} />
+                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                            {product.productViews}
+                          </Typography>
+                      </Box>
+                    </div>
+                    
+                    <Typography className="product-price">
+                      ${product.productPrice}
+                      {/* Mantiq: Agar eski narx bo'lsa ko'rsatish kerak (hozircha shartli qo'ydim) */}
+                      {/* <span className="old-price">${product.productPrice + 10}</span> */}
+                    </Typography>
 
-            </Box>
-          ))}
+                    {/* Tugmalar */}
+                    <div className="action-buttons">
+                      <Button variant="outlined" className="btn-cart">
+                        Add Cart
+                      </Button>
+                      <Button variant="contained" className="btn-buy">
+                        Buy Now
+                      </Button>
+                    </div>
+                  </div>
+                </Box>
+             );
+          })}
         </div>
       </Container>
     </div>

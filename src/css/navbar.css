@@ -1,3 +1,5 @@
+
+
 .home-navbar {
     width: 100%;
     height: auto;
@@ -121,17 +123,17 @@
     overflow: hidden;            /* Tashqariga chiqib ketishni oldini olish */
 }
 
-
 /* Agar ichida Carousel bo'lsa, u ham 100% bo'lishi kerak */
 .hero-carousel {
-    width: 100%;
-    display: flex;
-    align-items: center; /* Yozuvlarni vertikal markazlash */
-    background-size: cover;
-    background-position: center;
+  width: 100%;
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.8s ease-in-out;
+  display: flex;
+  align-items: center;
 }
 
-/* Yozuvlar juda chetga yopishib qolmasligi uchun konteyner */
 .hero-content-wrapper {
     width: 100%;
     padding-left: 50px; /* Chap tomondan chiroyli masofa */
@@ -150,14 +152,19 @@
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.25rem !important;
     margin-bottom: 40px !important;
+    margin: 20px 0 !important;
+    opacity: 0.9;
+    font-size: 25px !important
 }
 .hero-btn {
-    background-color: #ffca28 !important;
+    background-color: #2b7ffc !important;
     color: #1e3c72 !important;
     width: fit-content;
     padding: 12px 40px !important;
     font-weight: bold !important;
     border-radius: 8px !important;
+    padding: 12px 32px !important;
+    font-size: 1rem !important;
 }
 
 

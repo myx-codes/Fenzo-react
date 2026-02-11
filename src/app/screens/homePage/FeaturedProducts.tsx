@@ -19,10 +19,6 @@ const featuredProductsRetriever = createSelector(
 export function FeaturedProducts() {
   // 1. Reduxdan ma'lumotni olamiz
   const { featuredProducts } = useSelector(featuredProductsRetriever);
-
-  /** * 2. XAVFSIZLIK TEKSHIRUVI (Fix for "map is not a function")
-   * Agar featuredProducts hali kelmagan bo'lsa (null/undefined), bo'sh array olamiz.
-   */
   const products = Array.isArray(featuredProducts) ? featuredProducts : [];
 
   return (
@@ -34,15 +30,8 @@ export function FeaturedProducts() {
 
         <div className="products-grid">
           {products.map((product: Product) => {
-            
-            /** * 3. RASM YO'LINI YASASH (Fix for images not showing)
-             * Backenddan rasm nomi keladi: "uploads/products/image.jpg"
-             * Biz unga server manzilini ulaymiz: "http://localhost:3001/uploads/..."
-             */
-            const imagePath = product.productImages && product.productImages.length > 0 
-              ? `${serverApi}/${product.productImages[0]}` 
-              : "/icons/default-product.png"; // Rasm yo'q bo'lsa zaxira rasm
-
+            const imagePath = `${serverApi}/${product.productImages[0]}` 
+        
             return (
               <Box key={product._id} className="product-card">
                 
