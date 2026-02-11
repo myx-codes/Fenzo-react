@@ -60,7 +60,7 @@ export function FeaturedProducts() {
 
                   <div className="product-meta">
                     {/* Rating */}
-                    <div className="product-rating">
+                    {/* <div className="product-rating">
                       <Rating 
                         name="read-only" 
                         value={product.productRating ? product.productRating : 0} 
@@ -71,15 +71,20 @@ export function FeaturedProducts() {
                       <span className="review-count">
                         ({product.productViews})
                       </span>
+                    </div> */}
+
+                    <div className="product-rating">
+                        <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
+                        <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
                     </div>
 
                     {/* Views */}
-                    <div className="product-views">
-                      <VisibilityIcon />
-                      <Typography variant="caption">
-                        {product.productViews}
-                      </Typography>
-                    </div>
+                    <Box className="views-box">
+                        <VisibilityIcon sx={{ fontSize: 17 }} />
+                        <Typography variant="caption">
+                            {product.productViews}
+                        </Typography>
+                    </Box>
                   </div>
                   
                   <Typography className="product-price">

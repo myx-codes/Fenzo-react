@@ -67,16 +67,8 @@ export function BestProducts() {
                     <div className="product-meta">
                       {/* Rating */}
                       <div className="product-rating">
-                        <Rating 
-                          name="read-only" 
-                          value={product.productRating || 0} 
-                          precision={0.5} 
-                          readOnly 
-                          size="small" 
-                        />
-                        <span className="review-count">
-                          ({product.productViews})
-                        </span>
+                          <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
+                          <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
                       </div>
 
                       {/* Views */}

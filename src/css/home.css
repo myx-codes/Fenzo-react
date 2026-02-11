@@ -410,7 +410,6 @@
 }
 
 /* --- TOP SELLER --- */
-
 .sellers-section {
   padding: 50px 20px;
   /* background-color gradient qabul qilmaydi, shuning uchun 'background' ishlatamiz */
@@ -457,8 +456,8 @@
 
 /* Logo (Avatar) - KICHRAYTIRILDI */
 .seller-avatar {
-  width: 120px !important; /* 150px juda katta edi, 80px ixcham */
-  height: 120px !important;
+  width: 180px !important; /* 150px juda katta edi, 80px ixcham */
+  height: 180px !important;
   border: 3px solid #f0f4f8;
   margin-bottom: 5px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -467,7 +466,7 @@
 /* Do'kon nomi */
 .seller-name {
   font-weight: 700 !important;
-  font-size: 1rem !important; /* Font sal kichraytirildi */
+  font-size: 22px !important; 
   color: #333;
   line-height: 1.2 !important;
 }
@@ -499,9 +498,7 @@
   color: #fff !important;
 }
 
-/* Bigsales */
-
-
+/* --- BIGSALES --- */
 .sale-badge {
   position: absolute;
   top: 10px;
@@ -517,9 +514,7 @@
 }
 
 
-/* --- WelcomeAuthModal.css --- */
-
-/* Modalning umumiy ramkasi */
+/* --- WELCOME_AUTH_MODEL --- */
 .modal-wrapper {
   display: flex;
   min-height: 550px; /* Balandlikni sal oshirdik */

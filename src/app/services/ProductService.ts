@@ -16,7 +16,6 @@ import { Product, ProductInquiry } from "../../lib/types/product";
 
             const result = await axios.get(url);
             const data = result.data;
-            // Normalize: API may return array or wrapped (e.g. { value: { products } } or { products })
             if (Array.isArray(data)) return data;
             const list = (data as any)?.value?.products ?? (data as any)?.products;
             return Array.isArray(list) ? list : [];

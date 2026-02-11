@@ -1,39 +1,30 @@
 import React from "react";
 import { Container, Typography, Avatar, Button, Rating, Box } from "@mui/material";
 
-// Static Data: Top Sotuvchilar
-const topSellers = [
-  {
-    id: 1,
-    name: "Fashion Hub",
-    logo: "https://images.pexels.com/photos/994234/pexels-photo-994234.jpeg?auto=compress&cs=tinysrgb&w=300",
-    rating: 4.8,
-    followers: "12.5k Followers",
-  },
-  {
-    id: 2,
-    name: "Tech World",
-    logo: "https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=300",
-    rating: 5.0,
-    followers: "45k Followers",
-  },
-  {
-    id: 3,
-    name: "Green Organic",
-    logo: "https://images.pexels.com/photos/1089932/pexels-photo-1089932.jpeg?auto=compress&cs=tinysrgb&w=300",
-    rating: 4.5,
-    followers: "8k Followers",
-  },
-  {
-    id: 4,
-    name: "Urban Style",
-    logo: "https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=300",
-    rating: 4.2,
-    followers: "20k Followers",
-  },
-];
+// Redux va Config importlari
+// 1. Selectorlarni to'g'ri import qilamiz
+import { retrieveBestProducts, retrieveTopSellers } from "./selector"; 
+import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { Product } from "../../../lib/types/product";
+import { serverApi } from "../../../lib/config"; 
+import { User } from "../../../lib/types/user";
+
+/** REDUX SELECTOR */
+// Selector faylidan kelgan funksiyani o'rab olamiz
+const topSellerRetriever = createSelector(
+  retrieveTopSellers,
+  (topSellers) => ({ topSellers })
+);
+
 
 export function TopSellers() {
+
+   // 2. Reduxdan ma'lumotni olamiz
+    const { topSellers } = useSelector(topSellerRetriever);
+    
+    // 3. Xavfsizlik uchun tekshiruv (null kelsa bo'sh array)
+    const products = Array.isArray(topSellers) ? topSellers : [];
   return (
     <div className="sellers-section">
       <Container>
@@ -44,27 +35,31 @@ export function TopSellers() {
 
         {/* Grid Container */}
         <div className="sellers-grid">
-          {topSellers.map((seller) => (
-            <div key={seller.id} className="seller-card">
+          {topSellers.map((seller: User
+          ) => {
+            const imagePath = `${serverApi}/${seller.userImage}`;
+            
+            return (
+              <div key={seller._id} className="seller-card">
               
               {/* 1. Logo (Avatar) */}
               <Avatar 
-                src={seller.logo} 
-                alt={seller.name} 
+                src={imagePath} 
+                alt={seller.userNick} 
                 className="seller-avatar"
               />
 
               {/* 2. Ism va Followers */}
               <Typography className="seller-name">
-                {seller.name}
+                {seller.userNick}
               </Typography>
-              <Typography className="follower-count">
+              {/* <Typography className="follower-count">
                 {seller.followers}
-              </Typography>
+              </Typography> */}
 
               {/* 3. Rating (Yulduzchalar) */}
               <Rating 
-                value={seller.rating} 
+                value={seller.userPoints} 
                 precision={0.1} 
                 readOnly 
                 size="small" 
@@ -76,7 +71,8 @@ export function TopSellers() {
               </Button>
               
             </div>
-          ))}
+            );
+           })}
         </div>
       </Container>
     </div>
