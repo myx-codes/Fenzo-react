@@ -1,122 +1,153 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  IconButton,
+} from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 
-const products = [
+const events = [
   {
     id: 1,
-    name: "Winter Coat Elegant",
-    // 60% chegirma: $220 dan $85 ga tushdi
-    price: "$85.00",
-    oldPrice: "$220.00", 
-    discount: "-61%", // Yorliq uchun
-    rating: 4.5,
-    reviews: 12,
+    title: "Winter Big Sale 2026",
+    description: "Up to 70% off on winter collection",
+    discount: "70% OFF",
+    date: "Ends Feb 28",
     img: "/img/winter-coat.webp",
   },
   {
     id: 2,
-    name: "Casual Denim Jacket",
-    // 65% chegirma: $160 dan $55 ga tushdi
-    price: "$55.00",
-    oldPrice: "$160.00",
-    discount: "-65%",
-    rating: 4.0,
-    reviews: 8,
-    img: "/img/jacket.webp",
+    title: "Sneakers Festival",
+    description: "Limited edition sneakers event",
+    discount: "80% OFF",
+    date: "Ends Mar 05",
+    img: "/img/nike-sneakers.avif",
   },
   {
     id: 3,
-    name: "Classic Leather Bag",
-    // 60% chegirma: $350 dan $140 ga tushdi
-    price: "$140.00",
-    oldPrice: "$350.00",
-    discount: "-60%",
-    rating: 5.0,
-    reviews: 25,
+    title: "Luxury Bag Campaign",
+    description: "Premium leather bags promotion",
+    discount: "85% OFF",
+    date: "Ends Mar 15",
     img: "/img/classic-bag.webp",
   },
   {
     id: 4,
-    name: "Running Sneakers",
-    // 70% chegirma: $320 dan $95 ga tushdi
-    price: "$95.00",
-    oldPrice: "$320.00",
-    discount: "-70%",
-    rating: 4.5,
-    reviews: 40,
+    title: "Denim Days",
+    description: "Best denim deals of the season",
+    discount: "75% OFF",
+    date: "Ends Mar 20",
+    img: "/img/jacket.webp",
+  },
+  {
+    id: 5,
+    title: "Winter Big Sale 2026",
+    description: "Up to 70% off on winter collection",
+    discount: "70% OFF",
+    date: "Ends Feb 28",
+    img: "/img/winter-coat.webp",
+  },
+  {
+    id: 6,
+    title: "Sneakers Festival",
+    description: "Limited edition sneakers event",
+    discount: "80% OFF",
+    date: "Ends Mar 05",
     img: "/img/nike-sneakers.avif",
-  }
+  },
+  {
+    id: 7,
+    title: "Luxury Bag Campaign",
+    description: "Premium leather bags promotion",
+    discount: "85% OFF",
+    date: "Ends Mar 15",
+    img: "/img/classic-bag.webp",
+  },
+  {
+    id: 8,
+    title: "Denim Days",
+    description: "Best denim deals of the season",
+    discount: "75% OFF",
+    date: "Ends Mar 20",
+    img: "/img/jacket.webp",
+  },
 ];
 
 export function BigSales() {
   return (
-    <div className="featured-section">
+    <div className="events-section">
       <Container>
-        {/* Sarlavha: Big Sale ekanligi bilinib turishi uchun o'zgartirdim */}
-        <Typography variant="h2" className="section-title">
-          Big Sales 
+        <Typography variant="h2" className="events-title">
+          Special Events
         </Typography>
 
-        <div className="products-grid">
-          {products.map((product) => (
-            <Box key={product.id} className="product-card">
-              
-              <div className="product-image-box">
-                {/* --- YANGI: Foiz yozuvi (Badge) --- */}
-                <span className="sale-badge">
-                  {product.discount}
-                </span>
-
-                <img 
-                  src={product.img}
-                  alt={product.name} 
-                  className="product-img"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; }}
-                />
-                
-                <IconButton className="like-btn" aria-label="add to favorites">
-                  <FavoriteBorderIcon fontSize="small" />
-                </IconButton>
-              </div>
-
-              <div className="product-info">
-                <Typography className="product-name">
-                  {product.name}
-                </Typography>
-
-                <div className="product-rating">
-                  <Rating 
-                    name="read-only" 
-                    value={product.rating} 
-                    precision={0.5} 
-                    readOnly 
-                    size="small" 
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={30}
+          slidesPerView={3}
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000 }}
+          breakpoints={{
+            0: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1200: { slidesPerView: 3 },
+          }}
+        >
+          {events.map((event) => (
+            <SwiperSlide key={event.id}>
+              <Box className="event-card">
+                <div className="event-image-box">
+                  <img
+                    src={event.img}
+                    alt={event.title}
+                    className="event-img"
                   />
-                  <span className="review-count">
-                    ({product.reviews})
+
+                  <span className="event-badge">
+                    {event.discount}
                   </span>
-                </div>
-                
-                <Typography className="product-price">
-                  {product.price}
-                  <span className="old-price">{product.oldPrice}</span>
-                </Typography>
 
-                <div className="action-buttons">
-                  <Button variant="outlined" className="btn-cart">
-                    Add Cart
-                  </Button>
-                  <Button variant="contained" className="btn-buy">
-                    Buy Now
+                  <IconButton className="event-like-btn">
+                    <FavoriteBorderIcon fontSize="small" />
+                  </IconButton>
+                </div>
+
+                <div className="event-info">
+                  <Typography className="event-title">
+                    {event.title}
+                  </Typography>
+
+                  <Typography className="event-desc">
+                    {event.description}
+                  </Typography>
+
+                  <Typography className="event-date">
+                    ⏳ {event.date}
+                  </Typography>
+
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    className="event-btn"
+                  >
+                    Explore Event
                   </Button>
                 </div>
-              </div>
-
-            </Box>
+              </Box>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </Container>
     </div>
   );
