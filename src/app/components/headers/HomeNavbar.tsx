@@ -13,7 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Logout from "@mui/icons-material/Logout";
@@ -40,16 +40,16 @@ const heroSlides = [
 
 const menuItems = [
   { label: "Home", path: "/" },
-  { label: "Electronics", path: "/products/electronics" },
-  { label: "Men's Fashion", path: "/products/mens-fashion" },
-  { label: "Women's Fashion", path: "/products/womens-fashion" },
-  { label: "Kids", path: "/products/kids" },
-  { label: "Big Sales", path: "/products/big-sales" },
-  { label: "Help", path: "/help" },
+  { label: "Products", path: "/products/ALL" },
+  { label: "Electronics", path: "/products/ELECTRONICS" },
+  { label: "Beauty & Health", path: "/products/BEAUTY-HEALTH" },
+  { label: "Fashion", path: "/products/FASHION" },
+  { label: "Kids", path: "/products/KIDS" },
+  { label: "Help", path: "/help" }, 
 ];
 
 export function HomeNavbar() {
-  const authUser = false; // Login holatini shu yerdan boshqarasiz
+  const authUser = true; 
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -75,6 +75,10 @@ export function HomeNavbar() {
     setAnchorEl(null);
   };
 
+  // Global searching
+  const history = useHistory();
+  const [searchValue, setSearchValue] = useState("");
+
   return (
     <div className="home-navbar">
       <Container className="navbar-container">
@@ -89,7 +93,18 @@ export function HomeNavbar() {
 
           <Box className="search-box">
             <SearchIcon className="search-icon" />
-            <input type="text" placeholder="Search" className="search-input" />
+            <input 
+                type="text"
+                placeholder="Search"
+                className="search-input"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    history.push(`/products/ALL?search=${searchValue}`);
+                  }
+                }}
+              />
           </Box>
 
           {/* ===== AUTH ACTIONS ===== */}

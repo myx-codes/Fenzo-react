@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"; // 1. useEffect va useRef qo'shildi
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Container, 
   Box, 
@@ -6,7 +6,6 @@ import {
   Button, 
   IconButton, 
   Rating,
-  Stack,
   Grid, 
   Paper,
   List,
@@ -20,7 +19,7 @@ import {
   Radio,
   RadioGroup,
   FormControl,
-  CircularProgress // Loading animatsiyasi uchun
+  CircularProgress 
 } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -28,6 +27,9 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SortIcon from '@mui/icons-material/Sort';
+
+// 1. useHistory ni qo'shdik
+import { useParams, useLocation, useHistory } from "react-router-dom";
 
 // Redux
 import { retrieveProducts } from "./selector";
@@ -40,9 +42,10 @@ import { serverApi } from "../../../lib/config";
 const categories = [
     { name: "ALL", label: "All Products" },
     { name: "ELECTRONICS", label: "Electronics" },
-    { name: "FASHION", label: "Fashion" },
+    { name: "BEAUTY-HEALTH", label: "Beauty & Health"},
+    { name: "FASHION", label: "Fashion"},
+    { name: "KIDS", label: "Kids" },
     { name: "PARFUM", label: "Parfum"},
-    { name: "BEAUTY", label: "Beauty & Health"}
 ];
 
 /** REDUX SELECTOR */
@@ -52,24 +55,41 @@ const ProductsRetriever = createSelector(
 );
 
 export function Products() {
+  // 2. history ni chaqiramiz
+  const history = useHistory();
+  
   const { Products } = useSelector(ProductsRetriever);
   const productsList = Array.isArray(Products) ? Products : [];
 
+  // Global searching
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchQuery = queryParams.get("search") || "";
+
   // State
-  const [selectedCategory, setSelectedCategory] = useState("ALL");
-  const [visibleCount, setVisibleCount] = useState(8); 
+  const { collection } = useParams<{ collection: string }>();
+  const [selectedCategory, setSelectedCategory] = useState(
+    collection ? collection.toUpperCase() : "ALL"
+  );
+
+  const [visibleCount, setVisibleCount] = useState(19); 
   const [sortOption, setSortOption] = useState("newest");
   const [onlySale, setOnlySale] = useState(false); 
   const [openCategory, setOpenCategory] = useState(true); 
   const [openSort, setOpenSort] = useState(true);
   
-  // 2. Observer uchun reference yaratamiz
+  // Observer reference
   const observerTarget = useRef(null); 
 
-  // Handlers
+  // --- O'ZGARTIRILGAN HANDLER ---
   const handleCategoryChange = (category: string) => {
+    // Local stateni o'zgartiramiz
     setSelectedCategory(category);
-    setVisibleCount(8); 
+    setVisibleCount(19); 
+
+    // MUHIM: URLni yangilaymiz. Bu search queryni avtomatik olib tashlaydi.
+    // Agar category "ALL" bo'lsa, /products/ALL ga o'tadi
+    history.push(`/products/${category}`);
   };
 
   const handleToggleCategory = () => setOpenCategory(!openCategory);
@@ -81,8 +101,16 @@ export function Products() {
 
   // --- FILTRLASH ---
   const filteredData = productsList.filter((product: Product) => {
-    const matchesCategory = selectedCategory === "ALL" || product.productCollection === selectedCategory;
-    return matchesCategory; 
+    const matchesCategory =
+      selectedCategory === "ALL" ||
+      product.productCollection === selectedCategory;
+
+    const matchesSearch =
+      product.productName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
   });
 
   // --- SARALASH ---
@@ -101,18 +129,26 @@ export function Products() {
 
   const productsToShow = sortedData.slice(0, visibleCount);
 
-  // 3. INFINITE SCROLL (Scroll bo'lganda avtomatik ishlash)
+  // URL collection effect
+  useEffect(() => {
+    if (collection) {
+      setSelectedCategory(collection.toUpperCase());
+    } else {
+      setSelectedCategory("ALL");
+    }
+  }, [collection]);
+
+  // INFINITE SCROLL
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          // Agar ko'rsatilayotganlar umumiy sonidan kam bo'lsa, ko'paytiramiz
           if (visibleCount < sortedData.length) {
             setVisibleCount((prev) => prev + 4);
           }
         }
       },
-      { threshold: 1.0 } // Element 100% ko'ringanda ishlaydi
+      { threshold: 1.0 }
     );
 
     if (observerTarget.current) {
@@ -277,14 +313,13 @@ export function Products() {
                     )}
                 </div>
 
-                {/* 4. LOAD MORE TUGMASI O'RNIGA OBSERVER ELEMENT */}
+                {/* OBSERVER ELEMENT */}
                 {visibleCount < sortedData.length && (
                     <Box 
                         ref={observerTarget} 
                         className="load-more-container" 
                         sx={{ mt: 3, display: 'flex', justifyContent: 'center', width: '100%', py: 2 }}
                     >
-                        {/* Scroll qilib pastga tushganda shu yozuv yoki spinner chiqadi va avtomatik yuklanadi */}
                         <CircularProgress size={30} sx={{color: '#1e3c72'}} />
                     </Box>
                 )}

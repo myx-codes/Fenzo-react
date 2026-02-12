@@ -133,13 +133,11 @@ export function BigSales() {
                   </Typography>
 
                   <Typography className="event-date">
-                    ⏳ {event.date}
+                    {event.date}
                   </Typography>
 
                   <Button
-                    variant="contained"
-                    fullWidth
-                    className="event-btn"
+                    variant="outlined" fullWidth className="btn-buy"
                   >
                     Explore Event
                   </Button>

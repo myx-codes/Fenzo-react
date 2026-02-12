@@ -4,11 +4,12 @@ import { Products } from "./Products";
 import { ProductCard } from "./ProductCard";
 
 import { useDispatch} from "react-redux";
-import { Dispatch } from "@reduxjs/toolkit";
+
 import { Product } from "../../../lib/types/product";
 import ProductService from "../../services/ProductService";
 import { setProductCard, setProducts } from "./slice";
 import { useEffect } from "react";
+import { Dispatch } from "@reduxjs/toolkit";
 
 /** REDUX SLICE */
 const actionDispatch = (dispatch: Dispatch) => ({

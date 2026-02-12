@@ -19,14 +19,20 @@ import Logout from "@mui/icons-material/Logout";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'; 
 import { NavLink } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
+
+
+
+
 
 const menuItems = [
   { label: "Home", path: "/" },
-  { label: "Electronics", path: "/products/electronics" },
-  { label: "Men's Fashion", path: "/products/mens-fashion" },
-  { label: "Women's Fashion", path: "/products/womens-fashion" },
-  { label: "Kids", path: "/products/kids" },
-  { label: "Big Sales", path: "/products/big-sales" },
+  { label: "Products", path: "/products/ALL" },
+  { label: "Electronics", path: "/products/ELECTRONICS" },
+  { label: "Beauty & Health", path: "/products/BEAUTY-HEALTH" },
+  { label: "Fashion", path: "/products/FASHION" },
+  { label: "Kids", path: "/products/KIDS" },
   { label: "Help", path: "/help" }, 
 ];
 
@@ -49,6 +55,9 @@ export function OtherNavbar() {
     handleClose();
     console.log("Logged out");
   };
+  // Global searching
+  const history = useHistory();
+  const [searchValue, setSearchValue] = useState("");
 
   return (
     <div className="other-navbar">
@@ -68,10 +77,18 @@ export function OtherNavbar() {
           <Box className="search-box">
              <SearchIcon className="search-icon" />
              <input 
-               type="text" 
-               placeholder="Search" 
-               className="search-input" 
-             />
+                type="text"
+                placeholder="Search"
+                className="search-input"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    history.push(`/products/ALL?search=${searchValue}`);
+                  }
+                }}
+              />
+
           </Box>
 
           {/* USER ACTIONS */}
@@ -183,3 +200,6 @@ export function OtherNavbar() {
     </div>
   );
 }
+
+
+
