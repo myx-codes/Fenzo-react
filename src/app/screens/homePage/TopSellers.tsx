@@ -3,10 +3,9 @@ import { Container, Typography, Avatar, Button, Rating, Box } from "@mui/materia
 
 // Redux va Config importlari
 // 1. Selectorlarni to'g'ri import qilamiz
-import { retrieveBestProducts, retrieveTopSellers } from "./selector"; 
+import { retrieveTopSellers } from "./selector"; 
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { Product } from "../../../lib/types/product";
 import { serverApi } from "../../../lib/config"; 
 import { User } from "../../../lib/types/user";
 

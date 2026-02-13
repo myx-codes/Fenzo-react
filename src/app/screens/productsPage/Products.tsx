@@ -27,8 +27,6 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SortIcon from '@mui/icons-material/Sort';
-
-// 1. useHistory ni qo'shdik
 import { useParams, useLocation, useHistory } from "react-router-dom";
 
 // Redux
@@ -55,9 +53,7 @@ const ProductsRetriever = createSelector(
 );
 
 export function Products() {
-  // 2. history ni chaqiramiz
-  const history = useHistory();
-  
+ 
   const { Products } = useSelector(ProductsRetriever);
   const productsList = Array.isArray(Products) ? Products : [];
 
@@ -72,6 +68,7 @@ export function Products() {
     collection ? collection.toUpperCase() : "ALL"
   );
 
+  const history = useHistory();
   const [visibleCount, setVisibleCount] = useState(19); 
   const [sortOption, setSortOption] = useState("newest");
   const [onlySale, setOnlySale] = useState(false); 
@@ -81,35 +78,30 @@ export function Products() {
   // Observer reference
   const observerTarget = useRef(null); 
 
-  // --- O'ZGARTIRILGAN HANDLER ---
+  // --- HANDLERs ---
   const handleCategoryChange = (category: string) => {
-    // Local stateni o'zgartiramiz
     setSelectedCategory(category);
     setVisibleCount(19); 
-
     // MUHIM: URLni yangilaymiz. Bu search queryni avtomatik olib tashlaydi.
-    // Agar category "ALL" bo'lsa, /products/ALL ga o'tadi
     history.push(`/products/${category}`);
   };
-
   const handleToggleCategory = () => setOpenCategory(!openCategory);
   const handleToggleSort = () => setOpenSort(!openSort);
-
   const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSortOption(event.target.value);
   };
 
+
+  const handleProductCard = (id: string) => {
+    history.push(`/products/detail/${id}`);
+  }
+
   // --- FILTRLASH ---
   const filteredData = productsList.filter((product: Product) => {
-    const matchesCategory =
-      selectedCategory === "ALL" ||
-      product.productCollection === selectedCategory;
-
-    const matchesSearch =
-      product.productName
+    const matchesCategory = selectedCategory === "ALL" || product.productCollection ===selectedCategory;
+    const matchesSearch =product.productName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-
     return matchesCategory && matchesSearch;
   });
 
@@ -131,11 +123,8 @@ export function Products() {
 
   // URL collection effect
   useEffect(() => {
-    if (collection) {
-      setSelectedCategory(collection.toUpperCase());
-    } else {
-      setSelectedCategory("ALL");
-    }
+    if (collection) {setSelectedCategory(collection.toUpperCase());
+    } else {setSelectedCategory("ALL");}
   }, [collection]);
 
   // INFINITE SCROLL
@@ -151,14 +140,9 @@ export function Products() {
       { threshold: 1.0 }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
+    if (observerTarget.current) {observer.observe(observerTarget.current);}
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
+      if (observerTarget.current) {observer.unobserve(observerTarget.current);}
     };
   }, [observerTarget, visibleCount, sortedData.length]);
 
@@ -265,7 +249,11 @@ export function Products() {
                                 : "/img/placeholder.jpg"; 
 
                             return (
-                                <div key={product._id} className="product-card">
+                                <div 
+                                key={product._id} 
+                                className="product-card"
+                                onClick={() =>handleProductCard(product._id)}
+                                >
                                     <div className="product-image-box">
                                         <img src={imagePath} alt={product.productName} className="product-img"/>
                                         <IconButton className="like-btn" aria-label="add to favorites">

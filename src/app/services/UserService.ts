@@ -25,6 +25,17 @@ class UserService {
             throw err;
         }
     }
+
+    public async getMember(memberId: string): Promise<User> {
+    try {
+        let url = `${this.path}/member/${memberId}`; // Agar backenda shunday yo'l bo'lsa
+        const result = await axios.get(url);
+        return result.data;
+    } catch(err) {
+        console.log("Error getMember", err);
+        throw err;
+    }
+}
 }
 
 export default UserService

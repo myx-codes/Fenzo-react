@@ -16,6 +16,7 @@ export interface HomePageState{
 
 /** PRODUCT PAGE */
 export interface ProductsPageState{
+    store: User [];
     products: Product[];
     productCard: Product | null;
 }

@@ -14,3 +14,8 @@ export const retrieveProductCard = createSelector(
     selectProductsPage,
     (ProductsPage) => ProductsPage.productCard
 );
+
+export const retrieveStore = createSelector(
+    selectProductsPage,
+    (ProductsPage) => ProductsPage.store
+);
