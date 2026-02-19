@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { 
-  Container, Grid, Box, Typography, Button, Rating, Stack, Chip, Divider, IconButton, CircularProgress, Breadcrumbs, Link 
+  Container, Grid, Box, Typography, Button, Rating, Stack, Chip, IconButton, CircularProgress, Breadcrumbs, Link 
 } from "@mui/material";
 
 import AddIcon from '@mui/icons-material/Add';
@@ -12,53 +12,112 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import HomeIcon from '@mui/icons-material/Home';
 
 import { useHistory, useParams } from "react-router-dom"; 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import { retrieveProducts } from "./selector"; 
+import { retrieveTopSellers } from "../homePage/selector";
+import { setTopSellers } from "../homePage/slice";
 import { Product } from "../../../lib/types/product"; 
+import { User } from "../../../lib/types/user";
 import { serverApi } from "../../../lib/config";
-import ProductService from "../../services/ProductService"; 
+import ProductService from "../../services/ProductService";
+import UserService from "../../services/UserService"; 
 
 
 
-// Selector
+// Selectors
 const ProductsRetriever = createSelector(
   retrieveProducts,
   (products) => ({ products })
 );
 
+const TopSellersRetriever = createSelector(
+  retrieveTopSellers,
+  (topSellers) => ({ topSellers })
+);
+
 export function ProductCard() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const { productId } = useParams<{ productId: string }>();
   const { products } = useSelector(ProductsRetriever);
+  const { topSellers } = useSelector(TopSellersRetriever);
   const chosenProduct = products?.find((p: Product) => p._id === productId);
 
+  // Ensure topSellers are loaded (for seller fallback when user lands directly on product page)
+  useEffect(() => {
+    if (!Array.isArray(topSellers) || topSellers.length === 0) {
+      new UserService().getTopSellers()
+        .then((data) => dispatch(setTopSellers(data)))
+        .catch(() => {});
+    }
+  }, [topSellers, dispatch]);
+
   const [product, setProduct] = useState<Product | null>(chosenProduct || null);
+  const [seller, setSeller] = useState<User | null>(null);
   const [loading, setLoading] = useState(!chosenProduct);
   const [activeImage, setActiveImage] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const totalPrice = (product?.productPrice ?? 0) * quantity;
+
 
   useEffect(() => {
+    setSeller(null);
     const productService = new ProductService();
+    const userService = new UserService();
     const formatImage = (img?: string) => img ? `${serverApi}/${img}` : "/img/placeholder.jpg";
+
+    const resolveSeller = (productData: any, apiSeller: User | null) => {
+      // 1. Use seller from product API response if present
+      const memberData = productData?.member || productData?.seller || productData?.user || productData?.memberData;
+      if (memberData && (memberData.userNick || memberData.userId)) return memberData;
+      if (apiSeller) return apiSeller;
+      // 2. Match product.userId to topSellers by _id
+      const sellers = Array.isArray(topSellers) ? topSellers : [];
+      const matched = productData?.userId && sellers.find((s: User) => s._id === productData.userId || s.userId === productData.userId);
+      if (matched) return matched;
+      // 3. Use first top seller as fallback
+      if (sellers.length > 0) return sellers[0];
+      // 4. Ultimate fallback
+      return { userNick: "Fenzo Store", userImage: undefined } as User;
+    };
+
+    const fetchSellerAndProduct = (data: any) => {
+      const productData = data?.value?.product || data?.value || data;
+      setProduct(productData);
+      setActiveImage(formatImage(productData?.productImages?.[0]));
+      const memberData = productData?.member || productData?.seller || productData?.user
+        || data?.value?.member || data?.value?.seller || data?.value?.user;
+      if (memberData && (memberData.userNick || memberData.userId)) {
+        setSeller(memberData);
+        return;
+      }
+      if (productData?.userId) {
+        userService.getMember(productData.userId)
+          .then((s) => setSeller(resolveSeller(productData, s)))
+          .catch(() => setSeller(resolveSeller(productData, null)));
+      } else {
+        setSeller(resolveSeller(productData, null));
+      }
+    };
 
     if (chosenProduct) {
         setProduct(chosenProduct);
         setActiveImage(formatImage(chosenProduct.productImages?.[0]));
+        setSeller(resolveSeller(chosenProduct, null));
         productService.getProduct(productId)
-            .then(data => setProduct(data))
-            .catch(err => console.log("Background update error:", err));
+            .then(fetchSellerAndProduct)
+            .catch(() => {});
     } else {
         setLoading(true);
         productService.getProduct(productId)
             .then((data) => {
-                setProduct(data);
-                setActiveImage(formatImage(data.productImages?.[0]));
+              fetchSellerAndProduct(data);
             })
             .catch((err) => console.log("Fetch error:", err))
             .finally(() => setLoading(false));
     }
-  }, [productId, chosenProduct]);
+  }, [productId, chosenProduct, topSellers]);
 
   const handleQuantity = (type: "inc" | "dec") => {
     if (type === "inc") setQuantity(prev => prev + 1);
@@ -129,19 +188,18 @@ export function ProductCard() {
               {/* Product Name */}
               <Typography className="product-title">{product.productName}</Typography>
 
-              {/* User Info */}
-              {/* {seller && (
-              <Stack direction="row" alignItems="center" spacing={1} className="user-info">
-                <img 
-                  src={`${serverApi}/${seller.userImage}`} 
-                  alt="user" 
+              {/* Seller Info - always shown with fallback */}
+              <Stack direction="row" alignItems="center" spacing={1} className="user-info" sx={{ mb: 2 }}>
+                <img
+                  src={seller?.userImage ? `${serverApi}/${seller.userImage}` : "https://via.placeholder.com/80?text=S"}
+                  alt={seller?.userNick || "Seller"}
                   className="user-avatar"
+                  style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
                 />
-                <Typography className="username">
-                  {seller.userNick}
+                <Typography className="username" variant="body1">
+                  {seller?.userNick || "Fenzo Store"}
                 </Typography>
               </Stack>
-            )} */}
 
 
               {/* Rating & Views */}
@@ -152,7 +210,7 @@ export function ProductCard() {
               </div>
 
               {/* Price */}
-              <div className="price">${product.productPrice.toLocaleString()}</div>
+              <div className="price">${totalPrice}</div>
 
               {/* Description */}
               <p className="description">{product.productDesc || "High-quality and durable product for everyday use."}</p>
@@ -175,7 +233,7 @@ export function ProductCard() {
 
               {/* Info Box */}
               <div className="info-box">
-                <div><small>Brand</small><strong>Fenzo Official</strong></div>
+                <div><small>Seller</small><strong>{seller?.userNick || "Fenzo Store"}</strong></div>
                 <div><small>Category</small><strong>{product.productCollection}</strong></div>
               </div>
 

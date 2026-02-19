@@ -15,9 +15,9 @@ class UserService {
             let url = `${this.path}/customer/sellers`
             const result = await axios.get(url);
             const data = result.data;
-            // Normalize: API may return array or wrapped (e.g. { value: { products } } or { products })
+            // Normalize: API may return array or wrapped (e.g. { value: { sellers } } or { sellers })
             if (Array.isArray(data)) return data;
-            const list = (data as any)?.value?.products ?? (data as any)?.products;
+            const list = (data as any)?.value?.sellers ?? (data as any)?.sellers ?? (data as any)?.value?.data ?? (data as any)?.data;
             return Array.isArray(list) ? list : [];
 
         }catch(err){

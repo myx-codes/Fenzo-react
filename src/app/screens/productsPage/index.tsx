@@ -1,18 +1,12 @@
-import { Container } from "@mui/material";
-import { useRouteMatch, Switch, Route, Router } from "react-router-dom";
+import { useRouteMatch, Switch, Route} from "react-router-dom";
 import { Products } from "./Products";
-
-
 import { useDispatch} from "react-redux";
 import { Dispatch } from "@reduxjs/toolkit";
 import { Product } from "../../../lib/types/product";
 import ProductService from "../../services/ProductService";
 import { setProductCard, setProducts, setStore } from "./slice";
 import { useEffect } from "react";
-
 import { User } from "src/lib/types/user";
-import UserService from "src/app/services/UserService";
-import { setTopSellers } from "../homePage/slice";
 import { ProductCard } from "./ProductCard";
 
 
@@ -51,7 +45,7 @@ export function ProductsPage() {
       <Route path= {`${products.path}/detail/:productId`}>
       <ProductCard/>
       </Route>
-      <Route path= {`${products.path}`}>
+      <Route path= {`${products.path}/:collection`}>
         <Products />
       </Route>
     </Switch>

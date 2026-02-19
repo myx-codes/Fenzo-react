@@ -125,6 +125,7 @@ export function Products() {
   useEffect(() => {
     if (collection) {setSelectedCategory(collection.toUpperCase());
     } else {setSelectedCategory("ALL");}
+    console.log("Category changed:", selectedCategory)
   }, [collection]);
 
   // INFINITE SCROLL
