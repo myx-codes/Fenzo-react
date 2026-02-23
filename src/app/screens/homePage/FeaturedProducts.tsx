@@ -1,14 +1,19 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating, Stack } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import VisibilityIcon from '@mui/icons-material/Visibility'; 
+import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useHistory } from "react-router-dom";
 
-// Redux va Config importlari
 import { retrieveFeaturedProducts } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Product } from "../../../lib/types/product";
-import { serverApi } from "../../../lib/config"; // 
+import { CartItem } from "../../../lib/types/cart";
+import { WishlistItem } from "../../../lib/types/wishlist";
+import { serverApi } from "../../../lib/config";
+import { useCart } from "../../context/CartContext";
+import { useWishlistContext } from "../../context/WishlistContext"; 
 
 /** REDUX SELECTOR */
 const featuredProductsRetriever = createSelector(
@@ -17,9 +22,13 @@ const featuredProductsRetriever = createSelector(
 );
 
 export function FeaturedProducts() {
-  // 1. Reduxdan ma'lumotni olamiz
+  const history = useHistory();
+  const { onAdd: addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { featuredProducts } = useSelector(featuredProductsRetriever);
   const products = Array.isArray(featuredProducts) ? featuredProducts : [];
+
+  const handleProductCard = (id: string) => history.push(`/products/detail/${id}`);
 
   return (
     <div className="featured-section">
@@ -30,69 +39,81 @@ export function FeaturedProducts() {
 
         <div className="products-grid">
           {products.map((product: Product) => {
-            const imagePath = `${serverApi}/${product.productImages[0]}` 
-        
+            const imagePath = product.productImages?.[0]
+              ? `${serverApi}/${product.productImages[0]}`
+              : "https://via.placeholder.com/300";
+            const wishlistItem: WishlistItem = {
+              _id: product._id,
+              name: product.productName,
+              price: product.productPrice,
+              image: product.productImages?.[0] ?? "",
+              collection: String(product.productCollection),
+            };
+
             return (
-              <Box key={product._id} className="product-card">
-                
-                {/* Rasm qismi */}
-                <div className="product-image-box">
-                  <img 
+              <Box
+                key={product._id}
+                className="product-card"
+                onClick={() => handleProductCard(product._id)}
+                sx={{ cursor: "pointer" }}
+              >
+                <div className="product-image-box" onClick={(e) => e.stopPropagation()}>
+                  <img
                     src={imagePath}
-                    alt={product.productName} 
+                    alt={product.productName}
                     className="product-img"
-                    // Agar rasm manzili xato bo'lsa, buzilgan rasm iconi chiqmasligi uchun:
-                    onError={(e) => { 
-                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; 
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/300";
                     }}
                   />
-                  
-                  <IconButton className="like-btn" aria-label="add to favorites">
-                    <FavoriteBorderIcon fontSize="small" />
+                  <IconButton
+                    className="like-btn"
+                    aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
+                    onClick={() => toggleWishlist(wishlistItem)}
+                    sx={isInWishlist(product._id) ? { color: "red" } : undefined}
+                  >
+                    {isInWishlist(product._id) ? (
+                      <FavoriteIcon fontSize="small" />
+                    ) : (
+                      <FavoriteBorderIcon fontSize="small" />
+                    )}
                   </IconButton>
                 </div>
 
-                {/* Ma'lumot qismi */}
                 <div className="product-info">
-                  <Typography className="product-name">
-                    {product.productName}
-                  </Typography>
+                  <Typography className="product-name">{product.productName}</Typography>
 
                   <div className="product-meta">
-                    {/* Rating */}
-                    {/* <div className="product-rating">
-                      <Rating 
-                        name="read-only" 
-                        value={product.productRating ? product.productRating : 0} 
-                        precision={0.5} 
-                        readOnly 
-                        size="small" 
-                      />
-                      <span className="review-count">
-                        ({product.productViews})
-                      </span>
-                    </div> */}
-
                     <div className="product-rating">
-                        <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
-                        <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
+                      <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
+                      <span className="review-count">
+                        ({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})
+                      </span>
                     </div>
-
-                    {/* Views */}
                     <Box className="views-box">
-                        <VisibilityIcon sx={{ fontSize: 17 }} />
-                        <Typography variant="caption">
-                            {product.productViews}
-                        </Typography>
+                      <VisibilityIcon sx={{ fontSize: 17 }} />
+                      <Typography variant="caption">{product.productViews}</Typography>
                     </Box>
                   </div>
-                  
-                  <Typography className="product-price">
-                    ${product.productPrice}
-                  </Typography>
 
-                  <div className="action-buttons">
-                    <Button variant="outlined" className="btn-cart">
+                  <Typography className="product-price">${product.productPrice}</Typography>
+
+                  <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="outlined"
+                      className="btn-cart"
+                      onClick={() => {
+                        const cartItem: CartItem = {
+                          _id: product._id,
+                          name: product.productName,
+                          price: product.productPrice,
+                          quantity: 1,
+                          image: product.productImages?.[0] ?? "",
+                          collection: String(product.productCollection),
+                        };
+                        addToCart(cartItem);
+                      }}
+                    >
                       Add Cart
                     </Button>
                     <Button variant="contained" className="btn-buy">
@@ -100,7 +121,6 @@ export function FeaturedProducts() {
                     </Button>
                   </div>
                 </div>
-
               </Box>
             );
           })}

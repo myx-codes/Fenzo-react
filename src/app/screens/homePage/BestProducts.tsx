@@ -1,15 +1,19 @@
 import React from "react";
 import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import VisibilityIcon from '@mui/icons-material/Visibility'; 
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useHistory } from "react-router-dom";
 
-// Redux va Config importlari
-// 1. Selectorlarni to'g'ri import qilamiz
-import { retrieveBestProducts } from "./selector"; 
+import { retrieveBestProducts } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Product } from "../../../lib/types/product";
-import { serverApi } from "../../../lib/config"; 
+import { CartItem } from "../../../lib/types/cart";
+import { WishlistItem } from "../../../lib/types/wishlist";
+import { serverApi } from "../../../lib/config";
+import { useCart } from "../../context/CartContext";
+import { useWishlistContext } from "../../context/WishlistContext";
 
 /** REDUX SELECTOR */
 // Selector faylidan kelgan funksiyani o'rab olamiz
@@ -19,11 +23,13 @@ const bestProductsRetriever = createSelector(
 );
 
 export function BestProducts() {
-  // 2. Reduxdan ma'lumotni olamiz
+  const history = useHistory();
+  const { onAdd: addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { bestProducts } = useSelector(bestProductsRetriever);
-  
-  // 3. Xavfsizlik uchun tekshiruv (null kelsa bo'sh array)
   const products = Array.isArray(bestProducts) ? bestProducts : [];
+
+  const handleProductCard = (id: string) => history.push(`/products/detail/${id}`);
 
   return (
     <div className="featured-section">
@@ -33,71 +39,94 @@ export function BestProducts() {
         </Typography>
 
         <div className="products-grid">
-          {/* 4. MAP FUNKSIYASINI TO'G'IRLASH */}
           {products.map((product: Product) => {
-             // Jingalak qavs { ochildi, endi o'zgaruvchi yozsa bo'ladi
-             
-             const imagePath = product.productImages && product.productImages.length > 0
-               ? `${serverApi}/${product.productImages[0]}`
-               : "https://via.placeholder.com/300";
+            const imagePath =
+              product.productImages && product.productImages.length > 0
+                ? `${serverApi}/${product.productImages[0]}`
+                : "https://via.placeholder.com/300";
+            const wishlistItem: WishlistItem = {
+              _id: product._id,
+              name: product.productName,
+              price: product.productPrice,
+              image: product.productImages?.[0] ?? "",
+              collection: String(product.productCollection),
+            };
 
-             // Endi esa 'return' so'zi orqali JSX qaytaramiz
-             return (
-                <Box key={product._id} className="product-card">
-                  {/* Rasm qismi */}
-                  <div className="product-image-box">
-                    <img 
-                      src={imagePath}
-                      alt={product.productName} 
-                      className="product-img"
-                      onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/300"; }}
-                    />
-                    
-                    <IconButton className="like-btn" aria-label="add to favorites">
+            return (
+              <Box
+                key={product._id}
+                className="product-card"
+                onClick={() => handleProductCard(product._id)}
+                sx={{ cursor: "pointer" }}
+              >
+                <div className="product-image-box" onClick={(e) => e.stopPropagation()}>
+                  <img
+                    src={imagePath}
+                    alt={product.productName}
+                    className="product-img"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/300";
+                    }}
+                  />
+                  <IconButton
+                    className="like-btn"
+                    aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
+                    onClick={() => toggleWishlist(wishlistItem)}
+                    sx={isInWishlist(product._id) ? { color: "red" } : undefined}
+                  >
+                    {isInWishlist(product._id) ? (
+                      <FavoriteIcon fontSize="small" />
+                    ) : (
                       <FavoriteBorderIcon fontSize="small" />
-                    </IconButton>
+                    )}
+                  </IconButton>
+                </div>
+
+                <div className="product-info">
+                  <Typography className="product-name">{product.productName}</Typography>
+
+                  <div className="product-meta">
+                    <div className="product-rating">
+                      <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
+                      <span className="review-count">
+                        ({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})
+                      </span>
+                    </div>
+                    <Box className="product-views">
+                      <VisibilityIcon sx={{ fontSize: 16 }} />
+                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                        {product.productViews}
+                      </Typography>
+                    </Box>
                   </div>
 
-                  {/* Ma'lumot qismi */}
-                  <div className="product-info">
-                    <Typography className="product-name">
-                      {product.productName}
-                    </Typography>
+                  <Typography className="product-price">${product.productPrice}</Typography>
 
-                    <div className="product-meta">
-                      {/* Rating */}
-                      <div className="product-rating">
-                          <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
-                          <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
-                      </div>
-
-                      {/* Views */}
-                      <Box className="product-views">
-                          <VisibilityIcon sx={{ fontSize: 16 }} />
-                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                            {product.productViews}
-                          </Typography>
-                      </Box>
-                    </div>
-                    
-                    <Typography className="product-price">
-                      ${product.productPrice}
-                      {/* Mantiq: Agar eski narx bo'lsa ko'rsatish kerak (hozircha shartli qo'ydim) */}
-                      {/* <span className="old-price">${product.productPrice + 10}</span> */}
-                    </Typography>
-
-                    {/* Tugmalar */}
-                    <div className="action-buttons">
-                      <Button variant="outlined" className="btn-cart">
-                        Add Cart
-                      </Button>
-                      <Button variant="contained" className="btn-buy">
-                        Buy Now
-                      </Button>
-                    </div>
+                  <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="outlined"
+                      className="btn-cart"
+                      onClick={() => {
+                        const cartItem: CartItem = {
+                          _id: product._id,
+                          name: product.productName,
+                          price: product.productPrice,
+                          quantity: 1,
+                          image: product.productImages?.[0] ?? "",
+                          collection: String(product.productCollection),
+                        };
+                        addToCart(cartItem);
+                      }}
+                    >
+                      Add Cart
+                    </Button>
+                    <Button variant="contained" className="btn-buy">
+                      Buy Now
+                    </Button>
                   </div>
-                </Box>
-             );
+                </div>
+              </Box>
+            );
           })}
         </div>
       </Container>
