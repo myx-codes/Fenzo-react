@@ -14,6 +14,7 @@ import {
   TextField,
   CircularProgress,
   IconButton,
+  Pagination,
   Grid,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -51,6 +52,22 @@ export function MyPage() {
     tabFromUrl === "address" ? "address" : "orders"
   );
 
+  // --- Pagination States (Wishlist) ---
+  const [wishlistPage, setWishlistPage] = useState(1);
+  const wishlistItemsPerPage = 8; // Bitta sahifada 8 ta (2 qator, 4 ustun)
+  
+  const wishlistTotalPages = Math.ceil(wishlistItems.length / wishlistItemsPerPage);
+  const currentWishlistItems = wishlistItems.slice(
+    (wishlistPage - 1) * wishlistItemsPerPage,
+    wishlistPage * wishlistItemsPerPage
+  );
+
+  useEffect(() => {
+    if (wishlistPage > wishlistTotalPages && wishlistTotalPages > 0) {
+      setWishlistPage(wishlistTotalPages);
+    }
+  }, [wishlistItems.length, wishlistTotalPages, wishlistPage]);
+
   // Edit Mode States
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -78,7 +95,6 @@ export function MyPage() {
     else setTabValue("orders");
   }, [tabFromUrl]);
 
-  // AuthUser ma'lumotlarini state'larga tarqatish (Reset funksiyasi)
   const populateUserData = () => {
     if (authUser) {
       setInfoNick(authUser.userNick || "");
@@ -103,7 +119,6 @@ export function MyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser]);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (authUser === null) {
       history.replace("/login");
@@ -112,11 +127,10 @@ export function MyPage() {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
-    // Tab o'zgarganda edit rejimlarini yopamiz
     setIsEditingInfo(false);
     setIsEditingAddress(false);
     setInfoError("");
-    populateUserData(); // eski holatiga qaytaramiz
+    populateUserData(); 
   };
 
   const handleLogout = () => {
@@ -137,7 +151,7 @@ export function MyPage() {
     setIsEditingInfo(false);
     setIsEditingAddress(false);
     setInfoError("");
-    populateUserData(); // Kiritilgan noto'g'ri o'zgarishlarni bekor qilib asliga qaytarish
+    populateUserData(); 
   };
 
   const handleSaveInfo = async () => {
@@ -159,26 +173,22 @@ export function MyPage() {
     try {
       let updatedUser;
 
-      // Agar rasm tanlangan bo'lsa FormData orqali yuboramiz
       if (selectedFile) {
         const formData = new FormData();
         formData.append("userNick", infoNick.trim());
         formData.append("userPhone", infoPhone.trim());
-        if (infoAddress.trim()) formData.append("userAddress", infoAddress.trim());
-        if (infoDesc.trim()) formData.append("userDesc", infoDesc.trim());
+        formData.append("userAddress", infoAddress.trim());
+        formData.append("userDesc", infoDesc.trim());
         if (infoPassword.trim()) formData.append("userPassword", infoPassword);
-        
-        // Backend'dagi Multer 'userImage' nomini kutishiga ishonch hosil qiling
-        formData.append("userImage", selectedFile); 
+        formData.append("userImage", selectedFile);
 
         updatedUser = await userService.updateUserWithImage(authUser._id, formData);
       } else {
-        // Rasm yo'q bo'lsa oddiy JSON (UserUpdateInput) orqali yuboramiz
         const input: UserUpdateInput = {
           userNick: infoNick.trim(),
           userPhone: infoPhone.trim(),
-          userAddress: infoAddress.trim() || undefined,
-          userDesc: infoDesc.trim() || undefined,
+          userAddress: infoAddress.trim(),
+          userDesc: infoDesc.trim(),
         };
         if (infoPassword.trim()) input.userPassword = infoPassword;
 
@@ -187,7 +197,6 @@ export function MyPage() {
 
       setAuthUser({ ...authUser, ...updatedUser });
       
-      // Saqlangandan so'ng rejimni yopamiz va tozalaymiz
       setInfoPassword("");
       setInfoPasswordConfirm("");
       setSelectedFile(null);
@@ -344,24 +353,41 @@ export function MyPage() {
                     </Button>
                   </Card>
                 ) : (
-                  <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }, gap: 3 }}>
-                    {wishlistItems.map((item) => (
-                      <Card key={item._id} sx={{ borderRadius: 3, boxShadow: "0 4px 15px rgba(0,0,0,0.04)", border: "1px solid #eaeaea", position: "relative" }}>
-                        <Box sx={{ position: "relative", overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
-                          <img src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"} alt={item.name} style={{ width: "100%", height: 220, objectFit: "cover" }} />
-                          <IconButton sx={{ position: "absolute", top: 10, right: 10, bgcolor: "rgba(255,255,255,0.9)" }} onClick={() => removeFromWishlist(item._id)} size="small">
-                            <DeleteOutlineIcon color="error" fontSize="small" />
-                          </IconButton>
-                        </Box>
-                        <Box sx={{ p: 2.5 }}>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#333" }} noWrap>{item.name}</Typography>
-                          <Typography variant="h6" sx={{ color: "#0d6efd", fontWeight: 700, mt: 1 }}>${item.price.toLocaleString()}</Typography>
-                          <Button fullWidth variant="outlined" startIcon={<ShoppingCartIcon />} sx={{ mt: 2, borderRadius: 2, textTransform: "none", fontWeight: 600 }} onClick={() => addToCart({...item, quantity: 1})}>
-                            Add to Cart
-                          </Button>
-                        </Box>
-                      </Card>
-                    ))}
+                  <Box>
+                    {/* Grid qismi: To'liq Grid2 size usuliga o'tkazildi (12 / 4 = 3) */}
+                    <Grid container spacing={3}>
+                      {currentWishlistItems.map((item) => (
+                        <Grid key={item._id} size={{ xs: 12, sm: 6, md: 3 }}>
+                          <Card sx={{ borderRadius: 3, boxShadow: "0 4px 15px rgba(0,0,0,0.04)", border: "1px solid #eaeaea", position: "relative", height: "100%" }}>
+                            <Box sx={{ position: "relative", overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
+                              <img src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"} alt={item.name} style={{ width: "100%", height: 180, objectFit: "cover" }} />
+                              <IconButton sx={{ position: "absolute", top: 10, right: 10, bgcolor: "rgba(255,255,255,0.9)" }} onClick={() => removeFromWishlist(item._id)} size="small">
+                                <DeleteOutlineIcon color="error" fontSize="small" />
+                              </IconButton>
+                            </Box>
+                            <Box sx={{ p: 2 }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: "#333" }} noWrap>{item.name}</Typography>
+                              <Typography variant="body1" sx={{ color: "#0d6efd", fontWeight: 700, mt: 0.5 }}>${item.price.toLocaleString()}</Typography>
+                              <Button fullWidth variant="outlined" startIcon={<ShoppingCartIcon />} size="small" sx={{ mt: 1.5, borderRadius: 2, textTransform: "none", fontWeight: 600 }} onClick={() => addToCart({...item, quantity: 1})}>
+                                Add
+                              </Button>
+                            </Box>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+
+                    {wishlistTotalPages > 1 && (
+                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                        <Pagination 
+                          count={wishlistTotalPages} 
+                          page={wishlistPage} 
+                          onChange={(_, page) => setWishlistPage(page)} 
+                          color="primary" 
+                          shape="rounded"
+                        />
+                      </Box>
+                    )}
                   </Box>
                 )}
               </Stack>
