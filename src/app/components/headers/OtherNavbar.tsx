@@ -13,8 +13,8 @@ import {
   Divider
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Basket from "./Basket";
 import Logout from "@mui/icons-material/Logout";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'; 
@@ -99,12 +99,8 @@ export function OtherNavbar() {
               <FavoriteBorderIcon style={{ color: 'white' }} />
             </IconButton>
 
-            {/* Savatcha */}
-            <IconButton className="nav-icon-btn">
-              <Badge badgeContent={3} color="secondary">
-                <ShoppingCartIcon style={{ color: 'white' }} />
-              </Badge>
-            </IconButton>
+            {/* Cart – dropdown mini cart (no navigation) */}
+            <Basket iconButtonClassName="nav-icon-btn" />
 
             {/* Profil tugmasi */}
             <Box 

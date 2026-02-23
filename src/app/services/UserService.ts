@@ -21,7 +21,6 @@ class UserService {
             return Array.isArray(list) ? list : [];
 
         }catch(err){
-            console.log("Error getProducts", err);
             throw err;
         }
     }
@@ -32,7 +31,6 @@ class UserService {
         const result = await axios.get(url);
         return result.data;
     } catch(err) {
-        console.log("Error getMember", err);
         throw err;
     }
 }

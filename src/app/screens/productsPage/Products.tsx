@@ -34,7 +34,9 @@ import { retrieveProducts } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Product } from "../../../lib/types/product";
-import { serverApi } from "../../../lib/config"; 
+import { CartItem } from "../../../lib/types/cart";
+import { serverApi } from "../../../lib/config";
+import { useCart } from "../../context/CartContext"; 
 
 // Kategoryalar
 const categories = [
@@ -53,7 +55,7 @@ const ProductsRetriever = createSelector(
 );
 
 export function Products() {
- 
+  const { onAdd: addToCart } = useCart();
   const { Products } = useSelector(ProductsRetriever);
   const productsList = Array.isArray(Products) ? Products : [];
 
@@ -287,8 +289,24 @@ export function Products() {
                                             </Typography>
                                         </Box>
 
-                                       <div className="action-buttons">
-                                            <Button variant="outlined" className="btn-cart">Add Cart</Button>
+                                       <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                                            <Button
+                                                variant="outlined"
+                                                className="btn-cart"
+                                                onClick={() => {
+                                                    const cartItem: CartItem = {
+                                                        _id: product._id,
+                                                        name: product.productName,
+                                                        price: product.productPrice,
+                                                        quantity: 1,
+                                                        image: product.productImages?.[0] ?? "",
+                                                        collection: String(product.productCollection),
+                                                    };
+                                                    addToCart(cartItem);
+                                                }}
+                                            >
+                                                Add Cart
+                                            </Button>
                                             <Button variant="contained" className="btn-buy">Buy Now</Button>
                                         </div>
                                     </div>

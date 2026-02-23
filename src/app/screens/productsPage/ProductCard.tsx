@@ -21,7 +21,9 @@ import { Product } from "../../../lib/types/product";
 import { User } from "../../../lib/types/user";
 import { serverApi } from "../../../lib/config";
 import ProductService from "../../services/ProductService";
-import UserService from "../../services/UserService"; 
+import UserService from "../../services/UserService";
+import { useCart } from "../../context/CartContext";
+import { CartItem } from "../../../lib/types/cart"; 
 
 
 
@@ -39,6 +41,7 @@ const TopSellersRetriever = createSelector(
 export function ProductCard() {
   const history = useHistory();
   const dispatch = useDispatch();
+  const { onAdd: addToCart } = useCart();
   const { productId } = useParams<{ productId: string }>();
   const { products } = useSelector(ProductsRetriever);
   const { topSellers } = useSelector(TopSellersRetriever);
@@ -114,7 +117,7 @@ export function ProductCard() {
             .then((data) => {
               fetchSellerAndProduct(data);
             })
-            .catch((err) => console.log("Fetch error:", err))
+            .catch(() => {})
             .finally(() => setLoading(false));
     }
   }, [productId, chosenProduct, topSellers]);
@@ -147,13 +150,13 @@ export function ProductCard() {
 
         {/* Top Bar */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" className="top-bar">
-            <Button startIcon={<ArrowBackIcon />} onClick={() => history.push("/products")} className="back-btn">
+            <Button startIcon={<ArrowBackIcon />} onClick={() => history.push("/products/ALL")} className="back-btn">
                 Back to products
             </Button>
 
             <Breadcrumbs separator="›">
                 <Link onClick={() => history.push("/")} className="breadcrumb-link"><HomeIcon fontSize="small"/> Home</Link>
-                <Link onClick={() => history.push("/products")} className="breadcrumb-link">Products</Link>
+                <Link onClick={() => history.push("/products/ALL")} className="breadcrumb-link">Products</Link>
                 <Typography className="breadcrumb-current">{product.productName}</Typography>
             </Breadcrumbs>
         </Stack>
@@ -227,7 +230,24 @@ export function ProductCard() {
 
               {/* Buttons */}
               <div className="button-row">
-                <Button variant="contained" startIcon={<ShoppingCartIcon/>} className="cart-btn">Add to Cart</Button>
+                <Button
+                  variant="contained"
+                  startIcon={<ShoppingCartIcon />}
+                  className="cart-btn"
+                  onClick={() => {
+                    const cartItem: CartItem = {
+                      _id: product._id,
+                      name: product.productName,
+                      price: product.productPrice,
+                      quantity,
+                      image: product.productImages?.[0] ?? "",
+                      collection: String(product.productCollection),
+                    };
+                    addToCart(cartItem);
+                  }}
+                >
+                  Add to Cart
+                </Button>
                 <Button variant="outlined" startIcon={<FavoriteBorderIcon/>} className="save-btn">Save</Button>
               </div>
 

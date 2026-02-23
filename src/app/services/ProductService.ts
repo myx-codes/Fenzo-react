@@ -21,7 +21,6 @@ import { Product, ProductInquiry } from "../../lib/types/product";
             return Array.isArray(list) ? list : [];
 
         }catch(err){
-            console.log("Error getProducts", err);
             throw err;
         }
     }
@@ -31,11 +30,8 @@ import { Product, ProductInquiry } from "../../lib/types/product";
     try{
       const url = `${this.path}/product/detail/${productId}`
       const result = await axios.get(url, {withCredentials: true});
-      console.log("getProduct", result);
-
       return result.data;
     }catch(err) {
-      console.log("Error getProduct", err)
       throw(err)
     }
   }
