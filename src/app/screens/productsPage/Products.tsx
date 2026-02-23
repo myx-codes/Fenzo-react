@@ -75,7 +75,7 @@ export function Products() {
   );
 
   const history = useHistory();
-  const [visibleCount, setVisibleCount] = useState(19); 
+  const [visibleCount, setVisibleCount] = useState(9999); 
   const [sortOption, setSortOption] = useState("newest");
   const [onlySale, setOnlySale] = useState(false); 
   const [openCategory, setOpenCategory] = useState(true); 
@@ -87,7 +87,7 @@ export function Products() {
   // --- HANDLERs ---
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setVisibleCount(19); 
+    setVisibleCount(9999); 
     // MUHIM: URLni yangilaymiz. Bu search queryni avtomatik olib tashlaydi.
     history.push(`/products/${category}`);
   };

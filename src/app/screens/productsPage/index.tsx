@@ -21,21 +21,14 @@ export function ProductsPage() {
 
   const { setProducts, setProductCard } = actionDispatch(useDispatch());
   useEffect(() => {
-    const products = new ProductService();
-    products.getProducts({
-      page: 1,
-      limit: 22,
-      order: "createdAt",
-      search:""
-    }).then((data) => {setProducts(data)}).catch((err) => console.log(err))
-
-
-    const product = new ProductService();
-    product.getProducts({
-      page:1,
-      limit:22
-    }).then((data) => {setProductCard(data)}).catch((err) => console.log(err))
-
+    const productService = new ProductService();
+    productService
+      .getAllProducts({ order: "createdAt" })
+      .then((data) => {
+        setProducts(data);
+        setProductCard(data);
+      })
+      .catch((err) => console.error(err));
   }, [])
   
 

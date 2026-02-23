@@ -8,6 +8,7 @@ export const Messages = {
     // --- Authentication & User ---
     errorLogin: "Incorrect username or password.",
     errorUserExists: "User with this email or phone number already exists.",
+    usedNickPhone: "This nickname or phone number is already in use.",
     errorUnauthorized: "You are not authorized. Please log in first.",
     errorSessionExpired: "Your session has expired. Please log in again.",
     

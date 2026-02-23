@@ -65,13 +65,29 @@ class UserService {
         }
     }
 
-    /** Update current member profile (requires auth). */
-    public async updateMember(memberId: string, input: UserUpdateInput): Promise<User> {
-        const url = `${this.path}/member/${memberId}`;
-        const { data } = await axios.patch(url, input);
+    /** Update current member profile (requires auth). Requests PUT /auth/profile. */
+    public async updateUser(_userId: string, input: UserUpdateInput): Promise<User> {
+        const url = `${this.path}/auth/profile`;
+        const { data } = await axios.put(url, input, { withCredentials: true });
         const raw = data as any;
         return raw?.value ?? raw?.user ?? raw;
     }
+
+    /** Update profile with image file (FormData). Backend should accept multipart with userImage file + other fields. */
+    public async updateUserWithImage(_userId: string, formData: FormData): Promise<User> {
+        const url = `${this.path}/auth/profile`;
+        const { data } = await axios.put(url, formData, {
+            withCredentials: true,
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        const raw = data as any;
+        return raw?.value ?? raw?.user ?? raw;
+    }
+
+    /** Alias for updateUser (PUT /auth/profile). */
+    public async updateMember(_Id: string, input: UserUpdateInput): Promise<User> {
+        return this.updateUser(_Id, input);
+    }
 }
 
-export default UserService
+export default UserService;

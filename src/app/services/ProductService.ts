@@ -25,6 +25,26 @@ import { Product, ProductInquiry } from "../../lib/types/product";
         }
     }
 
+    /** Fetches all products from the database by requesting every page until none left. */
+    public async getAllProducts(opts?: { order?: string; productCollection?: string; search?: string }): Promise<Product[]> {
+        const limit = 100;
+        const all: Product[] = [];
+        let page = 1;
+        let chunk: Product[];
+        do {
+            chunk = await this.getProducts({
+                page,
+                limit,
+                order: opts?.order ?? "createdAt",
+                productCollection: opts?.productCollection as any,
+                search: opts?.search ?? "",
+            });
+            all.push(...chunk);
+            page++;
+        } while (chunk.length === limit);
+        return all;
+    }
+
 
     public async getProduct(productId: string): Promise<Product>{
     try{
