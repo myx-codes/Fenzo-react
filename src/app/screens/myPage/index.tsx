@@ -1,236 +1,274 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { 
-  Container, 
-  Box, 
-  Stack, 
-  Typography, 
-  Grid, 
-  Avatar, 
-  Button, 
-  Tab, 
-  Tabs, 
-  Card, 
-  Divider, 
-  Chip,
+import { useLocation, useHistory } from "react-router-dom";
+import {
+  Container,
+  Box,
+  Stack,
+  Typography,
+  Grid,
+  Avatar,
+  Button,
+  Tab,
+  Tabs,
+  Card,
+  Divider,
+  TextField,
+  CircularProgress,
   IconButton,
-  Rating 
 } from "@mui/material";
-import LogoutIcon from '@mui/icons-material/Logout';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import PersonIcon from '@mui/icons-material/Person';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import FavoriteIcon from '@mui/icons-material/Favorite'; 
-import VisibilityIcon from '@mui/icons-material/Visibility'; 
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'; // <--- O'chirish ikonkasi
+import LogoutIcon from "@mui/icons-material/Logout";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import PersonIcon from "@mui/icons-material/Person";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-// ... (MOCK DATA o'zgarishsiz qoladi) ...
-const orderHistory = [
-  { id: "#ORD-7741", date: "12 Feb, 2024", total: "$250.00", status: "Delivered", items: [{ name: "Wireless Headset Pro", img: "/img/nike-sneakers.avif", price: "$120", qty: 1 }] },
-];
+import { useGlobals } from "../../hooks/useGlobals";
+import { useWishlistContext } from "../../context/WishlistContext";
+import { useCart } from "../../context/CartContext";
+import { serverApi } from "../../../lib/config";
+import UserService from "../../services/UserService";
+import { UserUpdateInput } from "../../../lib/types/user";
+import { Messages } from "../../../lib/config";
 
-const wishlistItems = [
-  { id: 1, name: "Winter Coat Elegant", price: "$85.00", oldPrice: "$120.00", rating: 4.5, reviews: 12, views: 1240, img: "/img/winter-coat.webp" },
-  { id: 2, name: "Casual Denim Jacket", price: "$55.00", rating: 4.0, reviews: 8, views: 850, img: "/img/jacket.webp" },
-  { id: 3, name: "Classic Leather Bag", price: "$140.00", oldPrice: "$180.00", rating: 5.0, reviews: 25, views: 3200, img: "/img/classic-bag.webp" },
-  { id: 4, name: "Running Sneakers", price: "$95.00", rating: 4.5, reviews: 40, views: 560, img: "/img/nike-sneakers.avif" },
-];
-
-const user = {
-    name: "Akmal Juraev",
-    email: "akmal@example.com",
-    phone: "+998 90 123 45 67",
-    address: "Tashkent, Uzbekistan, Chilanzar 12",
-    avatar: "/img/user-avatar.jpg" 
-};
+const userService = new UserService();
 
 export function MyPage() {
+  const history = useHistory();
   const location = useLocation();
+  const { authUser, setAuthUser, logout } = useGlobals();
+  const { wishlistItems, removeFromWishlist } = useWishlistContext();
+  const { onAdd: addToCart } = useCart();
+
   const tabFromUrl = new URLSearchParams(location.search).get("tab");
-  const [tabValue, setTabValue] = useState(tabFromUrl === "wishlist" ? "wishlist" : "orders");
+  const [tabValue, setTabValue] = useState(tabFromUrl === "wishlist" ? "wishlist" : tabFromUrl === "info" ? "info" : tabFromUrl === "address" ? "address" : "orders");
+
+  // Personal info form (synced from authUser)
+  const [infoNick, setInfoNick] = useState("");
+  const [infoPhone, setInfoPhone] = useState("");
+  const [infoAddress, setInfoAddress] = useState("");
+  const [infoDesc, setInfoDesc] = useState("");
+  const [infoSaving, setInfoSaving] = useState(false);
+  const [infoError, setInfoError] = useState("");
 
   useEffect(() => {
     if (tabFromUrl === "wishlist") setTabValue("wishlist");
+    else if (tabFromUrl === "info") setTabValue("info");
+    else if (tabFromUrl === "address") setTabValue("address");
+    else setTabValue("orders");
   }, [tabFromUrl]);
+
+  useEffect(() => {
+    if (authUser) {
+      setInfoNick(authUser.userNick || "");
+      setInfoPhone(authUser.userPhone || "");
+      setInfoAddress(authUser.userAddress || "");
+      setInfoDesc(authUser.userDesc || "");
+    }
+  }, [authUser]);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (authUser === null) {
+      history.replace("/login");
+    }
+  }, [authUser, history]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-        case "Delivered": return "success";
-        case "Processing": return "info";
-        case "Cancelled": return "error";
-        default: return "default";
+  const handleLogout = () => {
+    logout();
+    history.push("/");
+  };
+
+  const handleSaveInfo = async () => {
+    if (!authUser) return;
+    setInfoError("");
+    if (!infoNick.trim() || !infoPhone.trim()) {
+      setInfoError(Messages.errorValidation);
+      return;
+    }
+    setInfoSaving(true);
+    try {
+      const input: UserUpdateInput = {
+        userNick: infoNick.trim(),
+        userPhone: infoPhone.trim(),
+        userAddress: infoAddress.trim() || undefined,
+        userDesc: infoDesc.trim() || undefined,
+      };
+      const updated = await userService.updateMember(authUser._id, input);
+      setAuthUser({ ...authUser, ...updated });
+    } catch (err: any) {
+      setInfoError(err?.response?.data?.message || Messages.error1);
+    } finally {
+      setInfoSaving(false);
     }
   };
 
-  const removeFromWishlist = (id: number) => {
-    console.log("Removing item id:", id);
-    // Backend logic...
-  };
+  if (authUser === null) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "40vh" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  const user = authUser;
+  const avatarSrc = user.userImage ? `${serverApi}/${user.userImage}` : undefined;
+  const displayName = user.userNick || "User";
 
   return (
     <div className="my-page">
       <Container>
         <Stack className="my-page-title">
-            <Typography variant="h2">My Account</Typography>
+          <Typography variant="h2">My Account</Typography>
         </Stack>
 
         <Grid container spacing={4}>
-          
           {/* --- LEFT SIDEBAR --- */}
-           <Grid size={{xs:12, md:4, lg:3 }}>
+          <Grid size={{ xs: 12, md: 4, lg: 3 }}>
             <Card className="user-sidebar-card">
-                <Box className="user-avatar-box">
-                    <Avatar src={user.avatar} alt={user.name} sx={{ width: 100, height: 100, fontSize: 40 }}>{user.name.charAt(0)}</Avatar>
-                    <Typography variant="h5" className="user-name">{user.name}</Typography>
-                    <Typography variant="body2" className="user-email">{user.email}</Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Box className="user-menu">
-                    <Tabs orientation="vertical" value={tabValue} onChange={handleTabChange} sx={{ borderRight: 1, borderColor: 'divider', height: '100%' }} TabIndicatorProps={{ style: { display: "none" } }}>
-                        <Tab label="My Orders" value="orders" icon={<LocalMallIcon />} iconPosition="start" className={tabValue === 'orders' ? 'active-tab' : ''}/>
-                        <Tab label="Wishlist" value="wishlist" icon={<FavoriteIcon />} iconPosition="start" className={tabValue === 'wishlist' ? 'active-tab' : ''}/>
-                        <Tab label="Personal Info" value="info" icon={<PersonIcon />} iconPosition="start" className={tabValue === 'info' ? 'active-tab' : ''}/>
-                        <Tab label="Address" value="address" icon={<LocationOnIcon />} iconPosition="start" className={tabValue === 'address' ? 'active-tab' : ''}/>
-                    </Tabs>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Box sx={{ p: 2 }}>
-                    <Button fullWidth variant="outlined" color="error" startIcon={<LogoutIcon />}>Log Out</Button>
-                </Box>
+              <Box className="user-avatar-box">
+                <Avatar src={avatarSrc} alt={displayName} sx={{ width: 100, height: 100, fontSize: 40 }}>
+                  {displayName.charAt(0).toUpperCase()}
+                </Avatar>
+                <Typography variant="h5" className="user-name">{displayName}</Typography>
+                <Typography variant="body2" className="user-email">{user.userPhone}</Typography>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box className="user-menu">
+                <Tabs
+                  orientation="vertical"
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  sx={{ borderRight: 1, borderColor: "divider", height: "100%" }}
+                  TabIndicatorProps={{ style: { display: "none" } }}
+                >
+                  <Tab label="My Orders" value="orders" icon={<LocalMallIcon />} iconPosition="start" className={tabValue === "orders" ? "active-tab" : ""} />
+                  <Tab label="Wishlist" value="wishlist" icon={<FavoriteIcon />} iconPosition="start" className={tabValue === "wishlist" ? "active-tab" : ""} />
+                  <Tab label="Personal Info" value="info" icon={<PersonIcon />} iconPosition="start" className={tabValue === "info" ? "active-tab" : ""} />
+                  <Tab label="Address" value="address" icon={<LocationOnIcon />} iconPosition="start" className={tabValue === "address" ? "active-tab" : ""} />
+                </Tabs>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ p: 2 }}>
+                <Button fullWidth variant="outlined" color="error" startIcon={<LogoutIcon />} onClick={handleLogout}>
+                  Log Out
+                </Button>
+              </Box>
             </Card>
           </Grid>
 
           {/* --- RIGHT CONTENT --- */}
-           <Grid size={{xs:12, md:8, lg:9 }}>
-             
-             {/* 1. ORDERS TAB */}
-             {tabValue === "orders" && (
-                <Stack spacing={3}>
-                    <Typography variant="h4" sx={{ mb: 1 }}>Order History</Typography>
-                    {orderHistory.map((order) => (
-                        <Card key={order.id} className="order-card">
-                            <Box className="order-header">
-                                <Box>
-                                    <Typography variant="h6" className="order-id">Order {order.id}</Typography>
-                                    <Typography variant="body2" color="text.secondary">Placed on {order.date}</Typography>
-                                </Box>
-                                <Chip label={order.status} color={getStatusColor(order.status) as any} variant="outlined" size="small" />
-                            </Box>
-                            <Divider />
-                            <Box className="order-items-box">
-                                {order.items.map((item, index) => (
-                                    <Box key={index} className="order-item">
-                                        <img src={item.img} alt={item.name} className="order-item-img" />
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{item.name}</Typography>
-                                            <Typography variant="caption" color="text.secondary">Qty: {item.qty}</Typography>
-                                        </Box>
-                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{item.price}</Typography>
-                                    </Box>
-                                ))}
-                            </Box>
-                            <Divider />
-                            <Box className="order-footer">
-                                <Typography>Total Amount:</Typography>
-                                <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>{order.total}</Typography>
-                            </Box>
-                        </Card>
+          <Grid size={{ xs: 12, md: 8, lg: 9 }}>
+            {/* 1. ORDERS TAB — real data: empty state until orders API exists */}
+            {tabValue === "orders" && (
+              <Stack spacing={3}>
+                <Typography variant="h4" sx={{ mb: 1 }}>Order History</Typography>
+                <Card sx={{ p: 4, textAlign: "center" }}>
+                  <LocalMallIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>No orders yet</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>When you place orders, they will appear here.</Typography>
+                  <Button variant="contained" onClick={() => history.push("/products/ALL")}>Browse products</Button>
+                </Card>
+              </Stack>
+            )}
+
+            {/* 2. WISHLIST TAB — real wishlist from context */}
+            {tabValue === "wishlist" && (
+              <Stack spacing={3}>
+                <Typography variant="h4" sx={{ mb: 1 }}>My Wishlist</Typography>
+                {wishlistItems.length === 0 ? (
+                  <Card sx={{ p: 4, textAlign: "center" }}>
+                    <FavoriteIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>Your wishlist is empty</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Save items you like by clicking the heart on product pages.</Typography>
+                    <Button variant="contained" onClick={() => history.push("/products/ALL")}>Discover products</Button>
+                  </Card>
+                ) : (
+                  <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 2 }}>
+                    {wishlistItems.map((item) => (
+                      <Card key={item._id} sx={{ overflow: "hidden" }}>
+                        <Box sx={{ position: "relative" }}>
+                          <img
+                            src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"}
+                            alt={item.name}
+                            style={{ width: "100%", height: 200, objectFit: "cover" }}
+                          />
+                          <IconButton
+                            sx={{ position: "absolute", top: 8, right: 8, bgcolor: "rgba(255,255,255,0.9)" }}
+                            onClick={() => removeFromWishlist(item._id)}
+                            aria-label="Remove from wishlist"
+                          >
+                            <DeleteOutlineIcon color="error" />
+                          </IconButton>
+                        </Box>
+                        <Box sx={{ p: 2 }}>
+                          <Typography variant="subtitle1" fontWeight={600} noWrap title={item.name}>{item.name}</Typography>
+                          <Typography variant="body2" color="text.secondary">{item.collection}</Typography>
+                          <Typography variant="h6" color="primary" sx={{ mt: 1 }}>${item.price.toLocaleString()}</Typography>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            size="small"
+                            startIcon={<ShoppingCartIcon />}
+                            sx={{ mt: 2 }}
+                            onClick={() => {
+                              addToCart({
+                                _id: item._id,
+                                name: item.name,
+                                price: item.price,
+                                quantity: 1,
+                                image: item.image,
+                                collection: item.collection,
+                              });
+                            }}
+                          >
+                            Add to Cart
+                          </Button>
+                        </Box>
+                      </Card>
                     ))}
+                  </Box>
+                )}
+              </Stack>
+            )}
+
+            {/* 3. PERSONAL INFO TAB — real data + save to API */}
+            {tabValue === "info" && (
+              <Card sx={{ p: 4, borderRadius: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2 }}>Personal Information</Typography>
+                <Typography paragraph color="text.secondary">Edit your nickname, phone and description. Changes are saved to your account.</Typography>
+                <Stack spacing={2} sx={{ maxWidth: 400 }}>
+                  <TextField fullWidth label="Username / Nickname" value={infoNick} onChange={(e) => setInfoNick(e.target.value)} required />
+                  <TextField fullWidth label="Phone" value={infoPhone} onChange={(e) => setInfoPhone(e.target.value)} required placeholder="e.g. +998901234567" />
+                  <TextField fullWidth label="Short bio (optional)" value={infoDesc} onChange={(e) => setInfoDesc(e.target.value)} multiline rows={2} />
+                  <TextField fullWidth label="Address (optional)" value={infoAddress} onChange={(e) => setInfoAddress(e.target.value)} placeholder="City, street, etc." />
+                  {infoError && <Typography color="error">{infoError}</Typography>}
+                  <Button variant="contained" onClick={handleSaveInfo} disabled={infoSaving}>
+                    {infoSaving ? "Saving…" : "Save changes"}
+                  </Button>
                 </Stack>
-             )}
+              </Card>
+            )}
 
-             {/* 2. WISHLIST TAB */}
-             {tabValue === "wishlist" && (
-                <Stack spacing={3}>
-                    <Typography variant="h4" sx={{ mb: 1 }}>My Wishlist</Typography>
-                    
-                    <div className="products-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
-                        {wishlistItems.map((item) => (
-                           <div key={item.id} className="product-card">
-                                
-                                <div className="product-image-box">
-                                    <img src={item.img} alt={item.name} className="product-img"/>
-                                    {item.oldPrice && <span className="sale-badge">SALE</span>}
-                                    
-                                    {/* Yuqori o'ng burchakdagi Yurak (Like) */}
-                                    <IconButton 
-                                        className="like-btn" 
-                                        sx={{ bgcolor: 'white', '&:hover': { bgcolor: '#ffebee' } }}
-                                    >
-                                        <FavoriteIcon sx={{ color: 'red' }} fontSize="small" />
-                                    </IconButton>
-                                </div>
-
-                                <div className="product-info">
-                                    <Typography className="product-name" title={item.name}>{item.name}</Typography>
-
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                                        <div className="product-rating" style={{ display: 'flex', alignItems: 'center' }}>
-                                            <Rating value={item.rating} precision={0.5} readOnly size="small" />
-                                            <span className="review-count" style={{marginLeft: '4px'}}>({item.reviews})</span>
-                                        </div>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                                            <VisibilityIcon sx={{ fontSize: 16 }} />
-                                            <Typography variant="caption" sx={{ fontWeight: 500 }}>{item.views}</Typography>
-                                        </Box>
-                                    </Box>
-                                    
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 1 }}>
-                                        <Typography className="product-price">{item.price}</Typography>
-                                        {item.oldPrice && <Typography className="old-price">{item.oldPrice}</Typography>}
-                                    </Box>
-
-                                    {/* --- 3. Add to Cart va Delete tugmalari --- */}
-                                   <div className="action-buttons" style={{ display: 'flex', gap: '10px' }}>
-                                        {/* Add to Cart - ko'proq joy egallaydi */}
-                                        <Button 
-                                            variant="outlined" 
-                                            className="btn-cart" 
-                                            sx={{ flex: 1 }}
-                                        >
-                                            Add to Cart
-                                        </Button>
-
-                                        {/* Delete - kichik kvadrat tugma */}
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            onClick={() => removeFromWishlist(item.id)}
-                                            sx={{ minWidth: '40px', px: 1, borderColor: '#ffcdd2', color: '#d32f2f', '&:hover': { borderColor: '#d32f2f', bgcolor: '#ffebee' } }}
-                                        >
-                                            <DeleteOutlineIcon />
-                                        </Button>
-                                    </div>
-                                    {/* -------------------------------------- */}
-
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </Stack>
-             )}
-
-             {/* 3. INFO TAB */}
-             {tabValue === "info" && (
-                <Card sx={{ p: 4, borderRadius: 4 }}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>Personal Information</Typography>
-                    <Typography paragraph>Edit your name, email and phone number here.</Typography>
-                    <Button variant="contained">Save Changes</Button>
-                </Card>
-             )}
-
-              {/* 4. ADDRESS TAB */}
-             {tabValue === "address" && (
-                <Card sx={{ p: 4, borderRadius: 4 }}>
-                     <Typography variant="h5" sx={{ mb: 2 }}>My Address</Typography>
-                     <Typography variant="body1">{user.address}</Typography>
-                </Card>
-             )}
-
+            {/* 4. ADDRESS TAB — real data from authUser */}
+            {tabValue === "address" && (
+              <Card sx={{ p: 4, borderRadius: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2 }}>My Address</Typography>
+                {user.userAddress ? (
+                  <Typography variant="body1">{user.userAddress}</Typography>
+                ) : (
+                  <>
+                    <Typography color="text.secondary" paragraph>No address set.</Typography>
+                    <Typography variant="body2" color="text.secondary">You can add or update your address in the Personal Info tab.</Typography>
+                  </>
+                )}
+              </Card>
+            )}
           </Grid>
         </Grid>
       </Container>

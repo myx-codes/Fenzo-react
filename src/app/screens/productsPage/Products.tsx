@@ -22,6 +22,7 @@ import {
   CircularProgress 
 } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -35,8 +36,10 @@ import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Product } from "../../../lib/types/product";
 import { CartItem } from "../../../lib/types/cart";
+import { WishlistItem } from "../../../lib/types/wishlist";
 import { serverApi } from "../../../lib/config";
-import { useCart } from "../../context/CartContext"; 
+import { useCart } from "../../context/CartContext";
+import { useWishlistContext } from "../../context/WishlistContext"; 
 
 // Kategoryalar
 const categories = [
@@ -56,6 +59,7 @@ const ProductsRetriever = createSelector(
 
 export function Products() {
   const { onAdd: addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { Products } = useSelector(ProductsRetriever);
   const productsList = Array.isArray(Products) ? Products : [];
 
@@ -257,10 +261,24 @@ export function Products() {
                                 className="product-card"
                                 onClick={() =>handleProductCard(product._id)}
                                 >
-                                    <div className="product-image-box">
+                                    <div className="product-image-box" onClick={(e) => e.stopPropagation()}>
                                         <img src={imagePath} alt={product.productName} className="product-img"/>
-                                        <IconButton className="like-btn" aria-label="add to favorites">
-                                            <FavoriteBorderIcon fontSize="small" />
+                                        <IconButton
+                                            className="like-btn"
+                                            aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
+                                            onClick={() => {
+                                                const item: WishlistItem = {
+                                                    _id: product._id,
+                                                    name: product.productName,
+                                                    price: product.productPrice,
+                                                    image: product.productImages?.[0] ?? "",
+                                                    collection: String(product.productCollection),
+                                                };
+                                                toggleWishlist(item);
+                                            }}
+                                            sx={isInWishlist(product._id) ? { color: 'red' } : undefined}
+                                        >
+                                            {isInWishlist(product._id) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
                                         </IconButton>
                                     </div>
 

@@ -8,7 +8,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { CartItem } from "src/lib/types/cart";
 import { serverApi } from "src/lib/config";
-import { useHistory } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
 export interface BasketProps {
@@ -17,7 +16,6 @@ export interface BasketProps {
 }
 
 export default function Basket({ iconButtonClassName }: BasketProps = {}) {
-  const history = useHistory();
   const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = useCart();
 
   const itemsPrice = cartItems.reduce((a: number, c: CartItem) => a + c.quantity * c.price, 0);
@@ -132,9 +130,6 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
             </span>
             <Button startIcon={<ShoppingCartIcon />} variant={"contained"}>
               Order
-            </Button>
-            <Button size="small" sx={{ mt: 1 }} onClick={() => { handleClose(); history.push("/basket"); }}>
-              View full cart
             </Button>
           </Box>
           ) : (

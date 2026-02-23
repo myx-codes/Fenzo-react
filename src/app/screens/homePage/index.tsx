@@ -4,7 +4,6 @@ import { TopBrands} from "./TopBrands";
 import Advertisement from "./Advertisement";
 import { TopSellers } from "./TopSellers";
 import { BigSales } from "./BigSales";
-import { WelcomeAuthModal } from "./WelcomeAuthModal";
 import React , { useEffect } from "react";
 import { BestProducts } from "./BestProducts";
 
@@ -67,6 +66,5 @@ export default function HomePage() {
     <Advertisement/>
     <TopSellers/>
     <BigSales/>
-    <WelcomeAuthModal/>
   </div>;
 }

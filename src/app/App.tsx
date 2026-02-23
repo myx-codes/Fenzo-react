@@ -6,10 +6,13 @@ import { OrdersPage } from "./screens/ordersPage";
 import { HelpPage } from "./screens/helpPage";
 import { MyPage } from "./screens/myPage";
 import { BasketPage } from "./screens/basketPage/BasketPage";
+import { Login, Signup } from "./components/Auth";
 import { HomeNavbar } from "./components/headers/HomeNavbar";
 import { OtherNavbar } from "./components/headers/OtherNavbar";
 import { Footer } from "./components/footer";
+import ContextProvider from "./context/ProviderContext";
 import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
 import "../css/app.css";
 import "../css/navbar.css";
 import "../css/footer.css";
@@ -22,18 +25,24 @@ function App() {
   const location = useLocation();
 
   return (
-    <CartProvider>
-      {location.pathname === "/" ? <HomeNavbar /> : <OtherNavbar />}
-      <Switch>
-        <Route path="/products" component={ProductsPage} />
-        <Route path="/orders" component={OrdersPage} />
-        <Route path="/help" component={HelpPage} />
-        <Route path="/profile" component={MyPage} />
-        <Route path="/basket" component={BasketPage} />
-        <Route path="/" component={HomePage} />
-      </Switch>
-      <Footer />
-    </CartProvider>
+    <ContextProvider>
+      <CartProvider>
+        <WishlistProvider>
+        {location.pathname === "/" ? <HomeNavbar /> : <OtherNavbar />}
+        <Switch>
+          <Route path="/products" component={ProductsPage} />
+          <Route path="/orders" component={OrdersPage} />
+          <Route path="/help" component={HelpPage} />
+          <Route path="/profile" component={MyPage} />
+          <Route path="/basket" component={BasketPage} />
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/" component={HomePage} />
+        </Switch>
+        <Footer />
+        </WishlistProvider>
+      </CartProvider>
+    </ContextProvider>
   );
 }
 

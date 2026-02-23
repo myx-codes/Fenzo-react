@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
-  IconButton, 
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  IconButton,
   Badge,
   Menu,
   MenuItem,
   Avatar,
   ListItemIcon,
-  Divider
+  Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -18,8 +18,10 @@ import Basket from "./Basket";
 import Logout from "@mui/icons-material/Logout";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'; 
-import { NavLink } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
+import { useGlobals } from "../../hooks/useGlobals";
+import { useWishlistContext } from "../../context/WishlistContext";
+import { serverApi } from "../../../lib/config";
 
 
 
@@ -37,27 +39,23 @@ const menuItems = [
 ];
 
 export function OtherNavbar() {
-  // Profil menyusini ochish/yopish uchun state
+  const { authUser, logout } = useGlobals();
+  const { wishlistItems } = useWishlistContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  // SIDEBAR KODLARI OLIB TASHLANDI
+  const history = useHistory();
+  const [searchValue, setSearchValue] = useState("");
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
     handleClose();
-    console.log("Logged out");
+    logout();
   };
-  // Global searching
-  const history = useHistory();
-  const [searchValue, setSearchValue] = useState("");
 
   return (
     <div className="other-navbar">
@@ -93,88 +91,86 @@ export function OtherNavbar() {
 
           {/* USER ACTIONS */}
           <Box className="action-box">
-            
-            {/* Wishlist */}
-            <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
-              <FavoriteBorderIcon style={{ color: 'white' }} />
-            </IconButton>
-
-            {/* Cart – dropdown mini cart (no navigation) */}
-            <Basket iconButtonClassName="nav-icon-btn" />
-
-            {/* Profil tugmasi */}
-            <Box 
-                className="profile-box" 
-                onClick={handleProfileClick}
-                style={{ cursor: 'pointer' }}
-            >
-                <Avatar 
-                    alt="User Name" 
-                    src="/img/yujong.jpg" 
-                    sx={{ width: 35, height: 35, bgcolor: '#ffca28', color: '#1e3c72' }}
-                >
-                    U
-                </Avatar>
-            </Box>
-
-            {/* Profil Menyusi (Dropdown) */}
-            <Menu
-              anchorEl={anchorEl}
-              id="account-menu"
-              open={open}
-              onClose={handleClose}
-              onClick={handleClose}
-              PaperProps={{
-                elevation: 0,
-                className: "profile-menu-paper",
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              {/* Header */}
-              <MenuItem onClick={handleClose} className="menu-header">
-                <Avatar 
-                  className="menu-avatar"
-                  src="/img/yujong.jpg" 
-                />
-                <Box>
-                    <Typography className="menu-username">Yujong</Typography>
-                    <Typography className="menu-email">user@example.com</Typography>
-                </Box>
-              </MenuItem>
-
-              <Divider />
-
-              {/* Items */}
-              <NavLink to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <MenuItem onClick={handleClose} className="menu-item">
-                  <ListItemIcon>
-                    <PersonOutlineIcon fontSize="small" />
-                  </ListItemIcon>
-                  Profile
-                </MenuItem>
-              </NavLink>
-
-              <MenuItem onClick={handleClose} className="menu-item">
-                <ListItemIcon>
-                  <Badge badgeContent={2} color="error" className="menu-badge">
-                    <ShoppingBagOutlinedIcon fontSize="small" />
+            {authUser ? (
+              <>
+                <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
+                  <Badge badgeContent={wishlistItems.length} color="error">
+                    <FavoriteBorderIcon style={{ color: 'white' }} />
                   </Badge>
-                </ListItemIcon>
-                My Orders
-              </MenuItem>
-
-              <Divider className="menu-divider" />
-
-              {/* Logout */}
-              <MenuItem onClick={handleLogout} className="menu-item logout-item">
-                <ListItemIcon>
-                  <Logout fontSize="small" className="logout-icon" />
-                </ListItemIcon>
-                Logout
-              </MenuItem>
-            </Menu>
-
+                </IconButton>
+                <Basket iconButtonClassName="nav-icon-btn" />
+                <Box
+                  className="profile-box"
+                  onClick={handleProfileClick}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Avatar
+                    alt={authUser.userNick}
+                    src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
+                    sx={{ width: 35, height: 35, bgcolor: '#ffca28', color: '#1e3c72' }}
+                  >
+                    {(authUser.userNick || "U").charAt(0).toUpperCase()}
+                  </Avatar>
+                </Box>
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={open}
+                  onClose={handleClose}
+                  onClick={handleClose}
+                  PaperProps={{ elevation: 0, className: "profile-menu-paper" }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <MenuItem onClick={handleClose} className="menu-header">
+                    <Avatar
+                      className="menu-avatar"
+                      src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
+                    >
+                      {(authUser.userNick || "U").charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Box>
+                      <Typography className="menu-username">{authUser.userNick}</Typography>
+                      <Typography className="menu-email">{authUser.userPhone}</Typography>
+                    </Box>
+                  </MenuItem>
+                  <Divider />
+                  <NavLink to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <MenuItem onClick={handleClose} className="menu-item">
+                      <ListItemIcon>
+                        <PersonOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      Profile
+                    </MenuItem>
+                  </NavLink>
+                  <MenuItem onClick={handleClose} className="menu-item">
+                    <ListItemIcon>
+                      <Badge badgeContent={2} color="error" className="menu-badge">
+                        <ShoppingBagOutlinedIcon fontSize="small" />
+                      </Badge>
+                    </ListItemIcon>
+                    My Orders
+                  </MenuItem>
+                  <Divider className="menu-divider" />
+                  <MenuItem onClick={handleLogout} className="menu-item logout-item">
+                    <ListItemIcon>
+                      <Logout fontSize="small" className="logout-icon" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Basket iconButtonClassName="nav-icon-btn" />
+                <Button component={NavLink} to="/login" variant="contained" className="login-btn">
+                  Login
+                </Button>
+                <Button component={NavLink} to="/signup" variant="contained" className="signup-btn">
+                  Sign Up
+                </Button>
+              </>
+            )}
           </Box>
         
         </Box>

@@ -6,6 +6,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -23,7 +24,9 @@ import { serverApi } from "../../../lib/config";
 import ProductService from "../../services/ProductService";
 import UserService from "../../services/UserService";
 import { useCart } from "../../context/CartContext";
-import { CartItem } from "../../../lib/types/cart"; 
+import { useWishlistContext } from "../../context/WishlistContext";
+import { CartItem } from "../../../lib/types/cart";
+import { WishlistItem } from "../../../lib/types/wishlist"; 
 
 
 
@@ -42,6 +45,7 @@ export function ProductCard() {
   const history = useHistory();
   const dispatch = useDispatch();
   const { onAdd: addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { productId } = useParams<{ productId: string }>();
   const { products } = useSelector(ProductsRetriever);
   const { topSellers } = useSelector(TopSellersRetriever);
@@ -248,7 +252,24 @@ export function ProductCard() {
                 >
                   Add to Cart
                 </Button>
-                <Button variant="outlined" startIcon={<FavoriteBorderIcon/>} className="save-btn">Save</Button>
+                <Button
+                  variant="outlined"
+                  startIcon={product && isInWishlist(product._id) ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteBorderIcon />}
+                  className="save-btn"
+                  onClick={() => {
+                    if (!product) return;
+                    const item: WishlistItem = {
+                      _id: product._id,
+                      name: product.productName,
+                      price: product.productPrice,
+                      image: product.productImages?.[0] ?? "",
+                      collection: String(product.productCollection),
+                    };
+                    toggleWishlist(item);
+                  }}
+                >
+                  {product && isInWishlist(product._id) ? "Saved" : "Save"}
+                </Button>
               </div>
 
               {/* Info Box */}

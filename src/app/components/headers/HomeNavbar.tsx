@@ -6,6 +6,7 @@ import {
   Button,
   IconButton,
   Avatar,
+  Badge,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -18,6 +19,9 @@ import Logout from "@mui/icons-material/Logout";
 import Basket from "./Basket";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import { useGlobals } from "../../hooks/useGlobals";
+import { useWishlistContext } from "../../context/WishlistContext";
+import { serverApi } from "../../../lib/config";
 
 // ===== HERO SLIDES =====
 const heroSlides = [
@@ -48,8 +52,8 @@ const menuItems = [
 ];
 
 export function HomeNavbar() {
-  const authUser = true; 
-
+  const { authUser, logout } = useGlobals();
+  const { wishlistItems } = useWishlistContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -72,6 +76,7 @@ export function HomeNavbar() {
 
   const handleLogout = () => {
     setAnchorEl(null);
+    logout();
   };
 
   // Global searching
@@ -112,7 +117,9 @@ export function HomeNavbar() {
               <>
                 {/* Like → Wishlist */}
                 <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
-                  <FavoriteBorderIcon sx={{ color: "#fff" }} />
+                  <Badge badgeContent={wishlistItems.length} color="error">
+                    <FavoriteBorderIcon sx={{ color: "#fff" }} />
+                  </Badge>
                 </IconButton>
 
                 {/* Cart – dropdown mini cart (no navigation) */}
@@ -121,9 +128,11 @@ export function HomeNavbar() {
                 {/* Profile */}
                 <Box className="profile-box" onClick={handleProfileClick} style={{ cursor: "pointer" }}>
                   <Avatar
-                    src="/img/yujong.jpg"
+                    src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
                     sx={{ width: 35, height: 35 }}
-                  />
+                  >
+                    {(authUser.userNick || "U").charAt(0).toUpperCase()}
+                  </Avatar>
                 </Box>
 
                 {/* Profile Menu Dropdown */}
@@ -135,10 +144,12 @@ export function HomeNavbar() {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                 >
                   <MenuItem onClick={handleClose}>
-                    <Avatar src="/img/yujong.jpg" sx={{ marginRight: 1 }} />
+                    <Avatar src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined} sx={{ marginRight: 1 }}>
+                      {(authUser.userNick || "U").charAt(0).toUpperCase()}
+                    </Avatar>
                     <Box>
-                      <Typography variant="subtitle2">Yujong</Typography>
-                      <Typography variant="caption" color="textSecondary">user@example.com</Typography>
+                      <Typography variant="subtitle2">{authUser.userNick}</Typography>
+                      <Typography variant="caption" color="textSecondary">{authUser.userPhone}</Typography>
                     </Box>
                   </MenuItem>
 
