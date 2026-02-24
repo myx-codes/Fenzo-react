@@ -241,8 +241,7 @@ export function SellerPage() {
 
            {/* SOTUVCHI HAQIDA MA'LUMOT */}
            <Box className="seller-section-wrapper">
-            <Typography variant="h6" className="seller-section-title">
-              <InfoOutlinedIcon sx={{ color: "#1e3c72" }} />
+            <Typography variant="h4" className="seller-section-title">
               Seller Information
             </Typography>
             <Grid container spacing={4}>
@@ -256,7 +255,7 @@ export function SellerPage() {
               )}
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="caption" className="seller-info-label">
-                  <PhoneIcon sx={{ fontSize: 16 }} /> CONTACT
+                  <PhoneIcon sx={{ fontSize: 20 }} /> CONTACT
                 </Typography>
                 <Typography variant="body1" color="#444" fontWeight={500}>
                   {user.userPhone || "Not provided"}
@@ -264,7 +263,7 @@ export function SellerPage() {
               </Grid>
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Typography variant="caption" className="seller-info-label">
-                  <LocationOnIcon sx={{ fontSize: 16 }} /> ADDRESS
+                  <LocationOnIcon sx={{ fontSize: 20 }} /> ADDRESS
                 </Typography>
                 <Typography variant="body1" color="#444" fontWeight={500}>
                   {user.userAddress || "Not provided"}
@@ -282,7 +281,7 @@ export function SellerPage() {
           <Divider sx={{ borderColor: "#eaeaea" }} />
 
           {/* STATISTIKA */}
-          <Box className="seller-stats-wrapper">
+          <Box  className="seller-stats-wrapper">
             {[
               { label: "Products added", value: productsAdded },
               { label: "Products sold", value: productsSold },
@@ -292,7 +291,7 @@ export function SellerPage() {
                 <Typography variant="caption" className="seller-stat-label">
                   {stat.label}
                 </Typography>
-                <Typography variant="h5" className="seller-stat-value">
+                <Typography variant="h3" className="seller-stat-value">
                   {stat.value}
                 </Typography>
               </Box>
@@ -305,7 +304,7 @@ export function SellerPage() {
             <>
               <Divider sx={{ borderColor: "#eaeaea" }} />
               <Box className="seller-section-wrapper bg-light">
-                <Typography variant="h6" className="seller-section-title">
+                <Typography variant="h4" className="seller-section-title">
                   <TrendingUpIcon sx={{ color: "#ff9800" }} />
                   Top Selling Products
                 </Typography>
@@ -321,7 +320,7 @@ export function SellerPage() {
             <>
               <Divider sx={{ borderColor: "#eaeaea" }} />
               <Box className="seller-section-wrapper">
-                <Typography variant="h6" className="seller-section-title">
+                <Typography variant="h4" className="seller-section-title">
                   <InventoryIcon sx={{ color: "#1e3c72" }} />
                   All Store Products 
                   <span className="seller-count-badge">{products.length}</span>

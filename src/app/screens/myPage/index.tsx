@@ -101,6 +101,7 @@ export function MyPage() {
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>("ALL");
   const [ordersPage, setOrdersPage] = useState(1);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"] as const;
   const ORDERS_PER_PAGE = 6;
@@ -419,67 +420,124 @@ export function MyPage() {
                         </Select>
                       </FormControl>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap", px: 1.5, pb: 0.5, borderBottom: "2px solid", borderColor: "divider" }}>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Product</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Order #</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 100 }}>Date</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Status</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Total</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 80, ml: "auto" }}>Action</Typography>
+                    {/* Table header — fixed column widths */}
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "200px 48px 100px 100px 100px 100px 1fr",
+                        gap: 2,
+                        alignItems: "center",
+                        px: 2,
+                        py: 1,
+                        borderBottom: "2px solid",
+                        borderColor: "divider",
+                      }}
+                    >
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Product</Typography>
+                      <Box />
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Order #</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Date</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Status</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Total</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, justifySelf: "end" }}>Action</Typography>
                     </Box>
                     {paginatedOrders.map((order) => {
                       const orderDate = typeof order.createdAt === "string" ? new Date(order.createdAt) : (order.createdAt as Date);
                       const orderIdShort = order._id.slice(-8).toUpperCase();
                       const items = order.orderItems ?? [];
+                      const maxThumbs = 4;
+                      const visibleItems = items.slice(0, maxThumbs);
+                      const extraCount = items.length > maxThumbs ? items.length - maxThumbs : 0;
+                      const isExpanded = expandedOrderId === order._id;
                       return (
-                        <Card key={order._id} sx={{ ...fenzoCardStyle, p: 1.5 }}>
-                          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 90, flexWrap: "wrap" }}>
+                        <Card
+                          key={order._id}
+                          sx={{
+                            ...fenzoCardStyle,
+                            p: 0,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            onClick={() => setExpandedOrderId((id) => (id === order._id ? null : order._id))}
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "200px 48px 100px 100px 100px 100px 1fr",
+                              gap: 2,
+                              alignItems: "center",
+                              px: 2,
+                              py: 1.5,
+                              cursor: "pointer",
+                              "&:hover": { bgcolor: "action.hover" },
+                            }}
+                          >
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                               {items.length > 0 ? (
-                                items.map((item) => (
-                                  <Box key={item.productId} sx={{ position: "relative", display: "inline-flex" }}>
-                                    <img
-                                      src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
-                                      alt={item.productName || ""}
-                                      style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10 }}
-                                      onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
-                                    />
-                                    <Typography
-                                      component="span"
+                                <>
+                                  {visibleItems.map((item) => (
+                                    <Box key={item.productId} sx={{ position: "relative", flexShrink: 0 }}>
+                                      <img
+                                        src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
+                                        alt={item.productName || ""}
+                                        style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
+                                        onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
+                                      />
+                                      <Typography
+                                        component="span"
+                                        sx={{
+                                          position: "absolute",
+                                          bottom: 0,
+                                          right: 0,
+                                          bgcolor: "rgba(0,0,0,0.75)",
+                                          color: "#fff",
+                                          fontSize: "0.65rem",
+                                          fontWeight: 700,
+                                          px: 0.4,
+                                          borderRadius: 0.5,
+                                          lineHeight: 1.2,
+                                        }}
+                                      >
+                                        ×{item.itemQuantity}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                  {extraCount > 0 && (
+                                    <Box
                                       sx={{
-                                        position: "absolute",
-                                        bottom: 2,
-                                        right: 2,
-                                        bgcolor: "rgba(0,0,0,0.7)",
-                                        color: "#fff",
-                                        fontSize: "0.7rem",
-                                        fontWeight: 700,
-                                        px: 0.5,
-                                        borderRadius: 1,
-                                        lineHeight: 1.2,
+                                        width: 48,
+                                        height: 48,
+                                        borderRadius: 8,
+                                        bgcolor: "grey.200",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexShrink: 0,
                                       }}
                                     >
-                                      ×{item.itemQuantity}
-                                    </Typography>
-                                  </Box>
-                                ))
+                                      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>
+                                        +{extraCount}
+                                      </Typography>
+                                    </Box>
+                                  )}
+                                </>
                               ) : (
-                                <Box sx={{ width: 64, height: 64, bgcolor: "#f0f0f0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <LocalMallIcon sx={{ fontSize: 28, color: "#999" }} />
+                                <Box sx={{ width: 48, height: 48, bgcolor: "#f0f0f0", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <LocalMallIcon sx={{ fontSize: 24, color: "#999" }} />
                                 </Box>
                               )}
                             </Box>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: "#333", minWidth: 90 }}>
+                            <Box />
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: "#333" }}>
                               #{orderIdShort}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: "#777", minWidth: 100 }}>
+                            <Typography variant="body2" sx={{ color: "#777", marginLeft: "20px" }}>
                               {orderDate.toLocaleDateString(undefined, { dateStyle: "medium" })}
                             </Typography>
-                            <Chip label={order.status || "Pending"} size="small" color="primary" variant="outlined" sx={{ fontWeight: 600, height: 24 }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#0d6efd" }}>
+                            <Chip label={order.status || "Pending"} size="small" color="primary" variant="outlined" sx={{ fontWeight: 600, height: 22, width: "fit-content", marginLeft: "20px" }} />
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#0d6efd", marginLeft: "20px" }}>
                               ${Number(order.total).toLocaleString()}
                             </Typography>
-                            <Box sx={{ minWidth: 80, ml: "auto" }}>
+                            <Box onClick={(e) => e.stopPropagation()} sx={{ justifySelf: "end", alignSelf: "start" }}>
                               {(order.status || order.orderStatus || "").toUpperCase() === "PENDING" && (
                                 <Button
                                   size="small"
@@ -494,6 +552,49 @@ export function MyPage() {
                               )}
                             </Box>
                           </Box>
+                          {isExpanded && items.length > 0 && (
+                            <Box
+                              sx={{
+                                borderTop: "1px solid",
+                                borderColor: "divider",
+                                bgcolor: "grey.50",
+                                p: 2,
+                              }}
+                            >
+                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#666", mb: 1.5 }}>
+                                All products in this order ({items.length})
+                              </Typography>
+                              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                {items.map((item) => {
+                                  const name = item.productName || "Product";
+                                  const shortName = name.length > 15 ? name.slice(0, 15) + "…" : name;
+                                  return (
+                                  <Box
+                                    key={item.productId}
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      width: 100,
+                                    }}
+                                  >
+                                    <img
+                                      src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
+                                      alt={item.productName || ""}
+                                      style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10 }}
+                                      onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
+                                    />
+                                    <Typography variant="caption" sx={{ mt: 0.5, textAlign: "center", fontWeight: 600 }} noWrap title={name}>
+                                      {shortName}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      ×{item.itemQuantity} · ${Number(item.itemPrice).toFixed(2)}
+                                    </Typography>
+                                  </Box>
+                                ); })}
+                              </Box>
+                            </Box>
+                          )}
                         </Card>
                       );
                     })}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Container,
   Box,
@@ -16,6 +16,7 @@ import {
   Divider,
   CircularProgress,
   Stack,
+  IconButton,
 } from "@mui/material";
 import { useHistory, useLocation } from "react-router-dom";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
@@ -23,8 +24,10 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 import { useCart } from "../../context/CartContext";
+import { useGlobals } from "../../hooks/useGlobals";
 import OrderService from "../../services/OrderService";
 import { serverApi } from "../../../lib/config";
 import { CartItem } from "../../../lib/types/cart";
@@ -33,10 +36,33 @@ import { CreateOrderInput, BuyNowItem } from "../../../lib/types/order";
 const steps = ["Cart", "Delivery", "Payment", "Confirm"];
 const orderService = new OrderService();
 
+type CardType = "visa" | "mastercard" | "amex" | "unionpay" | "unknown";
+
+function getCardType(num: string): CardType {
+  const n = num.replace(/\D/g, "").slice(0, 4);
+  if (/^4/.test(n)) return "visa";
+  if (/^5[1-5]/.test(n) || /^2(22[1-9]|2[3-9]\d|[3-6]\d{2}|7[01]\d|720)/.test(n)) return "mastercard";
+  if (/^3[47]/.test(n)) return "amex";
+  if (/^62|^88/.test(n)) return "unionpay";
+  return "unknown";
+}
+
+function formatCardNumber(value: string): string {
+  const v = value.replace(/\D/g, "").slice(0, 16);
+  return v.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+}
+
+function formatExpiry(value: string): string {
+  const v = value.replace(/\D/g, "").slice(0, 4);
+  if (v.length >= 2) return `${v.slice(0, 2)}/${v.slice(2)}`;
+  return v;
+}
+
 function CheckoutPage() {
   const history = useHistory();
   const location = useLocation<{ buyNow?: BuyNowItem }>();
-  const { cartItems, onDeleteAll } = useCart();
+  const { cartItems, onDelete, onDeleteAll } = useCart();
+  const { authUser } = useGlobals();
 
   const buyNow = location.state?.buyNow;
 
@@ -48,12 +74,39 @@ function CheckoutPage() {
     phone: "",
     note: "",
   });
+  const [buyNowRemoved, setBuyNowRemoved] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"delivery" | "card">("delivery");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardName, setCardName] = useState("");
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const cardType = getCardType(cardNumber);
+  const cardNumberRaw = cardNumber.replace(/\D/g, "");
+  const cardValid =
+    cardNumberRaw.length >= 16 &&
+    cardExpiry.replace(/\D/g, "").length === 4 &&
+    cardCvv.replace(/\D/g, "").length >= 3 &&
+    cardName.trim().length >= 2;
+  const canGoNextFromPayment =
+    paymentMethod === "delivery" || (paymentMethod === "card" && cardValid);
+
+  useEffect(() => {
+    if (authUser) {
+      setDelivery((d) => ({
+        ...d,
+        address: d.address || authUser.userAddress || "",
+        phone: d.phone || authUser.userPhone || "",
+      }));
+    }
+  }, [authUser]);
+
+  const canGoNextFromDelivery = delivery.address.trim() !== "" && delivery.city.trim() !== "" && delivery.zip.trim() !== "";
+
   const orderItems: { productId: string; quantity: number; price: number; name?: string; image?: string }[] = useMemo(() => {
-    if (buyNow) {
+    if (buyNow && !buyNowRemoved) {
       return [
         {
           productId: buyNow.productId,
@@ -64,6 +117,7 @@ function CheckoutPage() {
         },
       ];
     }
+    if (buyNow && buyNowRemoved) return [];
     return cartItems.map((i: CartItem) => ({
       productId: i._id,
       quantity: i.quantity,
@@ -71,7 +125,16 @@ function CheckoutPage() {
       name: i.name,
       image: i.image,
     }));
-  }, [buyNow, cartItems]);
+  }, [buyNow, buyNowRemoved, cartItems]);
+
+  const handleRemoveItem = (item: { productId: string; quantity: number; price: number; name?: string; image?: string }) => {
+    if (buyNow) {
+      setBuyNowRemoved(true);
+      return;
+    }
+    const cartItem = cartItems.find((c) => c._id === item.productId);
+    if (cartItem) onDelete(cartItem);
+  };
 
   const subtotal = useMemo(
     () => orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
@@ -81,6 +144,8 @@ function CheckoutPage() {
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) return;
+    if (activeStep === 1 && !canGoNextFromDelivery) return;
+    if (activeStep === 2 && !canGoNextFromPayment) return;
     setActiveStep((s) => s + 1);
     setError(null);
   };
@@ -118,7 +183,7 @@ function CheckoutPage() {
       .finally(() => setPlacing(false));
   };
 
-  if (isEmpty && !buyNow) {
+  if (isEmpty) {
     return (
       <Container maxWidth="md" sx={{ py: 6, textAlign: "center" }}>
         <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -183,6 +248,15 @@ function CheckoutPage() {
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>
                     ${(item.price * item.quantity).toFixed(2)}
                   </Typography>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => handleRemoveItem(item)}
+                    aria-label="Remove"
+                    sx={{ flexShrink: 0 }}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
                 </Box>
               ))}
             </Box>
@@ -206,6 +280,7 @@ function CheckoutPage() {
                 value={delivery.address}
                 onChange={(e) => setDelivery((d) => ({ ...d, address: e.target.value }))}
                 placeholder="123 Main St"
+                required
               />
               <Box sx={{ display: "flex", gap: 2 }}>
                 <TextField
@@ -213,12 +288,14 @@ function CheckoutPage() {
                   label="City"
                   value={delivery.city}
                   onChange={(e) => setDelivery((d) => ({ ...d, city: e.target.value }))}
+                  required
                 />
                 <TextField
                   fullWidth
                   label="ZIP / Postal code"
                   value={delivery.zip}
                   onChange={(e) => setDelivery((d) => ({ ...d, zip: e.target.value }))}
+                  required
                 />
               </Box>
               <TextField
@@ -247,15 +324,74 @@ function CheckoutPage() {
             <Typography variant="h6" sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
               <PaymentIcon /> Payment method
             </Typography>
-            <FormControl component="fieldset">
+            <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
               <RadioGroup
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as "delivery" | "card")}
               >
                 <FormControlLabel value="delivery" control={<Radio />} label="Pay on delivery (cash or card)" />
-                <FormControlLabel value="card" control={<Radio />} label="Card online (coming soon)" disabled />
+                <FormControlLabel value="card" control={<Radio />} label="Pay by card (Visa, Mastercard, etc.)" />
               </RadioGroup>
             </FormControl>
+
+            {paymentMethod === "card" && (
+              <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: "grey.50", maxWidth: 420 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Accepted cards</Typography>
+                  <Box sx={{ display: "flex", gap: 0.5, "& img": { height: 24 } }}>
+                    <Box component="span" sx={{ px: 1, py: 0.25, borderRadius: 1, bgcolor: "white", border: "1px solid", borderColor: "divider", fontSize: 11, fontWeight: 700, color: "#1a1f71" }}>Visa</Box>
+                    <Box component="span" sx={{ px: 1, py: 0.25, borderRadius: 1, bgcolor: "white", border: "1px solid", borderColor: "divider", fontSize: 11, fontWeight: 700, color: "#eb001b" }}>MC</Box>
+                    <Box component="span" sx={{ px: 1, py: 0.25, borderRadius: 1, bgcolor: "white", border: "1px solid", borderColor: "divider", fontSize: 11, fontWeight: 700, color: "#006fcf" }}>Amex</Box>
+                    <Box component="span" sx={{ px: 1, py: 0.25, borderRadius: 1, bgcolor: "white", border: "1px solid", borderColor: "divider", fontSize: 11, fontWeight: 700, color: "#006fcf" }}>UnionPay</Box>
+                  </Box>
+                </Box>
+                <Stack spacing={2}>
+                  <TextField
+                    fullWidth
+                    label="Card number"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                    placeholder="4242 4242 4242 4242"
+                    inputProps={{ maxLength: 19 }}
+                    InputProps={{
+                      startAdornment: cardType !== "unknown" && (
+                        <Box component="span" sx={{ mr: 1, fontSize: 20, fontWeight: 700, color: cardType === "visa" ? "#1a1f71" : cardType === "mastercard" ? "#eb001b" : "#006fcf" }}>
+                          {cardType === "visa" ? "Visa" : cardType === "mastercard" ? "MC" : cardType === "amex" ? "Amex" : "UnionPay"}
+                        </Box>
+                      ),
+                    }}
+                  />
+                  <Box sx={{ display: "flex", gap: 2 }}>
+                    <TextField
+                      label="Expiry (MM/YY)"
+                      value={cardExpiry}
+                      onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
+                      placeholder="MM/YY"
+                      inputProps={{ maxLength: 5 }}
+                      sx={{ width: 140 }}
+                    />
+                    <TextField
+                      label="CVV"
+                      value={cardCvv}
+                      onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder={cardType === "amex" ? "4 digits" : "123"}
+                      inputProps={{ maxLength: 4 }}
+                      sx={{ width: 120 }}
+                    />
+                  </Box>
+                  <TextField
+                    fullWidth
+                    label="Name on card"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value.slice(0, 40))}
+                    placeholder="John Doe"
+                  />
+                </Stack>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1.5 }}>
+                  Demo only. No real charge. Card data is not stored.
+                </Typography>
+              </Paper>
+            )}
           </Box>
         )}
 
@@ -284,7 +420,11 @@ function CheckoutPage() {
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
               <Typography variant="body2" color="text.secondary">Payment</Typography>
-              <Typography variant="body2">{paymentMethod === "delivery" ? "Pay on delivery" : "Card"}</Typography>
+              <Typography variant="body2">
+                {paymentMethod === "delivery"
+                  ? "Pay on delivery"
+                  : `Card (${cardType !== "unknown" ? cardType.charAt(0).toUpperCase() + cardType.slice(1) : "Card"} •••• ${cardNumberRaw.slice(-4) || "----"})`}
+              </Typography>
             </Box>
             <Divider sx={{ my: 1 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -314,7 +454,12 @@ function CheckoutPage() {
               {placing ? <CircularProgress size={24} /> : "Place order"}
             </Button>
           ) : (
-            <Button variant="contained" onClick={handleNext} sx={{ textTransform: "none", fontWeight: 600 }}>
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              disabled={(activeStep === 1 && !canGoNextFromDelivery) || (activeStep === 2 && !canGoNextFromPayment)}
+              sx={{ textTransform: "none", fontWeight: 600 }}
+            >
               Next
             </Button>
           )}

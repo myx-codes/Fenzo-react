@@ -34,7 +34,7 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
   const handleClose = () => setAnchorEl(null);
   const handleCheckout = () => {
     handleClose();
-    history.push("/basket");
+    history.push("/checkout");
   };
 
   return (
@@ -167,7 +167,7 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
                   startIcon={<ShoppingCartIcon />}
                   onClick={handleCheckout}
                 >
-                  View cart & checkout
+                  Order
                 </Button>
               </div>
             </>
