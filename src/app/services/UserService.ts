@@ -57,17 +57,11 @@ class UserService {
     public async getUser(userId: string): Promise<User> {
         try {
           const url = `${this.path}/customer/user/${userId}`;
-      
-          console.log("GET USER URL:", url);
-      
           const result = await axios.get(url, { withCredentials: true });
-      
-          console.log("GET USER RESPONSE:", result.data);
-      
           return result.data?.value ?? result.data;
       
         } catch (err: any) {
-          console.error("❌ GET USER ERROR:", err?.response?.data || err.message);
+          console.error("GET USER ERROR:", err?.response?.data || err.message);
           throw err;
         }
       }

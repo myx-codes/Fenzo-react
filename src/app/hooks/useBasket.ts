@@ -1,17 +1,39 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CartItem } from "../../lib/types/cart";
+import { useGlobals } from "../hooks/useGlobals";
 
-const CART_STORAGE_KEY = "cartData";
+const CART_STORAGE_PREFIX = "cartData";
+
+function getCartStorageKey(userId: string | null): string {
+  return userId ? `${CART_STORAGE_PREFIX}_${userId}` : `${CART_STORAGE_PREFIX}_guest`;
+}
 
 export default function useBasket() {
-  const cartJson: string | null =
-    typeof window !== "undefined" ? localStorage.getItem(CART_STORAGE_KEY) : null;
-  const initialCart: CartItem[] = cartJson ? JSON.parse(cartJson) : [];
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCart);
+  const { authUser } = useGlobals();
+  const userId = authUser?._id ?? null;
+  const storageKey = getCartStorageKey(userId);
 
-  const persist = useCallback((items: CartItem[]) => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  }, []);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Load cart for current user when storage key changes (login/logout)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const cartJson = localStorage.getItem(storageKey);
+      setCartItems(cartJson ? JSON.parse(cartJson) : []);
+    } catch {
+      setCartItems([]);
+    }
+  }, [storageKey]);
+
+  const persist = useCallback(
+    (items: CartItem[]) => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(storageKey, JSON.stringify(items));
+      }
+    },
+    [storageKey]
+  );
 
   const onAdd = useCallback(
     (input: CartItem) => {
@@ -67,8 +89,10 @@ export default function useBasket() {
 
   const onDeleteAll = useCallback(() => {
     setCartItems([]);
-    localStorage.removeItem(CART_STORAGE_KEY);
-  }, []);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(storageKey);
+    }
+  }, [storageKey]);
 
   return {
     cartItems,

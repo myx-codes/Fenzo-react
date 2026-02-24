@@ -134,7 +134,7 @@ export function OtherNavbar() {
                       <Typography className="menu-email">{authUser.userPhone}</Typography>
                     </Box>
                   </MenuItem>
-                  <Divider />
+                  <Divider /> 
                   <NavLink to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
                     <MenuItem onClick={handleClose} className="menu-item">
                       <ListItemIcon>
@@ -143,14 +143,6 @@ export function OtherNavbar() {
                       Profile
                     </MenuItem>
                   </NavLink>
-                  <MenuItem onClick={handleClose} className="menu-item">
-                    <ListItemIcon>
-                      <Badge badgeContent={2} color="error" className="menu-badge">
-                        <ShoppingBagOutlinedIcon fontSize="small" />
-                      </Badge>
-                    </ListItemIcon>
-                    My Orders
-                  </MenuItem>
                   <Divider className="menu-divider" />
                   <MenuItem onClick={handleLogout} className="menu-item logout-item">
                     <ListItemIcon>
@@ -162,7 +154,6 @@ export function OtherNavbar() {
               </>
             ) : (
               <>
-                <Basket iconButtonClassName="nav-icon-btn" />
                 <Button component={NavLink} to="/login" variant="contained" className="login-btn">
                   Login
                 </Button>

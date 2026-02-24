@@ -18,7 +18,6 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Logout from "@mui/icons-material/Logout";
 import Basket from "./Basket";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import { useGlobals } from "../../hooks/useGlobals";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { serverApi } from "../../../lib/config";
@@ -70,12 +69,12 @@ export function HomeNavbar() {
 
   const handleClose = () => setAnchorEl(null);
 
-  const handleProfileClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleLogout = () => {
-    setAnchorEl(null);
+    handleClose();
     logout();
   };
 
@@ -125,78 +124,65 @@ export function HomeNavbar() {
                 {/* Cart – dropdown mini cart (no navigation) */}
                 <Basket iconButtonClassName="nav-icon-btn" />
 
-                {/* Profile */}
-                <Box className="profile-box" onClick={handleProfileClick} style={{ cursor: "pointer" }}>
+                <Box
+                  className="profile-box"
+                  onClick={handleProfileClick}
+                  style={{ cursor: "pointer" }}
+                >
                   <Avatar
+                    alt={authUser.userNick}
                     src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
-                    sx={{ width: 35, height: 35 }}
+                    sx={{ width: 35, height: 35, bgcolor: "#ffca28", color: "#1e3c72" }}
                   >
                     {(authUser.userNick || "U").charAt(0).toUpperCase()}
                   </Avatar>
                 </Box>
-
-                {/* Profile Menu Dropdown */}
                 <Menu
                   anchorEl={anchorEl}
+                  id="account-menu"
                   open={open}
                   onClose={handleClose}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  onClick={handleClose}
+                  PaperProps={{ elevation: 0, className: "profile-menu-paper" }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined} sx={{ marginRight: 1 }}>
+                  <MenuItem onClick={handleClose} className="menu-header">
+                    <Avatar
+                      className="menu-avatar"
+                      src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
+                    >
                       {(authUser.userNick || "U").charAt(0).toUpperCase()}
                     </Avatar>
                     <Box>
-                      <Typography variant="subtitle2">{authUser.userNick}</Typography>
-                      <Typography variant="caption" color="textSecondary">{authUser.userPhone}</Typography>
+                      <Typography className="menu-username">{authUser.userNick}</Typography>
+                      <Typography className="menu-email">{authUser.userPhone}</Typography>
                     </Box>
                   </MenuItem>
-
                   <Divider />
-
-                  <MenuItem onClick={handleClose}>
+                  <NavLink to="/profile" style={{ textDecoration: "none", color: "inherit" }}>
+                    <MenuItem onClick={handleClose} className="menu-item">
+                      <ListItemIcon>
+                        <PersonOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      Profile
+                    </MenuItem>
+                  </NavLink>
+                  <Divider className="menu-divider" />
+                  <MenuItem onClick={handleLogout} className="menu-item logout-item">
                     <ListItemIcon>
-                      <PersonOutlineIcon fontSize="small" />
-                    </ListItemIcon>
-                    Profile
-                  </MenuItem>
-
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <ShoppingBagOutlinedIcon fontSize="small" />
-                    </ListItemIcon>
-                    My Orders
-                  </MenuItem>
-
-                  <Divider />
-
-                  <MenuItem onClick={handleLogout}>
-                    <ListItemIcon>
-                      <Logout fontSize="small" />
+                      <Logout fontSize="small" className="logout-icon" />
                     </ListItemIcon>
                     Logout
                   </MenuItem>
                 </Menu>
               </>
             ) : (
-              /* ===== GUEST (LOGIN / SIGNUP) ===== */
               <>
-                <Button
-                  component={NavLink}
-                  to="/login"
-                  variant="contained"
-                  className="login-btn"
-                >
+                <Button component={NavLink} to="/login" variant="contained" className="login-btn">
                   Login
                 </Button>
-
-                <Button
-                  component={NavLink}
-                  to="/signup"
-                  variant="contained"
-                  className="signup-btn"
-                >
+                <Button component={NavLink} to="/signup" variant="contained" className="signup-btn">
                   Sign Up
                 </Button>
               </>
