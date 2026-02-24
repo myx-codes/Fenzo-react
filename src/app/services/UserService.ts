@@ -1,6 +1,7 @@
 import axios from "axios";
 import { serverApi } from "../../lib/config";
 import { User, UserInput, LoginInput, UserUpdateInput } from "../../lib/types/user";
+import { SellerProfile } from "../../lib/types/seller";
 
 export interface AuthResponse {
     user: User;
@@ -65,6 +66,27 @@ class UserService {
           throw err;
         }
       }
+
+    /** Get seller profile (user + products + stats). Path: /user/seller/:userId. Returns real DB data. */
+    public async getSeller(userId: string): Promise<SellerProfile> {
+        try {
+            const url = `${this.path}/user/seller/${userId}`;
+            const result = await axios.get(url, { withCredentials: true });
+            const raw = result.data;
+            const data = raw?.value ?? raw;
+            return {
+                user: data.user,
+                productsAdded: data.productsAdded ?? 0,
+                products: Array.isArray(data.products) ? data.products : [],
+                productsSold: data.productsSold ?? 0,
+                totalRevenue: data.totalRevenue ?? 0,
+                topSellingProducts: Array.isArray(data.topSellingProducts) ? data.topSellingProducts : [],
+            } as SellerProfile;
+        } catch (err: any) {
+            console.error("GET SELLER ERROR:", err?.response?.data || err.message);
+            throw err;
+        }
+    }
 
     /** Update current user profile (requires auth). Requests PUT /auth/profile. */
     public async updateUser(_userId: string, input: UserUpdateInput): Promise<User> {

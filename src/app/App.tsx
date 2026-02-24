@@ -20,6 +20,8 @@ import "../css/home.css";
 import "../css/products.css";
 import "../css/mypage.css";
 import "../css/basket.css";
+import "../css/seller.css";
+import { SellerPage } from "./screens/sellerPage/SellerPage";
 
 function App() {
   const location = useLocation();
@@ -35,6 +37,7 @@ function App() {
           <Route path="/help" component={HelpPage} />
           <Route path="/profile" component={MyPage} />
           <Route path="/basket" component={BasketPage} />
+          <Route path="/user/seller/:id" component={SellerPage} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route path="/" component={HomePage} />

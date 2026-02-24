@@ -1,12 +1,12 @@
 import React from "react";
-import { Container, Typography, Avatar, Button, Rating, Box } from "@mui/material";
+import { Container, Typography, Avatar, Button, Rating } from "@mui/material";
+import { Link } from "react-router-dom";
 
 // Redux va Config importlari
-// 1. Selectorlarni to'g'ri import qilamiz
-import { retrieveTopSellers } from "./selector"; 
+import { retrieveTopSellers } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { serverApi } from "../../../lib/config"; 
+import { serverApi } from "../../../lib/config";
 import { User } from "../../../lib/types/user";
 
 /** REDUX SELECTOR */
@@ -18,60 +18,48 @@ const topSellerRetriever = createSelector(
 
 
 export function TopSellers() {
+  const { topSellers } = useSelector(topSellerRetriever);
+  const list = Array.isArray(topSellers) ? topSellers : [];
 
-   // 2. Reduxdan ma'lumotni olamiz
-    const { topSellers } = useSelector(topSellerRetriever);
-    
-    // 3. Xavfsizlik uchun tekshiruv (null kelsa bo'sh array)
-    const products = Array.isArray(topSellers) ? topSellers : [];
   return (
     <div className="sellers-section">
       <Container>
-        {/* Sarlavha */}
         <Typography variant="h2" className="section-title">
           Top Sellers
         </Typography>
-
-        {/* Grid Container */}
         <div className="sellers-grid">
-          {topSellers.map((seller: User
-          ) => {
+          {list.map((seller: User) => {
             const imagePath = `${serverApi}/${seller.userImage}`;
-            
+            const sellerId = seller._id || (seller as any).userId;
+            if (!sellerId) return null;
+            const sellerPath = `/user/seller/${sellerId}`;
             return (
-              <div key={seller._id} className="seller-card">
-              
-              {/* 1. Logo (Avatar) */}
-              <Avatar 
-                src={imagePath} 
-                alt={seller.userNick} 
-                className="seller-avatar"
-              />
-
-              {/* 2. Ism va Followers */}
-              <Typography className="seller-name">
-                {seller.userNick}
-              </Typography>
-              {/* <Typography className="follower-count">
-                {seller.followers}
-              </Typography> */}
-
-              {/* 3. Rating (Yulduzchalar) */}
-              <Rating 
-                value={seller.userPoints} 
-                precision={0.1} 
-                readOnly 
-                size="small" 
-              />
-
-              {/* 4. Tugma */}
-              <Button className="visit-btn">
-                Visit Store
-              </Button>
-              
-            </div>
+              <div key={String(sellerId)} className="seller-card">
+                <Avatar
+                  src={imagePath}
+                  alt={seller.userNick}
+                  className="seller-avatar"
+                />
+                <Typography className="seller-name">
+                  {seller.userNick}
+                </Typography>
+                <Rating
+                  value={seller.userPoints}
+                  precision={0.1}
+                  readOnly
+                  size="small"
+                />
+                <Button
+                  component={Link}
+                  to={sellerPath}
+                  className="visit-btn"
+                  style={{ textDecoration: "none" }}
+                >
+                  Visit Store
+                </Button>
+              </div>
             );
-           })}
+          })}
         </div>
       </Container>
     </div>
