@@ -105,7 +105,7 @@ export function SellerPage() {
     );
   }
 
-  const { user, productsAdded, products, productsSold, totalRevenue, topSellingProducts } = profile;
+  const { user, productsAdded, products, productsSold, topSellingProducts } = profile;
   const imagePath = user.userImage ? `${serverApi}/${user.userImage}` : undefined;
 
   // Products bilan bir xil bo'lgan Product Card render qiluvchi funksiya
@@ -285,7 +285,10 @@ export function SellerPage() {
             {[
               { label: "Products added", value: productsAdded },
               { label: "Products sold", value: productsSold },
-              { label: "Total revenue", value: `$${totalRevenue.toLocaleString()}` },
+              {
+                label: "Member since",
+                value: user.createdAt ? new Date(user.createdAt).getFullYear() : "—",
+              },
             ].map((stat, idx) => (
               <Box key={idx} className="seller-stat-box">
                 <Typography variant="caption" className="seller-stat-label">
