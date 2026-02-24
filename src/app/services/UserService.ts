@@ -26,7 +26,7 @@ class UserService {
         };
     }
 
-    /** Signup: register new member, returns user + accessToken. */
+    /** Signup: register new user, returns user + accessToken. */
     public async signup(input: UserInput): Promise<AuthResponse> {
         const url = `${this.path}/auth/signup`;
         const { data } = await axios.post<AuthResponse>(url, input);
@@ -54,18 +54,25 @@ class UserService {
         }
     }
 
-    public async getMember(memberId: string): Promise<User> {
+    public async getUser(userId: string): Promise<User> {
         try {
-            const url = `${this.path}/member/${memberId}`;
-            const result = await axios.get(url);
-            const data = result.data as any;
-            return data?.value ?? data;
-        } catch (err) {
-            throw err;
+          const url = `${this.path}/customer/user/${userId}`;
+      
+          console.log("GET USER URL:", url);
+      
+          const result = await axios.get(url, { withCredentials: true });
+      
+          console.log("GET USER RESPONSE:", result.data);
+      
+          return result.data?.value ?? result.data;
+      
+        } catch (err: any) {
+          console.error("❌ GET USER ERROR:", err?.response?.data || err.message);
+          throw err;
         }
-    }
+      }
 
-    /** Update current member profile (requires auth). Requests PUT /auth/profile. */
+    /** Update current user profile (requires auth). Requests PUT /auth/profile. */
     public async updateUser(_userId: string, input: UserUpdateInput): Promise<User> {
         const url = `${this.path}/auth/profile`;
         const { data } = await axios.put(url, input, { withCredentials: true });
@@ -84,10 +91,6 @@ class UserService {
         return raw?.value ?? raw?.user ?? raw;
     }
 
-    /** Alias for updateUser (PUT /auth/profile). */
-    public async updateMember(_Id: string, input: UserUpdateInput): Promise<User> {
-        return this.updateUser(_Id, input);
-    }
 }
 
 export default UserService;

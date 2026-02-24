@@ -46,20 +46,15 @@ import { Product, ProductInquiry } from "../../lib/types/product";
     }
 
 
-    public async getProduct(productId: string): Promise<Product>{
-    try{
-      const url = `${this.path}/product/detail/${productId}`
-      const result = await axios.get(url, {withCredentials: true});
-      return result.data;
-    }catch(err) {
-      throw(err)
-    }
-  }
-
-
-
-
-
+    public async getProduct(productId: string): Promise<Product> {
+        if (!productId) {
+            throw new Error("Product ID is required");
+        }
+        const url = `${this.path}/customer/product/detail/${productId}`;
+        const result = await axios.get(url, { withCredentials: true });
+        const raw = result.data?.value ?? result.data;
+        return (raw?.value?.product ?? raw?.value ?? raw) as Product;
+      }
 
  }
 
