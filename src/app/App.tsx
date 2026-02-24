@@ -6,6 +6,7 @@ import { OrdersPage } from "./screens/ordersPage";
 import { HelpPage } from "./screens/helpPage";
 import { MyPage } from "./screens/myPage";
 import { BasketPage } from "./screens/basketPage/BasketPage";
+import CheckoutPage from "./screens/checkoutPage/CheckoutPage";
 import { Login, Signup } from "./components/Auth";
 import { HomeNavbar } from "./components/headers/HomeNavbar";
 import { OtherNavbar } from "./components/headers/OtherNavbar";
@@ -37,6 +38,7 @@ function App() {
           <Route path="/help" component={HelpPage} />
           <Route path="/profile" component={MyPage} />
           <Route path="/basket" component={BasketPage} />
+          <Route path="/checkout" component={CheckoutPage} />
           <Route path="/user/seller/:id" component={SellerPage} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />

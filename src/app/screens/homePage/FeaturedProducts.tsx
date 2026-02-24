@@ -13,7 +13,8 @@ import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist";
 import { serverApi } from "../../../lib/config";
 import { useCart } from "../../context/CartContext";
-import { useWishlistContext } from "../../context/WishlistContext"; 
+import { useWishlistContext } from "../../context/WishlistContext";
+import { useCreateOrder } from "../../hooks/useCreateOrder";
 
 /** REDUX SELECTOR */
 const featuredProductsRetriever = createSelector(
@@ -25,6 +26,7 @@ export function FeaturedProducts() {
   const history = useHistory();
   const { onAdd: addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
   const { featuredProducts } = useSelector(featuredProductsRetriever);
   const products = Array.isArray(featuredProducts) ? featuredProducts : [];
 
@@ -116,7 +118,12 @@ export function FeaturedProducts() {
                     >
                       Add Cart
                     </Button>
-                    <Button variant="contained" className="btn-buy">
+                    <Button
+                      variant="contained"
+                      className="btn-buy"
+                      disabled={buyNowLoading}
+                      onClick={() => handleBuyNow(product, 1)}
+                    >
                       Buy Now
                     </Button>
                   </div>

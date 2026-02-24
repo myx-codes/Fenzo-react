@@ -10,6 +10,7 @@ import {
   Tab,
   Tabs,
   Card,
+  Chip,
   Divider,
   TextField,
   CircularProgress,
@@ -32,11 +33,14 @@ import { useWishlistContext } from "../../context/WishlistContext";
 import { useCart } from "../../context/CartContext";
 import { serverApi } from "../../../lib/config";
 import UserService from "../../services/UserService";
+import OrderService from "../../services/OrderService";
 import { UserUpdateInput } from "../../../lib/types/user";
+import { Order } from "../../../lib/types/order";
 import { Messages } from "../../../lib/config";
 import { sweetAlert } from "../../../lib/sweetalert";
 
 const userService = new UserService();
+const orderService = new OrderService();
 
 export function MyPage() {
   const history = useHistory();
@@ -88,12 +92,38 @@ export function MyPage() {
   const [infoSaving, setInfoSaving] = useState(false);
   const [infoError, setInfoError] = useState("");
 
+  const [myOrders, setMyOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+
   useEffect(() => {
     if (tabFromUrl === "wishlist") setTabValue("wishlist");
     else if (tabFromUrl === "info") setTabValue("info");
     else if (tabFromUrl === "address") setTabValue("address");
     else setTabValue("orders");
   }, [tabFromUrl]);
+
+  const fetchMyOrders = () => {
+    setOrdersLoading(true);
+    orderService
+      .getMyOrders({ page: 1, limit: 50 })
+      .then(setMyOrders)
+      .catch(() => setMyOrders([]))
+      .finally(() => setOrdersLoading(false));
+  };
+
+  useEffect(() => {
+    if (tabValue === "orders") fetchMyOrders();
+  }, [tabValue]);
+
+  const handleCancelOrder = (orderId: string) => {
+    setCancellingOrderId(orderId);
+    orderService
+      .updateOrder(orderId, "CANCELLED")
+      .then(() => fetchMyOrders())
+      .catch(() => {})
+      .finally(() => setCancellingOrderId(null));
+  };
 
   const populateUserData = () => {
     if (authUser) {
@@ -314,23 +344,92 @@ export function MyPage() {
             {/* 1. ORDERS TAB */}
             {tabValue === "orders" && (
               <Stack spacing={3}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: "#333" }}>Order History</Typography>
-                <Card sx={{ ...fenzoCardStyle, textAlign: "center", py: 8 }}>
-                  <Box sx={{ width: 80, height: 80, bgcolor: "#f4f7fb", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 3 }}>
-                    <LocalMallIcon sx={{ fontSize: 40, color: "#a0b2c6" }} />
+                <Typography variant="h5" sx={{ fontWeight: 700, color: "#333" }}>My Orders</Typography>
+                {ordersLoading ? (
+                  <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+                    <CircularProgress sx={{ color: "#0d6efd" }} />
                   </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: "#333", mb: 1 }}>No orders yet</Typography>
-                  <Typography variant="body2" sx={{ color: "#777", mb: 4, maxWidth: 300, mx: "auto" }}>
-                    Looks like you haven't made your menu yet. When you place orders, they will appear here.
-                  </Typography>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => history.push("/products/ALL")}
-                    sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, py: 1.2, boxShadow: "none" }}
-                  >
-                    Start Shopping
-                  </Button>
-                </Card>
+                ) : myOrders.length === 0 ? (
+                  <Card sx={{ ...fenzoCardStyle, textAlign: "center", py: 8 }}>
+                    <Box sx={{ width: 80, height: 80, bgcolor: "#f4f7fb", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 3 }}>
+                      <LocalMallIcon sx={{ fontSize: 40, color: "#a0b2c6" }} />
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: "#333", mb: 1 }}>No orders yet</Typography>
+                    <Typography variant="body2" sx={{ color: "#777", mb: 4, maxWidth: 300, mx: "auto" }}>
+                      When you click Buy Now on a product, your orders will appear here.
+                    </Typography>
+                    <Button 
+                      variant="contained" 
+                      onClick={() => history.push("/products/ALL")}
+                      sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, py: 1.2, boxShadow: "none" }}
+                    >
+                      Start Shopping
+                    </Button>
+                  </Card>
+                ) : (
+                  <Stack spacing={1.5}>
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap", px: 1.5, pb: 0.5, borderBottom: "2px solid", borderColor: "divider" }}>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Product</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Order #</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 100 }}>Date</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Status</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Total</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 80, ml: "auto" }}>Action</Typography>
+                    </Box>
+                    {myOrders.map((order) => {
+                      const orderDate = typeof order.createdAt === "string" ? new Date(order.createdAt) : (order.createdAt as Date);
+                      const orderIdShort = order._id.slice(-8).toUpperCase();
+                      const items = order.orderItems ?? [];
+                      return (
+                        <Card key={order._id} sx={{ ...fenzoCardStyle, p: 1.5 }}>
+                          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 90 }}>
+                              {items.length > 0 ? (
+                                items.map((item) => (
+                                  <img
+                                    key={item.productId}
+                                    src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
+                                    alt={item.productName || ""}
+                                    style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10 }}
+                                    onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
+                                  />
+                                ))
+                              ) : (
+                                <Box sx={{ width: 64, height: 64, bgcolor: "#f0f0f0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <LocalMallIcon sx={{ fontSize: 28, color: "#999" }} />
+                                </Box>
+                              )}
+                            </Box>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: "#333", minWidth: 90 }}>
+                              #{orderIdShort}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777", minWidth: 100 }}>
+                              {orderDate.toLocaleDateString(undefined, { dateStyle: "medium" })}
+                            </Typography>
+                            <Chip label={order.status || "Pending"} size="small" color="primary" variant="outlined" sx={{ fontWeight: 600, height: 24 }} />
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#0d6efd" }}>
+                              ${Number(order.total).toLocaleString()}
+                            </Typography>
+                            <Box sx={{ minWidth: 80, ml: "auto" }}>
+                              {(order.status || order.orderStatus || "").toUpperCase() === "PENDING" && (
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  variant="outlined"
+                                  disabled={cancellingOrderId === order._id}
+                                  onClick={() => handleCancelOrder(order._id)}
+                                  sx={{ textTransform: "none", fontWeight: 600, fontSize: "0.75rem" }}
+                                >
+                                  {cancellingOrderId === order._id ? "..." : "Cancel"}
+                                </Button>
+                              )}
+                            </Box>
+                          </Box>
+                        </Card>
+                      );
+                    })}
+                  </Stack>
+                )}
               </Stack>
             )}
 

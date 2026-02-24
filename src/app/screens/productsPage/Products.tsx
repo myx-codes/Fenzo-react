@@ -39,7 +39,8 @@ import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist";
 import { serverApi } from "../../../lib/config";
 import { useCart } from "../../context/CartContext";
-import { useWishlistContext } from "../../context/WishlistContext"; 
+import { useWishlistContext } from "../../context/WishlistContext";
+import { useCreateOrder } from "../../hooks/useCreateOrder";
 
 // Kategoryalar
 const categories = [
@@ -60,6 +61,7 @@ const ProductsRetriever = createSelector(
 export function Products() {
   const { onAdd: addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
   const { Products } = useSelector(ProductsRetriever);
   const productsList = Array.isArray(Products) ? Products : [];
 
@@ -325,7 +327,14 @@ export function Products() {
                                             >
                                                 Add Cart
                                             </Button>
-                                            <Button variant="contained" className="btn-buy">Buy Now</Button>
+                                            <Button
+                                                variant="contained"
+                                                className="btn-buy"
+                                                disabled={buyNowLoading}
+                                                onClick={() => handleBuyNow(product, 1)}
+                                            >
+                                                Buy Now
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>

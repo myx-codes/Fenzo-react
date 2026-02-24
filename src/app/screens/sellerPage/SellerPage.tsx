@@ -32,6 +32,7 @@ import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist";
 import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
+import { useCreateOrder } from "../../hooks/useCreateOrder";
 
 const userService = new UserService();
 
@@ -50,6 +51,7 @@ export function SellerPage() {
 
   const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { onAdd: addToCart } = useCart();
+  const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
 
   const handleProductCard = (productId: string) => {
     history.push(`/products/detail/${productId}`);
@@ -188,7 +190,14 @@ export function SellerPage() {
             >
               Add Cart
             </Button>
-            <Button variant="contained" className="btn-buy">Buy Now</Button>
+            <Button
+              variant="contained"
+              className="btn-buy"
+              disabled={buyNowLoading}
+              onClick={() => handleBuyNow(product, 1)}
+            >
+              Buy Now
+            </Button>
           </div>
         </div>
       </div>

@@ -68,14 +68,17 @@ export function BasketPage() {
               </Box>
             ))}
           </Box>
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h6">Total: ${total.toFixed(1)}</Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+            <Typography variant="h6">Total: ${total.toFixed(2)}</Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Button variant="outlined" onClick={onDeleteAll}>
                 Clear cart
               </Button>
-              <Button variant="contained" onClick={() => history.push("/products/ALL")}>
+              <Button variant="outlined" onClick={() => history.push("/products/ALL")}>
                 Continue shopping
+              </Button>
+              <Button variant="contained" onClick={() => history.push("/checkout")}>
+                Proceed to checkout
               </Button>
             </Box>
           </Box>

@@ -14,6 +14,7 @@ import { WishlistItem } from "../../../lib/types/wishlist";
 import { serverApi } from "../../../lib/config";
 import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
+import { useCreateOrder } from "../../hooks/useCreateOrder";
 
 /** REDUX SELECTOR */
 // Selector faylidan kelgan funksiyani o'rab olamiz
@@ -26,6 +27,7 @@ export function BestProducts() {
   const history = useHistory();
   const { onAdd: addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistContext();
+  const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
   const { bestProducts } = useSelector(bestProductsRetriever);
   const products = Array.isArray(bestProducts) ? bestProducts : [];
 
@@ -120,7 +122,12 @@ export function BestProducts() {
                     >
                       Add Cart
                     </Button>
-                    <Button variant="contained" className="btn-buy">
+                    <Button
+                      variant="contained"
+                      className="btn-buy"
+                      disabled={buyNowLoading}
+                      onClick={() => handleBuyNow(product, 1)}
+                    >
                       Buy Now
                     </Button>
                   </div>
