@@ -26,7 +26,13 @@ class OrderService {
    */
   public async updateOrder(orderId: string, orderStatus: string): Promise<Order> {
     const url = `${this.path}/order/update`;
-    const { data } = await axios.post<Order>(url, { orderId, orderStatus }, { withCredentials: true });
+    const id = typeof orderId === "string" ? orderId : (orderId as any)?.toString?.() ?? String(orderId);
+    const status = String(orderStatus).toUpperCase().trim();
+    const { data } = await axios.post<Order>(
+      url,
+      { orderId: id, orderStatus: status },
+      { withCredentials: true, headers: { "Content-Type": "application/json" } }
+    );
     const raw = data as any;
     return raw?.value ?? raw;
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import {
   Container,
@@ -17,6 +17,10 @@ import {
   IconButton,
   Pagination,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
@@ -95,6 +99,34 @@ export function MyPage() {
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+  const [orderStatusFilter, setOrderStatusFilter] = useState<string>("ALL");
+  const [ordersPage, setOrdersPage] = useState(1);
+
+  const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"] as const;
+  const ORDERS_PER_PAGE = 6;
+
+  const sortedOrders = useMemo(() => {
+    let list = [...myOrders];
+    if (orderStatusFilter !== "ALL") {
+      list = list.filter((o) => (o.status || o.orderStatus || "").toUpperCase() === orderStatusFilter);
+    }
+    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return list;
+  }, [myOrders, orderStatusFilter]);
+
+  const ordersTotalPages = Math.max(1, Math.ceil(sortedOrders.length / ORDERS_PER_PAGE));
+  const paginatedOrders = useMemo(
+    () => sortedOrders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE),
+    [sortedOrders, ordersPage]
+  );
+
+  useEffect(() => {
+    if (ordersPage > ordersTotalPages && ordersTotalPages > 0) setOrdersPage(1);
+  }, [ordersTotalPages, ordersPage]);
+
+  useEffect(() => {
+    setOrdersPage(1);
+  }, [orderStatusFilter]);
 
   useEffect(() => {
     if (tabFromUrl === "wishlist") setTabValue("wishlist");
@@ -117,11 +149,14 @@ export function MyPage() {
   }, [tabValue]);
 
   const handleCancelOrder = (orderId: string) => {
-    setCancellingOrderId(orderId);
+    const id = typeof orderId === "string" ? orderId : String((orderId as any)?._id ?? orderId);
+    setCancellingOrderId(id);
     orderService
-      .updateOrder(orderId, "CANCELLED")
+      .updateOrder(id, "CANCELLED")
       .then(() => fetchMyOrders())
-      .catch(() => {})
+      .catch((err) => {
+        console.error("Cancel order failed", err?.response?.data ?? err);
+      })
       .finally(() => setCancellingOrderId(null));
   };
 
@@ -368,6 +403,22 @@ export function MyPage() {
                   </Card>
                 ) : (
                   <Stack spacing={1.5}>
+                    <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 0.5 }}>
+                      <FormControl size="small" sx={{ minWidth: 160 }}>
+                        <InputLabel id="order-status-filter-label">Status</InputLabel>
+                        <Select
+                          labelId="order-status-filter-label"
+                          value={orderStatusFilter}
+                          label="Status"
+                          onChange={(e) => setOrderStatusFilter(e.target.value)}
+                        >
+                          <MenuItem value="ALL">All</MenuItem>
+                          {ORDER_STATUSES.map((s) => (
+                            <MenuItem key={s} value={s}>{s}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap", px: 1.5, pb: 0.5, borderBottom: "2px solid", borderColor: "divider" }}>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Product</Typography>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 90 }}>Order #</Typography>
@@ -376,23 +427,41 @@ export function MyPage() {
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Total</Typography>
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, minWidth: 80, ml: "auto" }}>Action</Typography>
                     </Box>
-                    {myOrders.map((order) => {
+                    {paginatedOrders.map((order) => {
                       const orderDate = typeof order.createdAt === "string" ? new Date(order.createdAt) : (order.createdAt as Date);
                       const orderIdShort = order._id.slice(-8).toUpperCase();
                       const items = order.orderItems ?? [];
                       return (
                         <Card key={order._id} sx={{ ...fenzoCardStyle, p: 1.5 }}>
                           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 90 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 90, flexWrap: "wrap" }}>
                               {items.length > 0 ? (
                                 items.map((item) => (
-                                  <img
-                                    key={item.productId}
-                                    src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
-                                    alt={item.productName || ""}
-                                    style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10 }}
-                                    onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
-                                  />
+                                  <Box key={item.productId} sx={{ position: "relative", display: "inline-flex" }}>
+                                    <img
+                                      src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
+                                      alt={item.productName || ""}
+                                      style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10 }}
+                                      onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
+                                    />
+                                    <Typography
+                                      component="span"
+                                      sx={{
+                                        position: "absolute",
+                                        bottom: 2,
+                                        right: 2,
+                                        bgcolor: "rgba(0,0,0,0.7)",
+                                        color: "#fff",
+                                        fontSize: "0.7rem",
+                                        fontWeight: 700,
+                                        px: 0.5,
+                                        borderRadius: 1,
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      ×{item.itemQuantity}
+                                    </Typography>
+                                  </Box>
                                 ))
                               ) : (
                                 <Box sx={{ width: 64, height: 64, bgcolor: "#f0f0f0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -417,7 +486,7 @@ export function MyPage() {
                                   color="error"
                                   variant="outlined"
                                   disabled={cancellingOrderId === order._id}
-                                  onClick={() => handleCancelOrder(order._id)}
+                                  onClick={() => handleCancelOrder(String(order._id))}
                                   sx={{ textTransform: "none", fontWeight: 600, fontSize: "0.75rem" }}
                                 >
                                   {cancellingOrderId === order._id ? "..." : "Cancel"}
@@ -428,6 +497,17 @@ export function MyPage() {
                         </Card>
                       );
                     })}
+                    {ordersTotalPages > 1 && (
+                      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                        <Pagination
+                          count={ordersTotalPages}
+                          page={ordersPage}
+                          onChange={(_, page) => setOrdersPage(page)}
+                          color="primary"
+                          shape="rounded"
+                        />
+                      </Box>
+                    )}
                   </Stack>
                 )}
               </Stack>
