@@ -103,7 +103,8 @@ function CheckoutPage() {
     }
   }, [authUser]);
 
-  const canGoNextFromDelivery = delivery.address.trim() !== "" && delivery.city.trim() !== "" && delivery.zip.trim() !== "";
+  const canGoNextFromDelivery = delivery.address.trim() !== "";
+  // Hozircha city va zip ishlatilmaydi: delivery.city.trim() !== "" && delivery.zip.trim() !== ""
 
   const orderItems: { productId: string; quantity: number; price: number; name?: string; image?: string }[] = useMemo(() => {
     if (buyNow && !buyNowRemoved) {
@@ -282,6 +283,7 @@ function CheckoutPage() {
                 placeholder="123 Main St"
                 required
               />
+              {/* Hozircha City va Zip code ishlatilmaydi
               <Box sx={{ display: "flex", gap: 2 }}>
                 <TextField
                   fullWidth
@@ -298,6 +300,7 @@ function CheckoutPage() {
                   required
                 />
               </Box>
+              */}
               <TextField
                 fullWidth
                 label="Phone"
@@ -388,7 +391,6 @@ function CheckoutPage() {
                   />
                 </Stack>
                 <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1.5 }}>
-                  Demo only. No real charge. Card data is not stored.
                 </Typography>
               </Paper>
             )}
@@ -449,16 +451,16 @@ function CheckoutPage() {
               variant="contained"
               onClick={handlePlaceOrder}
               disabled={placing}
-              sx={{ textTransform: "none", fontWeight: 600 }}
+              sx={{ bgcolor: "#2a5298", color: "white",  textTransform: "none", fontWeight: 600 }}
             >
-              {placing ? <CircularProgress size={24} /> : "Place order"}
+              {placing ? <CircularProgress size={24} /> : "Order"}
             </Button>
           ) : (
             <Button
               variant="contained"
               onClick={handleNext}
               disabled={(activeStep === 1 && !canGoNextFromDelivery) || (activeStep === 2 && !canGoNextFromPayment)}
-              sx={{ textTransform: "none", fontWeight: 600 }}
+              sx={{ bgcolor: "#2a5298", color: "white",  textTransform: "none", fontWeight: 600 }}
             >
               Next
             </Button>

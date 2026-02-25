@@ -101,7 +101,7 @@ export function Signup() {
             variant="contained"
             size="large"
             disabled={loading}
-            sx={{ mt: 3 }}
+            sx={{bgcolor: "#2a5298", color: "white", mt: 3 }}
           >
             {loading ? "Creating account…" : "Sign up"}
           </Button>

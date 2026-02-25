@@ -4,10 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { serverApi } from "../../../lib/config";
 
-/**
- * Full-page cart view (e.g. when navigating to /basket).
- * Mini cart is the dropdown in the navbar.
- */
+
 export function BasketPage() {
   const history = useHistory();
   const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = useCart();
@@ -73,12 +70,6 @@ export function BasketPage() {
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Button variant="outlined" onClick={onDeleteAll}>
                 Clear cart
-              </Button>
-              <Button variant="outlined" onClick={() => history.push("/products/ALL")}>
-                Continue shopping
-              </Button>
-              <Button variant="contained" onClick={() => history.push("/checkout")}>
-                Proceed to checkout
               </Button>
             </Box>
           </Box>

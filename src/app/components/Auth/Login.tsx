@@ -36,7 +36,7 @@ export function Login() {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ py: 6 }}>
+      <Box sx={{  py: 6 }}>
         <Typography variant="h5" gutterBottom>
           Login
         </Typography>
@@ -71,7 +71,7 @@ export function Login() {
             variant="contained"
             size="large"
             disabled={loading}
-            sx={{ mt: 3 }}
+            sx={{bgcolor: "#2a5298", color: "white", mt: 3 }}
           >
             {loading ? "Signing in…" : "Login"}
           </Button>

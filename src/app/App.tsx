@@ -37,7 +37,6 @@ function App() {
           <Route path="/orders" component={OrdersPage} />
           <Route path="/help" component={HelpPage} />
           <Route path="/profile" component={MyPage} />
-          <Route path="/basket" component={BasketPage} />
           <Route path="/checkout" component={CheckoutPage} />
           <Route path="/user/seller/:id" component={SellerPage} />
           <Route path="/login" component={Login} />

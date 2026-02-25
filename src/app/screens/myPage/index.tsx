@@ -397,7 +397,7 @@ export function MyPage() {
                     <Button 
                       variant="contained" 
                       onClick={() => history.push("/products/ALL")}
-                      sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, py: 1.2, boxShadow: "none" }}
+                      sx={{ bgcolor: "#2a5298", color: "white", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, py: 1.2, boxShadow: "none" }}
                     >
                       Start Shopping
                     </Button>
@@ -627,7 +627,7 @@ export function MyPage() {
                     <Button 
                       variant="contained" 
                       onClick={() => history.push("/products/ALL")}
-                      sx={{ bgcolor: "#0d6efd", borderRadius: 2, mt: 2, textTransform: "none", fontWeight: 600 }}
+                      sx={{ bgcolor: "#2a5298", color: "white", borderRadius: 2, mt: 2, textTransform: "none", fontWeight: 600 }}
                     >
                       Discover Products
                     </Button>
@@ -683,7 +683,7 @@ export function MyPage() {
                       variant="contained" 
                       startIcon={<EditIcon />} 
                       onClick={() => setIsEditingInfo(true)}
-                      sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", boxShadow: "none" }}
+                      sx={{ bgcolor: "#2a5298", color: "white", borderRadius: 2, textTransform: "none", boxShadow: "none" }}
                     >
                       Edit Profile
                     </Button>
@@ -774,7 +774,7 @@ export function MyPage() {
                         <Button variant="outlined" color="inherit" onClick={cancelEdit} sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600, px: 3 }}>
                           Cancel
                         </Button>
-                        <Button variant="contained" onClick={handleSaveInfo} disabled={infoSaving} sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, boxShadow: "none" }}>
+                        <Button variant="contained" onClick={handleSaveInfo} disabled={infoSaving} sx={{ bgcolor: "#2a5298", color: "white",borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, boxShadow: "none" }}>
                           {infoSaving ? "Saving..." : "Save Changes"}
                         </Button>
                       </Box>
@@ -794,7 +794,7 @@ export function MyPage() {
                       variant="contained" 
                       startIcon={<EditIcon />} 
                       onClick={() => setIsEditingAddress(true)}
-                      sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", boxShadow: "none" }}
+                      sx={{ bgcolor: "#2a5298", color: "white", borderRadius: 2, textTransform: "none", boxShadow: "none" }}
                     >
                       {user.userAddress ? "Edit Address" : "Add Address"}
                     </Button>
@@ -843,7 +843,7 @@ export function MyPage() {
                         <Button variant="outlined" color="inherit" onClick={cancelEdit} sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600, px: 3 }}>
                           Cancel
                         </Button>
-                        <Button variant="contained" onClick={handleSaveInfo} disabled={infoSaving} sx={{ bgcolor: "#0d6efd", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, boxShadow: "none" }}>
+                        <Button variant="contained" onClick={handleSaveInfo} disabled={infoSaving} sx={{ bgcolor: "#2a5298", color: "white",borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, boxShadow: "none" }}>
                           {infoSaving ? "Saving..." : "Save Address"}
                         </Button>
                       </Box>

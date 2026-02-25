@@ -163,7 +163,7 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
                 <Button
                   fullWidth
                   variant="contained"
-                  className="basket-checkout-btn"
+                  className="btn-buy"
                   startIcon={<ShoppingCartIcon />}
                   onClick={handleCheckout}
                 >

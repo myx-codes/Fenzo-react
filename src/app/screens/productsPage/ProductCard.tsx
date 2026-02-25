@@ -216,8 +216,7 @@ return (
 
             {/* Rating & Views */}
             <div className="rating-row">
-              <Rating value={4.5} readOnly precision={0.5} size="small"/>
-              <span>(4.5 Review)</span>
+              <Rating value={product.productViews} readOnly precision={0.5} size="small"/>
               <div className="views"><VisibilityIcon fontSize="small"/>{product.productViews} views</div>
             </div>
 
@@ -242,7 +241,7 @@ return (
               <Button
                 variant="contained"
                 startIcon={<ShoppingCartIcon />}
-                className="cart-btn"
+                className="btn-buy"
                 onClick={() => {
                   const cartItem: CartItem = {
                     _id: product._id,
