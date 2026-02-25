@@ -34,7 +34,7 @@ export default function HomePage() {
     const product = new ProductService();
     product.getProducts({
       page:1,
-      limit:8,
+      limit:12,
       order: "createdAt",
     })
     .then((data) => {setFeaturedProducts(data);})
@@ -42,7 +42,7 @@ export default function HomePage() {
 
     product.getProducts({
     page:1,
-    limit:8,
+    limit:12,
     order: "productViews",
     })
     .then((data) => {setBestProducts(data);})
