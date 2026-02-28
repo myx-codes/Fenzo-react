@@ -25,6 +25,7 @@ import ProductService from "../../services/ProductService";
 import UserService from "../../services/UserService";
 import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
+import { useCreateOrder } from "../../hooks/useCreateOrder";
 import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist"; 
 
@@ -46,6 +47,7 @@ const history = useHistory();
 const dispatch = useDispatch();
 const { onAdd: addToCart } = useCart();
 const { toggleWishlist, isInWishlist } = useWishlistContext();
+const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
 const { productId } = useParams<{ productId: string }>();
 const { products } = useSelector(ProductsRetriever);
 const { topSellers } = useSelector(TopSellersRetriever);
@@ -61,6 +63,7 @@ useEffect(() => {
 }, [topSellers, dispatch]);
 
 const [product, setProduct] = useState<Product | null>(chosenProduct || null);
+const [related, setRelated] = useState<Product[]>([]); // related products from same category
 const [seller, setSeller] = useState<User | null>(null);
 const [loading, setLoading] = useState(!chosenProduct);
 const [activeImage, setActiveImage] = useState("");
@@ -135,6 +138,29 @@ const handleQuantity = (type: "inc" | "dec") => {
   if (type === "inc") setQuantity(prev => prev + 1);
   if (type === "dec" && quantity > 1) setQuantity(prev => prev - 1);
 };
+
+// when a product is loaded, fetch up to 4 other random products in same collection
+useEffect(() => {
+  if (!product || !product.productCollection) {
+    setRelated([]);
+    return;
+  }
+  const service = new ProductService();
+  service
+    .getAllProducts({ productCollection: String(product.productCollection) })
+    .then((all) => {
+      const others = all.filter((p) => p._id !== product._id);
+      // shuffle
+      for (let i = others.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [others[i], others[j]] = [others[j], others[i]];
+      }
+      setRelated(others.slice(0, 4));
+    })
+    .catch(() => {
+      setRelated([]);
+    });
+}, [product]);
 
 if (loading) {
    return (
@@ -285,6 +311,113 @@ return (
           </div>
         </Grid>
       </Grid>
+
+      {/* related products section */}
+      {related.length > 0 && (
+        <Box sx={{ mt: 6, mb: 6 }}>
+          <Typography variant="h5" gutterBottom>
+            More from {product?.productCollection}
+          </Typography>
+          <Grid container spacing={2}>
+            {related.map((rp) => {
+              const imgPath =
+                rp.productImages && rp.productImages.length > 0
+                  ? `${serverApi}/${rp.productImages[0]}`
+                  : "/img/placeholder.jpg";
+              return (
+                <Grid size={{ xs: 6, md: 3 }} key={rp._id}>
+                  <div
+                    className="product-card"
+                    onClick={() => history.push(`/products/detail/${rp._id}`)}
+                  >
+                    <div
+                      className="product-image-box"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <img
+                        src={imgPath}
+                        alt={rp.productName}
+                        className="product-img"
+                      />
+                      <IconButton
+                        className="like-btn"
+                        aria-label={isInWishlist(rp._id) ? "Remove from wishlist" : "Add to wishlist"}
+                        onClick={() => {
+                          const item: WishlistItem = {
+                            _id: rp._id,
+                            name: rp.productName,
+                            price: rp.productPrice,
+                            image: rp.productImages?.[0] ?? "",
+                            collection: String(rp.productCollection),
+                          };
+                          toggleWishlist(item);
+                        }}
+                        sx={isInWishlist(rp._id) ? { color: 'red' } : undefined}
+                      >
+                        {isInWishlist(rp._id) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+                      </IconButton>
+                    </div>
+
+                    <div className="product-info">
+                      <Typography className="product-name" title={rp.productName}>
+                        {rp.productName}
+                      </Typography>
+
+                      <div className="rating-views-box">
+                        <div className="product-rating">
+                          <Rating value={rp.productViews || 0} precision={0.5} readOnly size="small" />
+                          <span className="review-count">({rp.productViews > 10 ? Math.floor(rp.productViews / 10) : 0})</span>
+                        </div>
+
+                        <Box className="views-box">
+                          <VisibilityIcon sx={{ fontSize: 17 }} />
+                          <Typography variant="caption">
+                            {rp.productViews}
+                          </Typography>
+                        </Box>
+                      </div>
+
+                      <Box className="price-box">
+                        <Typography className="product-price">
+                          ${rp.productPrice.toLocaleString()}
+                        </Typography>
+                      </Box>
+
+                      <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="outlined"
+                          className="btn-cart"
+                          onClick={() => {
+                            const cartItem: CartItem = {
+                              _id: rp._id,
+                              name: rp.productName,
+                              price: rp.productPrice,
+                              quantity: 1,
+                              image: rp.productImages?.[0] ?? "",
+                              collection: String(rp.productCollection),
+                            };
+                            addToCart(cartItem);
+                          }}
+                        >
+                          Add Cart
+                        </Button>
+                        <Button
+                          variant="contained"
+                          className="btn-buy"
+                          disabled={buyNowLoading}
+                          onClick={() => handleBuyNow(rp as any, 1)}
+                        >
+                          Buy Now
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
+      )}
     </Container>
   </div>
 );

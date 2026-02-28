@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { WishlistItem } from "../../lib/types/wishlist";
+import ProductService from "../services/ProductService";
+
+const productService = new ProductService();
 
 const WISHLIST_STORAGE_PREFIX = "wishlistData_";
 
@@ -75,12 +78,37 @@ export default function useWishlist(userId: string | null) {
     [wishlistItems]
   );
 
+  /** Serverdan mahsulot narxi/rasmini yangilab, wishlist ni sync qiladi (seller o'zgartirsa customer ko'radi). */
+  const refreshWishlist = useCallback(async () => {
+    if (!userId || wishlistItems.length === 0) return;
+    const results = await Promise.allSettled(
+      wishlistItems.map((item) => productService.getProduct(item._id))
+    );
+    const updated: WishlistItem[] = wishlistItems.map((item, index) => {
+      const result = results[index];
+      if (result.status === "fulfilled" && result.value) {
+        const p = result.value;
+        return {
+          _id: p._id,
+          name: p.productName ?? item.name,
+          price: p.productPrice ?? item.price,
+          image: Array.isArray(p.productImages) && p.productImages[0] ? p.productImages[0] : item.image,
+          collection: String(p.productCollection ?? item.collection),
+        };
+      }
+      return item;
+    });
+    setWishlistItems(updated);
+    persist(updated);
+  }, [userId, wishlistItems, persist]);
+
   return {
     wishlistItems,
     addToWishlist,
     removeFromWishlist,
     toggleWishlist,
     isInWishlist,
+    refreshWishlist,
     isSignedIn: !!userId,
   };
 }

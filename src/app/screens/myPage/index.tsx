@@ -50,7 +50,7 @@ export function MyPage() {
   const history = useHistory();
   const location = useLocation();
   const { authUser, setAuthUser, logout } = useGlobals();
-  const { wishlistItems, removeFromWishlist } = useWishlistContext();
+  const { wishlistItems, removeFromWishlist, refreshWishlist } = useWishlistContext();
   const { onAdd: addToCart } = useCart();
 
   const tabFromUrl = new URLSearchParams(location.search).get("tab");
@@ -75,6 +75,12 @@ export function MyPage() {
       setWishlistPage(wishlistTotalPages);
     }
   }, [wishlistItems.length, wishlistTotalPages, wishlistPage]);
+
+  // Wishlist tab ochilganda serverdan narx/rasm yangilab oladi (seller o'zgartirsa yangi ma'lumot chiqadi)
+  useEffect(() => {
+    if (tabValue === "wishlist") refreshWishlist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabValue]);
 
   // Edit Mode States
   const [isEditingInfo, setIsEditingInfo] = useState(false);

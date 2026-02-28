@@ -30,6 +30,7 @@ import { useCart } from "../../context/CartContext";
 import { useGlobals } from "../../hooks/useGlobals";
 import OrderService from "../../services/OrderService";
 import { serverApi } from "../../../lib/config";
+import { sweetAlert } from "../../../lib/sweetalert";
 import { CartItem } from "../../../lib/types/cart";
 import { CreateOrderInput, BuyNowItem } from "../../../lib/types/order";
 
@@ -102,6 +103,14 @@ function CheckoutPage() {
       }));
     }
   }, [authUser]);
+
+  useEffect(() => {
+    if (authUser === null) {
+      sweetAlert
+        .warning("Please sign up first.”", "Register to purchase a product.")
+        .then(() => history.push("/signup"));
+    }
+  }, [authUser, history]);
 
   const canGoNextFromDelivery = delivery.address.trim() !== "";
   // Hozircha city va zip ishlatilmaydi: delivery.city.trim() !== "" && delivery.zip.trim() !== ""
@@ -194,6 +203,14 @@ function CheckoutPage() {
           Continue shopping
         </Button>
       </Container>
+    );
+  }
+
+  if (authUser === null) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+        <CircularProgress sx={{ color: "#1e3c72" }} />
+      </Box>
     );
   }
 

@@ -9,6 +9,7 @@ interface WishlistContextValue {
   removeFromWishlist: (id: string) => void;
   toggleWishlist: (item: WishlistItem) => void;
   isInWishlist: (id: string) => boolean;
+  refreshWishlist: () => Promise<void>;
   isSignedIn: boolean;
 }
 
