@@ -748,7 +748,7 @@
   color: #2c3e50;
 }
 
-/* Mobil moslashuv */
+/* Mobil moslashuv - Auth modal */
 @media (max-width: 768px) {
   .modal-wrapper {
     flex-direction: column;
@@ -764,6 +764,104 @@
   .voucher-text { font-size: 1.5rem; }
   .auth-form-side {
     padding: 30px 20px;
+  }
+}
+
+/* Umumiy mobil/plan­shet moslashuv */
+@media (max-width: 1024px) {
+  .stats-section,
+  .featured-section,
+  .events-section,
+  .sellers-section {
+    padding: 48px 16px;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+    margin-bottom: 32px !important;
+  }
+
+  .ad-section {
+    height: 420px;
+  }
+
+  .ad-title {
+    font-size: 2.4rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-section,
+  .featured-section,
+  .events-section,
+  .sellers-section {
+    padding: 32px 12px;
+  }
+
+  .stat-value {
+    font-size: 2.2rem !important;
+  }
+
+  .stat-label {
+    font-size: 1.2rem !important;
+  }
+
+  .products-grid {
+    gap: 18px;
+  }
+
+  .product-image-box {
+    height: 220px;
+  }
+
+  .hero-carousel {
+    height: 320px;
+  }
+
+  .ad-section {
+    height: 340px;
+  }
+
+  .ad-title {
+    font-size: 2rem !important;
+  }
+
+  .ad-subtitle {
+    font-size: 1rem !important;
+  }
+
+  .slider-wrapper {
+    height: 80px;
+  }
+
+  .slide {
+    width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-value {
+    font-size: 1.8rem !important;
+  }
+
+  .section-title {
+    font-size: 1.6rem !important;
+  }
+
+  .product-card {
+    border-radius: 10px;
+  }
+
+  .product-image-box {
+    height: 200px;
+  }
+
+  .ad-title {
+    font-size: 1.6rem !important;
+  }
+
+  .ad-content {
+    padding: 0 12px;
   }
 }
 

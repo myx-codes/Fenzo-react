@@ -114,6 +114,10 @@ export function SellerPage() {
       ? `${serverApi}/${product.productImages[0]}`
       : "/img/placeholder.jpg";
 
+    // normalize view count (API may return different field names)
+    const rawViews = product.productViews ?? product.views ?? product.viewsCount ?? product.viewCount ?? product.view_count ?? product.views_count ?? product.totalViews ?? 0;
+    const views = Number(rawViews) || 0;
+
     return (
       <div
         key={product._id}
@@ -154,14 +158,14 @@ export function SellerPage() {
 
           <div className="rating-views-box">
             <div className="product-rating">
-              <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
-              <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
+              <Rating value={views || 0} precision={0.5} readOnly size="small" />
+              <span className="review-count">({views > 10 ? Math.floor(views / 10) : 0})</span>
             </div>
 
             <Box className="views-box">
               <VisibilityIcon sx={{ fontSize: 17 }} />
               <Typography variant="caption">
-                {product.productViews}
+                {views.toLocaleString()}
               </Typography>
             </Box>
           </div>

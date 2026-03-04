@@ -111,3 +111,42 @@
     align-items: center;
     background-color: #fff;
 }
+
+/* -------- Responsive -------- */
+
+@media (max-width: 1024px) {
+  .my-page {
+    padding-top: 24px;
+    padding-bottom: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .my-page {
+    padding-top: 16px;
+    padding-bottom: 32px;
+  }
+
+  .order-item {
+    align-items: flex-start;
+  }
+
+  .user-avatar-box {
+    padding: 20px 16px;
+  }
+
+  .vertical-tabs .MuiTab-root {
+    padding-left: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-item-img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .my-page-title h2 {
+    font-size: 1.4rem;
+  }
+}

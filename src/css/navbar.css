@@ -277,3 +277,113 @@
 .logout-item:hover {
   background-color: #ffebee !important; /* Och qizil fon */
 }
+
+/* ============================
+   RESPONSIVE NAVBAR & HERO
+   ============================ */
+
+@media (max-width: 1024px) {
+  .navbar-top {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .logo-img {
+    height: 70px;
+  }
+
+  .search-box {
+    margin: 0 16px;
+    max-width: 100%;
+  }
+
+  .hero-carousel {
+    height: 380px;
+  }
+
+  .hero-title {
+    font-size: 2.6rem !important;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    height: auto;
+  }
+
+  .logo-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .logo-img {
+    height: 56px;
+  }
+
+  .search-box {
+    margin: 0;
+    height: 40px;
+    padding: 0 14px;
+  }
+
+  .search-input {
+    font-size: 14px;
+  }
+
+  .action-box {
+    justify-content: center;
+    margin-top: 8px;
+    gap: 10px;
+    min-width: auto;
+  }
+
+  .navbar-menu {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 8px 12px;
+  }
+
+  .nav-link {
+    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .hero-carousel {
+    height: 300px;
+    margin-top: 8px;
+  }
+
+  .hero-content-wrapper {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero-title {
+    font-size: 2rem !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem !important;
+    margin-bottom: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.6rem !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem !important;
+  }
+
+  .login-btn {
+    padding: 6px 16px !important;
+    font-size: 0.8rem !important;
+  }
+}
