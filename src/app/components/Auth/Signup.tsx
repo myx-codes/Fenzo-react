@@ -6,7 +6,7 @@ import { Messages } from "../../../lib/config";
 
 export function Signup() {
   const history = useHistory();
-  const { signup } = useGlobals();
+  const { signup, t } = useGlobals();
   const [userNick, setUserNick] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -48,12 +48,12 @@ export function Signup() {
     <Container maxWidth="sm">
       <Box sx={{ py: 6 }}>
         <Typography variant="h5" gutterBottom>
-          Sign up
+          {t("signupTitle")}
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Username"
+            label={t("username")}
             value={userNick}
             onChange={(e) => setUserNick(e.target.value)}
             margin="normal"
@@ -62,7 +62,7 @@ export function Signup() {
           />
           <TextField
             fullWidth
-            label="Phone"
+            label={t("phone")}
             value={userPhone}
             onChange={(e) => setUserPhone(e.target.value)}
             margin="normal"
@@ -73,7 +73,7 @@ export function Signup() {
           <TextField
             fullWidth
             type="password"
-            label="Password"
+            label={t("password")}
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
             margin="normal"
@@ -83,7 +83,7 @@ export function Signup() {
           <TextField
             fullWidth
             type="password"
-            label="Confirm password"
+            label={t("confirmPassword")}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             margin="normal"
@@ -103,7 +103,7 @@ export function Signup() {
             disabled={loading}
             sx={{bgcolor: "#2a5298", color: "white", mt: 3 }}
           >
-            {loading ? "Creating account…" : "Sign up"}
+            {loading ? t("creatingAccount") : t("signUp")}
           </Button>
           <Button
             fullWidth
@@ -111,7 +111,7 @@ export function Signup() {
             sx={{ mt: 1 }}
             onClick={() => history.push("/login")}
           >
-            Already have an account? Login
+            {t("alreadyHaveAccount")}
           </Button>
         </form>
       </Box>

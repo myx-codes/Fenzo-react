@@ -1,35 +1,25 @@
 import { useRouteMatch, Switch, Route} from "react-router-dom";
 import { Products } from "./Products";
 import { useDispatch} from "react-redux";
-import { Dispatch } from "@reduxjs/toolkit";
 import { Product } from "../../../lib/types/product";
 import ProductService from "../../services/ProductService";
-import { setProductCard, setProducts, setStore } from "./slice";
+import { setProductCard, setProducts } from "./slice";
 import { useEffect } from "react";
-import { User } from "src/lib/types/user";
 import { ProductCard } from "./ProductCard";
-
-
-/** REDUX SLICE */
-const actionDispatch = (dispatch: Dispatch) => ({
-  setProducts: (data: Product[]) => dispatch(setProducts(data)),
-  setProductCard: (data: Product[]) => dispatch(setProductCard(data)),
-  setStore: (data: User) => dispatch(setStore(data)),
-});
 
 export function ProductsPage() {
 
-  const { setProducts, setProductCard } = actionDispatch(useDispatch());
+  const dispatch = useDispatch();
   useEffect(() => {
     const productService = new ProductService();
     productService
       .getAllProducts({ order: "createdAt" })
-      .then((data) => {
-        setProducts(data);
-        setProductCard(data);
+      .then((data: Product[]) => {
+        dispatch(setProducts(data));
+        dispatch(setProductCard(data));
       })
       .catch((err) => console.error(err));
-  }, [])
+  }, [dispatch])
   
 
   const products = useRouteMatch()

@@ -11,7 +11,7 @@ import {
   Grid,
   Paper,
   Button,
-  Stack
+  Stack,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
@@ -74,9 +74,25 @@ export function HelpPage() {
         
         {/* --- HERO SECTION --- */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2, color: '#1a1a1a' }}>
-                How can we help you?
-            </Typography>
+            <Stack spacing={2} alignItems="center">
+              <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1, color: '#1a1a1a' }}>
+                  How can we help you?
+              </Typography>
+              <TextField
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by question or keyword"
+                sx={{ maxWidth: 520 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
         </Box>
 
         {/* --- FAQ SECTION --- */}

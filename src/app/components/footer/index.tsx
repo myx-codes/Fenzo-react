@@ -1,12 +1,15 @@
 import React from "react";
-import { Box, Container, Stack, IconButton } from "@mui/material";
+import { Box, Container, IconButton } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { NavLink } from "react-router-dom";
+import { useGlobals } from "../../hooks/useGlobals";
 
 export function Footer() {
+  const { t } = useGlobals();
+
   return (
     <div className="footer">
       <Container className="footer-container">
@@ -18,8 +21,7 @@ export function Footer() {
           <Box className="footer-col">
             <h2 className="footer-logo">FENZO</h2>
             <p className="footer-desc">
-              Bizning do'konimizda eng so'nggi rusumdagi elektronika va moda 
-              mahsulotlarini topishingiz mumkin. Sifat va hamyonbop narxlar kafolati.
+              {t("bestQualityBestPrices")}
             </p>
             <div className="footer-socials">
                 <IconButton className="social-btn"><FacebookIcon /></IconButton>
@@ -31,53 +33,51 @@ export function Footer() {
 
           {/* 2. TEZ LINKLAR */}
           <Box className="footer-col">
-            <h3 className="footer-title">Quick Links</h3>
-            <NavLink to="/">
-              <a href="#" className="footer-link">Home</a>
-            </NavLink>
-            <a href="#" className="footer-link">Electronics</a>
-            <a href="#" className="footer-link">Fashion</a>
-            <a href="#" className="footer-link">Accessories</a>
-            <a href="#" className="footer-link">New Arrivals</a>
+            <h3 className="footer-title">{t("quickLinks")}</h3>
+            <NavLink to="/" className="footer-link">{t("home")}</NavLink>
+            <NavLink to="/products/ELECTRONICS" className="footer-link">{t("electronics")}</NavLink>
+            <NavLink to="/products/FASHION" className="footer-link">{t("fashion")}</NavLink>
+            <NavLink to="/products/BEAUTY-HEALTH" className="footer-link">{t("accessories")}</NavLink>
+            <NavLink to="/products" className="footer-link">{t("newArrivals")}</NavLink>
           </Box>
 
           {/* 3. MIJOZLAR UCHUN */}
           <Box className="footer-col">
-            <h3 className="footer-title">Customer Care</h3>
+            <h3 className="footer-title">{t("customerCare")}</h3>
             
             {/* 1. My Account to'g'rilandi */}
             <NavLink to="/profile" className="footer-link">
-              My Account
+              {t("myAccount")}
             </NavLink>
 
             {/* 2. Boshqalarni ham NavLink yoki Link ga o'tkazish tavsiya qilinadi */}
             <NavLink to="/orders" className="footer-link">
-              Order History
+              {t("orderHistory")}
             </NavLink>
             
             <NavLink to="/track-order" className="footer-link">
-              Track Order
+              {t("trackOrder")}
             </NavLink>
             
             <NavLink to="/terms" className="footer-link">
-              Terms & Conditions
+              {t("termsAndConditions")}
             </NavLink>
             
             <NavLink to="/privacy" className="footer-link">
-              Privacy Policy
+              {t("privacyPolicy")}
             </NavLink>
           </Box>
 
           {/* 4. KONTAKT */}
           <Box className="footer-col">
-            <h3 className="footer-title">Contact Us</h3>
+            <h3 className="footer-title">{t("contactUs")}</h3>
             <p className="footer-text">123 Street, Tashkent, Uzbekistan</p>
             <p className="footer-text">Email: support@fenzo.uz</p>
             <p className="footer-text">Phone: +998 90 123 45 67</p>
             
             {/* Newsletter Input (Vizual) */}
             <div className="newsletter-box">
-                <input type="email" placeholder="Your email..." />
+              <input type="email" placeholder={t("yourEmail")} />
                 <button>→</button>
             </div>
           </Box>
@@ -86,7 +86,7 @@ export function Footer() {
 
         {/* --- PASTKI QISM (COPYRIGHT) --- */}
         <Box className="footer-bottom">
-            <p>© 2024 FENZO. All rights reserved.</p>
+          <p>© 2024 FENZO. {t("allRightsReserved")}</p>
             <div className="payment-cards">
                 <span>Visa</span>
                 <span>Mastercard</span>

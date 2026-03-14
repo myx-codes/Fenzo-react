@@ -5,7 +5,6 @@ import { ProductsPage } from "./screens/productsPage";
 import { OrdersPage } from "./screens/ordersPage";
 import { HelpPage } from "./screens/helpPage";
 import { MyPage } from "./screens/myPage";
-import { BasketPage } from "./screens/basketPage/BasketPage";
 import CheckoutPage from "./screens/checkoutPage/CheckoutPage";
 import { Login, Signup } from "./components/Auth";
 import { HomeNavbar } from "./components/headers/HomeNavbar";

@@ -133,7 +133,6 @@ export function Products() {
   useEffect(() => {
     if (collection) {setSelectedCategory(collection.toUpperCase());
     } else {setSelectedCategory("ALL");}
-    console.log("Category changed:", selectedCategory)
   }, [collection]);
 
   // INFINITE SCROLL
@@ -149,11 +148,12 @@ export function Products() {
       { threshold: 1.0 }
     );
 
-    if (observerTarget.current) {observer.observe(observerTarget.current);}
+        const currentTarget = observerTarget.current;
+        if (currentTarget) {observer.observe(currentTarget);}
     return () => {
-      if (observerTarget.current) {observer.unobserve(observerTarget.current);}
+            if (currentTarget) {observer.unobserve(currentTarget);}
     };
-  }, [observerTarget, visibleCount, sortedData.length]);
+    }, [visibleCount, sortedData.length]);
 
 
   return (

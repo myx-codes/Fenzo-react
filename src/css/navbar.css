@@ -81,6 +81,22 @@
     min-width: 180px;
     justify-content: flex-end;
 }
+
+.lang-select {
+  height: 34px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0 10px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.lang-select option {
+  color: #222;
+}
 .login-btn {
     background-color: white !important;
     color: #1e3c72 !important;
@@ -340,6 +356,12 @@
     margin-top: 8px;
     gap: 10px;
     min-width: auto;
+  }
+
+  .lang-select {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 8px;
   }
 
   .navbar-menu {

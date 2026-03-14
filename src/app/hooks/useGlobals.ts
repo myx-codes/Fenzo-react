@@ -1,11 +1,16 @@
 import { createContext, useContext } from "react";
 import { User, LoginInput, UserInput } from "../../lib/types/user";
+import { SupportedLanguage, TranslationKey } from "../i18n/translations";
 
 export interface GlobalContextValue {
   authUser: User | null;
   setAuthUser: (user: User | null) => void;
   orderBuilder: Date;
   setOrderBuilder: (d: Date) => void;
+  language: SupportedLanguage;
+  setLanguage: (language: SupportedLanguage) => void;
+  locale: string;
+  t: (key: TranslationKey) => string;
   login: (input: LoginInput) => Promise<void>;
   signup: (input: UserInput) => Promise<void>;
   logout: () => void;

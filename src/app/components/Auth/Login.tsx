@@ -6,7 +6,7 @@ import { Messages } from "../../../lib/config";
 
 export function Login() {
   const history = useHistory();
-  const { login } = useGlobals();
+  const { login, t } = useGlobals();
   const [userNick, setUserNick] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [error, setError] = useState("");
@@ -38,12 +38,12 @@ export function Login() {
     <Container maxWidth="sm">
       <Box sx={{  py: 6 }}>
         <Typography variant="h5" gutterBottom>
-          Login
+          {t("loginTitle")}
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Username"
+            label={t("username")}
             value={userNick}
             onChange={(e) => setUserNick(e.target.value)}
             margin="normal"
@@ -53,7 +53,7 @@ export function Login() {
           <TextField
             fullWidth
             type="password"
-            label="Password"
+            label={t("password")}
             value={userPassword}
             onChange={(e) => setUserPassword(e.target.value)}
             margin="normal"
@@ -73,7 +73,7 @@ export function Login() {
             disabled={loading}
             sx={{bgcolor: "#2a5298", color: "white", mt: 3 }}
           >
-            {loading ? "Signing in…" : "Login"}
+            {loading ? t("signingIn") : t("login")}
           </Button>
           <Button
             fullWidth
@@ -81,7 +81,7 @@ export function Login() {
             sx={{ mt: 1 }}
             onClick={() => history.push("/signup")}
           >
-            Don’t have an account? Sign up
+            {t("dontHaveAccount")}
           </Button>
         </form>
       </Box>
