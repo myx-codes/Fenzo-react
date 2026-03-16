@@ -13,6 +13,8 @@ import { Footer } from "./components/footer";
 import ContextProvider from "./context/ProviderContext";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { SellerPage } from "./screens/sellerPage/SellerPage";
+import { SocketProvider } from "./context/SocketContext";
 import "../css/app.css";
 import "../css/navbar.css";
 import "../css/footer.css";
@@ -21,7 +23,6 @@ import "../css/products.css";
 import "../css/mypage.css";
 import "../css/basket.css";
 import "../css/seller.css";
-import { SellerPage } from "./screens/sellerPage/SellerPage";
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
   return (
     <ContextProvider>
       <CartProvider>
+        <SocketProvider>
         <WishlistProvider>
         {location.pathname === "/" ? <HomeNavbar /> : <OtherNavbar />}
         <Switch>
@@ -44,6 +46,7 @@ function App() {
         </Switch>
         <Footer />
         </WishlistProvider>
+        </SocketProvider>
       </CartProvider>
     </ContextProvider>
   );
