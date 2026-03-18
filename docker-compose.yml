@@ -16,7 +16,7 @@ services:
     networks:
       - client-network
 
-    command: bash -c "yarn && yarn run build && yarn run start:prod"
+    command: bash -c "yarn global add serve && yarn && yarn run build && yarn run start:prod"
 
 networks:
   client-network:
