@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  node:
+    container_name: fenzo-react
+    restart: always
+    image: node:20.10.0
+    ports:
+      - 4002:3000
+    environment:
+      - PORT=3000
+    volumes:
+      - ./:/usr/src/fenzo-react
+    working_dir: /usr/src/fenzo-react
+
+    networks:
+      - client-network
+
+    command: bash -c "yarn global add serve && yarn && yarn run build && yarn run start:prod"
+
+networks:
+  client-network:
+    driver: bridge
