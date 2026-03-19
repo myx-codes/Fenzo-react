@@ -36,6 +36,10 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
     handleClose();
     history.push("/checkout");
   };
+  const goToProductDetail = (productId: string) => {
+    handleClose();
+    history.push(`/products/detail/${productId}`);
+  };
 
   return (
     <Box className="basket-root">
@@ -118,7 +122,13 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
                 const imagePath = item.image ? `${serverApi}/${item.image}` : "";
                 return (
                   <div key={item._id} className="basket-item">
-                    <img src={imagePath} alt={item.name} className="basket-item-img" />
+                    <img
+                      src={imagePath}
+                      alt={item.name}
+                      className="basket-item-img"
+                      onClick={() => goToProductDetail(item._id)}
+                      style={{ cursor: "pointer" }}
+                    />
                     <div className="basket-item-details">
                       <Typography className="basket-item-name" title={item.name}>
                         {item.name}

@@ -43,7 +43,8 @@ export function BasketPage() {
                 <img
                   src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"}
                   alt={item.name}
-                  style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8 }}
+                  onClick={() => history.push(`/products/detail/${item._id}`)}
+                  style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, cursor: "pointer" }}
                 />
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body1">{item.name}</Typography>

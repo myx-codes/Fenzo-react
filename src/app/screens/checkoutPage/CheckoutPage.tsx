@@ -255,7 +255,8 @@ function CheckoutPage() {
                   <img
                     src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"}
                     alt={item.name || "Item"}
-                    style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8 }}
+                    onClick={() => history.push(`/products/detail/${item.productId}`)}
+                    style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, cursor: "pointer" }}
                   />
                   <Box sx={{ flex: 1 }}>
                     <Typography variant="body1">{item.name || `Product ${item.productId.slice(-6)}`}</Typography>

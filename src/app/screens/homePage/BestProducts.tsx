@@ -61,7 +61,7 @@ export function BestProducts() {
                 onClick={() => handleProductCard(product._id)}
                 sx={{ cursor: "pointer" }}
               >
-                <div className="product-image-box" onClick={(e) => e.stopPropagation()}>
+                <div className="product-image-box">
                   <img
                     src={imagePath}
                     alt={product.productName}
@@ -73,7 +73,10 @@ export function BestProducts() {
                   <IconButton
                     className="like-btn"
                     aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
-                    onClick={() => toggleWishlist(wishlistItem)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(wishlistItem);
+                    }}
                     sx={isInWishlist(product._id) ? { color: "red" } : undefined}
                   >
                     {isInWishlist(product._id) ? (

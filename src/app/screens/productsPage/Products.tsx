@@ -266,12 +266,13 @@ export function Products() {
                                 className="product-card"
                                 onClick={() =>handleProductCard(product._id)}
                                 >
-                                    <div className="product-image-box" onClick={(e) => e.stopPropagation()}>
+                                    <div className="product-image-box">
                                         <img src={imagePath} alt={product.productName} className="product-img"/>
                                         <IconButton
                                             className="like-btn"
                                             aria-label={isInWishlist(product._id) ? t("removeFromWishlist") : t("addToWishlist")}
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 const item: WishlistItem = {
                                                     _id: product._id,
                                                     name: product.productName,
