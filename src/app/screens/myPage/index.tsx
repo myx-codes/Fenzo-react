@@ -340,7 +340,12 @@ export function MyPage() {
                         <Grid key={item._id} size={{ xs: 6, sm: 6, md: 3 }}>
                           <Card sx={{ borderRadius: 3, boxShadow: "0 4px 15px rgba(0,0,0,0.04)", border: "1px solid #eaeaea", position: "relative", height: "100%" }}>
                             <Box sx={{ position: "relative", overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
-                              <img src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"} alt={item.name} style={{ width: "100%", height: 180, objectFit: "cover" }} />
+                              <img
+                                src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"}
+                                alt={item.name}
+                                onClick={() => history.push(`/products/detail/${item._id}`)}
+                                style={{ width: "100%", height: 180, objectFit: "cover", cursor: "pointer" }}
+                              />
                               <IconButton sx={{ position: "absolute", top: 10, right: 10, bgcolor: "rgba(255,255,255,0.9)" }} onClick={() => removeFromWishlist(item._id)} size="small">
                                 <DeleteOutlineIcon color="error" fontSize="small" />
                               </IconButton>

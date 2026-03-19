@@ -358,7 +358,6 @@ return (
                   >
                     <div
                       className="product-image-box"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       <img
                         src={imgPath}
@@ -368,7 +367,8 @@ return (
                       <IconButton
                         className="like-btn"
                         aria-label={isInWishlist(rp._id) ? "Remove from wishlist" : "Add to wishlist"}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const item: WishlistItem = {
                             _id: rp._id,
                             name: rp.productName,
