@@ -24,10 +24,6 @@ const localeByLanguage: Record<SupportedLanguage, string> = {
 };
 
 function readStoredUser(): User | null {
-  if (!cookies.get(ACCESS_TOKEN_KEY)) {
-    localStorage.removeItem(USER_DATA_KEY);
-    return null;
-  }
   try {
     const raw = localStorage.getItem(USER_DATA_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -51,20 +47,31 @@ const ContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const login = useCallback(async (input: LoginInput) => {
     const { user, accessToken } = await userService.login(input);
-    cookies.set(ACCESS_TOKEN_KEY, accessToken, { path: "/" });
+    cookies.set(ACCESS_TOKEN_KEY, accessToken, {
+      path: "/",
+      sameSite: "lax",
+      secure: window.location.protocol === "https:",
+    });
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
     setAuthUser(user);
   }, []);
 
   const signup = useCallback(async (input: UserInput) => {
     const { user, accessToken } = await userService.signup(input);
-    cookies.set(ACCESS_TOKEN_KEY, accessToken, { path: "/" });
+    cookies.set(ACCESS_TOKEN_KEY, accessToken, {
+      path: "/",
+      sameSite: "lax",
+      secure: window.location.protocol === "https:",
+    });
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
     setAuthUser(user);
   }, []);
 
   const logout = useCallback(() => {
     cookies.remove(ACCESS_TOKEN_KEY, { path: "/" });
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(USER_DATA_KEY);
     setAuthUser(null);
   }, []);

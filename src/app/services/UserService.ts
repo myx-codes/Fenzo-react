@@ -3,6 +3,13 @@ import { serverApi } from "../../lib/config";
 import { User, UserInput, LoginInput, UserUpdateInput } from "../../lib/types/user";
 import { SellerProfile } from "../../lib/types/seller";
 
+const ACCESS_TOKEN_KEY = "accessToken";
+
+function authHeaders() {
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    return token ? { Authorization: `Bearer ${token}` } : undefined;
+}
+
 export interface AuthResponse {
     user: User;
     accessToken: string;
@@ -18,7 +25,7 @@ class UserService {
     /** Login: returns user + accessToken. Store token in cookies. */
     public async login(input: LoginInput): Promise<AuthResponse> {
         const url = `${this.path}/auth/login`;
-        const { data } = await axios.post<AuthResponse>(url, input);
+        const { data } = await axios.post<AuthResponse>(url, input, { withCredentials: true });
         const raw = data as any;
         const value = raw?.value ?? raw;
         return {
@@ -30,7 +37,7 @@ class UserService {
     /** Signup: register new user, returns user + accessToken. */
     public async signup(input: UserInput): Promise<AuthResponse> {
         const url = `${this.path}/auth/signup`;
-        const { data } = await axios.post<AuthResponse>(url, input);
+        const { data } = await axios.post<AuthResponse>(url, input, { withCredentials: true });
         const raw = data as any;
         const value = raw?.value ?? raw;
         return {
@@ -58,7 +65,7 @@ class UserService {
     public async getUser(userId: string): Promise<User> {
         try {
           const url = `${this.path}/customer/user/${userId}`;
-          const result = await axios.get(url, { withCredentials: true });
+          const result = await axios.get(url, { withCredentials: true, headers: authHeaders() });
           return result.data?.value ?? result.data;
       
         } catch (err: any) {
@@ -71,7 +78,7 @@ class UserService {
     public async getSeller(userId: string): Promise<SellerProfile> {
         try {
             const url = `${this.path}/user/seller/${userId}`;
-            const result = await axios.get(url, { withCredentials: true });
+            const result = await axios.get(url, { withCredentials: true, headers: authHeaders() });
             const raw = result.data;
             const data = raw?.value ?? raw;
             return {
@@ -91,7 +98,7 @@ class UserService {
     /** Update current user profile (requires auth). Requests PUT /auth/profile. */
     public async updateUser(_userId: string, input: UserUpdateInput): Promise<User> {
         const url = `${this.path}/auth/profile`;
-        const { data } = await axios.put(url, input, { withCredentials: true });
+        const { data } = await axios.put(url, input, { withCredentials: true, headers: authHeaders() });
         const raw = data as any;
         return raw?.value ?? raw?.user ?? raw;
     }
@@ -101,7 +108,7 @@ class UserService {
         const url = `${this.path}/auth/profile`;
         const { data } = await axios.put(url, formData, {
             withCredentials: true,
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: { "Content-Type": "multipart/form-data", ...(authHeaders() || {}) },
         });
         const raw = data as any;
         return raw?.value ?? raw?.user ?? raw;

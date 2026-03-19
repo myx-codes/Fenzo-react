@@ -2,6 +2,13 @@ import axios from "axios";
 import { serverApi } from "../../lib/config";
 import { Order, CreateOrderInput } from "../../lib/types/order";
 
+const ACCESS_TOKEN_KEY = "accessToken";
+
+function authHeaders() {
+  const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+}
+
 class OrderService {
   private readonly path: string;
 
@@ -15,7 +22,10 @@ class OrderService {
    */
   public async createOrder(body: CreateOrderInput): Promise<Order> {
     const url = `${this.path}/order/create`;
-    const { data } = await axios.post<Order>(url, body, { withCredentials: true });
+    const { data } = await axios.post<Order>(url, body, {
+      withCredentials: true,
+      headers: authHeaders(),
+    });
     const raw = data as any;
     return raw?.value ?? raw;
   }
@@ -31,7 +41,10 @@ class OrderService {
     const { data } = await axios.post<Order>(
       url,
       { orderId: id, orderStatus: status },
-      { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json", ...(authHeaders() || {}) },
+      }
     );
     const raw = data as any;
     return raw?.value ?? raw;
@@ -47,7 +60,7 @@ class OrderService {
     const orderStatus = params?.orderStatus;
     let url = `${this.path}/order/all?page=${page}&limit=${limit}`;
     if (orderStatus) url += `&orderStatus=${encodeURIComponent(orderStatus)}`;
-    const { data } = await axios.get(url, { withCredentials: true });
+    const { data } = await axios.get(url, { withCredentials: true, headers: authHeaders() });
     const raw = data as any;
     const list = Array.isArray(raw) ? raw : (raw?.value ?? raw?.orders ?? []);
     const arr = Array.isArray(list) ? list : [];
