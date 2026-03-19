@@ -48,6 +48,18 @@ type TranslationMap = {
   creatingAccount: string;
   dontHaveAccount: string;
   alreadyHaveAccount: string;
+  categoryAllProducts: string;
+  categoryParfum: string;
+  productsCategories: string;
+  productsSortBy: string;
+  productsNewest: string;
+  productsLowPrice: string;
+  productsHighPrice: string;
+  addToWishlist: string;
+  removeFromWishlist: string;
+  addCart: string;
+  buyNow: string;
+  noProductsFound: string;
 };
 
 const en: TranslationMap = {
@@ -90,6 +102,18 @@ const en: TranslationMap = {
   creatingAccount: "Creating account...",
   dontHaveAccount: "Don't have an account? Sign up",
   alreadyHaveAccount: "Already have an account? Login",
+  categoryAllProducts: "All Products",
+  categoryParfum: "Parfum",
+  productsCategories: "Categories",
+  productsSortBy: "Sort By",
+  productsNewest: "Newest",
+  productsLowPrice: "Low Price",
+  productsHighPrice: "High Price",
+  addToWishlist: "Add to wishlist",
+  removeFromWishlist: "Remove from wishlist",
+  addCart: "Add Cart",
+  buyNow: "Buy Now",
+  noProductsFound: "No products found.",
 };
 
 const uz: TranslationMap = {
@@ -132,6 +156,18 @@ const uz: TranslationMap = {
   creatingAccount: "Akkaunt yaratilmoqda...",
   dontHaveAccount: "Akkauntingiz yo'qmi? Ro'yxatdan o'ting",
   alreadyHaveAccount: "Akkauntingiz bormi? Kiring",
+  categoryAllProducts: "Barcha mahsulotlar",
+  categoryParfum: "Atirlar",
+  productsCategories: "Kategoriyalar",
+  productsSortBy: "Saralash",
+  productsNewest: "Eng yangilari",
+  productsLowPrice: "Arzon narx",
+  productsHighPrice: "Yuqori narx",
+  addToWishlist: "Sevimlilarga qo'shish",
+  removeFromWishlist: "Sevimlilardan olib tashlash",
+  addCart: "Savatga qo'shish",
+  buyNow: "Hozir sotib olish",
+  noProductsFound: "Mahsulot topilmadi.",
 };
 
 const ko: TranslationMap = {
@@ -174,6 +210,18 @@ const ko: TranslationMap = {
   creatingAccount: "계정 생성 중...",
   dontHaveAccount: "계정이 없으신가요? 회원가입",
   alreadyHaveAccount: "이미 계정이 있나요? 로그인",
+  categoryAllProducts: "전체 상품",
+  categoryParfum: "향수",
+  productsCategories: "카테고리",
+  productsSortBy: "정렬 기준",
+  productsNewest: "최신순",
+  productsLowPrice: "낮은 가격",
+  productsHighPrice: "높은 가격",
+  addToWishlist: "위시리스트에 추가",
+  removeFromWishlist: "위시리스트에서 제거",
+  addCart: "장바구니 추가",
+  buyNow: "지금 구매",
+  noProductsFound: "상품을 찾을 수 없습니다.",
 };
 
 export const translations: Record<SupportedLanguage, TranslationMap> = {

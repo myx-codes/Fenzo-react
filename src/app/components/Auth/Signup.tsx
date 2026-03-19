@@ -68,7 +68,7 @@ export function Signup() {
             margin="normal"
             required
             autoComplete="tel"
-            placeholder="e.g. +998901234567"
+            placeholder="e.g. 01047799495"
           />
           <TextField
             fullWidth

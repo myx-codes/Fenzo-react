@@ -41,15 +41,17 @@ import { serverApi } from "../../../lib/config";
 import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { useCreateOrder } from "../../hooks/useCreateOrder";
+import { useGlobals } from "../../hooks/useGlobals";
+import { TranslationKey } from "../../i18n/translations";
 
 // Kategoryalar
-const categories = [
-    { name: "ALL", label: "All Products" },
-    { name: "ELECTRONICS", label: "Electronics" },
-    { name: "BEAUTY-HEALTH", label: "Beauty & Health"},
-    { name: "FASHION", label: "Fashion"},
-    { name: "KIDS", label: "Kids" },
-    { name: "PARFUM", label: "Parfum"},
+const categories: Array<{ name: string; labelKey: TranslationKey }> = [
+    { name: "ALL", labelKey: "categoryAllProducts" },
+    { name: "ELECTRONICS", labelKey: "electronics" },
+    { name: "BEAUTY-HEALTH", labelKey: "beautyHealth"},
+    { name: "FASHION", labelKey: "fashion"},
+    { name: "KIDS", labelKey: "kids" },
+    { name: "PARFUM", labelKey: "categoryParfum"},
 ];
 
 /** REDUX SELECTOR */
@@ -59,6 +61,7 @@ const ProductsRetriever = createSelector(
 );
 
 export function Products() {
+    const { t } = useGlobals();
   const { onAdd: addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
@@ -168,7 +171,7 @@ export function Products() {
                     {/* 1. KATEGORIYALAR */}
                     <Box onClick={handleToggleCategory} className="sidebar-header">
                         <Typography variant="h6" className="sidebar-title">
-                            <FilterListIcon fontSize="small"/> Categories
+                            <FilterListIcon fontSize="small"/> {t("productsCategories")}
                         </Typography>
                         {openCategory ? <ExpandLess /> : <ExpandMore />}
                     </Box>
@@ -181,7 +184,7 @@ export function Products() {
                                     onClick={() => handleCategoryChange(cat.name)}
                                     className={`category-item ${selectedCategory === cat.name ? "active" : ""}`}
                                 >
-                                    <ListItemText primary={cat.label} />
+                                    <ListItemText primary={t(cat.labelKey)} />
                                 </ListItemButton>
                             ))}
                         </List>
@@ -192,7 +195,7 @@ export function Products() {
                     {/* 2. SARALASH */}
                     <Box onClick={handleToggleSort} className="sidebar-header">
                         <Typography variant="h6" className="sidebar-title">
-                            <SortIcon fontSize="small"/> Sort By
+                            <SortIcon fontSize="small"/> {t("productsSortBy")}
                         </Typography>
                         {openSort ? <ExpandLess /> : <ExpandMore />}
                     </Box>
@@ -207,19 +210,19 @@ export function Products() {
                                 <FormControlLabel 
                                     value="newest" 
                                     control={<Radio size="small" />} 
-                                    label="Newest" 
+                                    label={t("productsNewest")} 
                                     sx={{ color: '#555' }}
                                 />
                                 <FormControlLabel 
                                     value="price-asc" 
                                     control={<Radio size="small" />} 
-                                    label="Low Price" 
+                                    label={t("productsLowPrice")} 
                                     sx={{ color: '#555' }}
                                 />
                                 <FormControlLabel 
                                     value="price-desc" 
                                     control={<Radio size="small" />} 
-                                    label="High Price" 
+                                    label={t("productsHighPrice")} 
                                     sx={{ color: '#555' }}
                                 />
                             </RadioGroup>
@@ -229,10 +232,10 @@ export function Products() {
                     <Divider sx={{ my: 3 }} />
 
                     {/* 3. FILTRLAR */}
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1rem' }}>
+                    {/* <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1rem' }}>
                         Filters
-                    </Typography>
-                    <FormGroup>
+                    </Typography> */}
+                    {/* <FormGroup>
                         <FormControlLabel 
                             control={
                                 <Checkbox 
@@ -243,7 +246,7 @@ export function Products() {
                             } 
                             label="On Sale Items" 
                         />
-                    </FormGroup>
+                    </FormGroup> */}
                 </Paper>
             </Grid>
 
@@ -267,7 +270,7 @@ export function Products() {
                                         <img src={imagePath} alt={product.productName} className="product-img"/>
                                         <IconButton
                                             className="like-btn"
-                                            aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
+                                            aria-label={isInWishlist(product._id) ? t("removeFromWishlist") : t("addToWishlist")}
                                             onClick={() => {
                                                 const item: WishlistItem = {
                                                     _id: product._id,
@@ -325,7 +328,7 @@ export function Products() {
                                                     addToCart(cartItem);
                                                 }}
                                             >
-                                                Add Cart
+                                                {t("addCart")}
                                             </Button>
                                             <Button
                                                 variant="contained"
@@ -333,7 +336,7 @@ export function Products() {
                                                 disabled={buyNowLoading}
                                                 onClick={() => handleBuyNow(product, 1)}
                                             >
-                                                Buy Now
+                                                {t("buyNow")}
                                             </Button>
                                         </div>
                                     </div>
@@ -342,7 +345,7 @@ export function Products() {
                         })
                     ) : (
                         <Box className="no-products">
-                            <Typography variant="h5" color="text.secondary">No products found.</Typography>
+                            <Typography variant="h5" color="text.secondary">{t("noProductsFound")}</Typography>
                         </Box>
                     )}
                 </div>

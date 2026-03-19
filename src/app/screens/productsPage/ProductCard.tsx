@@ -69,6 +69,12 @@ const [loading, setLoading] = useState(!chosenProduct);
 const [activeImage, setActiveImage] = useState("");
 const [quantity, setQuantity] = useState(1);
 const totalPrice = (product?.productPrice ?? 0) * quantity;
+const sellerProfileId = seller?._id || seller?.userId || product?.userId;
+
+const handleSellerProfile = () => {
+  if (!sellerProfileId) return;
+  history.push(`/user/seller/${sellerProfileId}`);
+};
 
 
 useEffect(() => {
@@ -235,7 +241,16 @@ return (
                 style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
               />
               <Typography className="username" variant="body1">
-                {seller?.userNick || "Fenzo Store"}
+                <Box
+                  component="span"
+                  onClick={handleSellerProfile}
+                  sx={{
+                    cursor: sellerProfileId ? 'pointer' : 'default',
+                    '&:hover': sellerProfileId ? { textDecoration: 'underline' } : undefined,
+                  }}
+                >
+                  {seller?.userNick || "Fenzo Store"}
+                </Box>
               </Typography>
             </Stack>
 
@@ -304,7 +319,18 @@ return (
 
             {/* Info Box */}
             <div className="info-box">
-              <div><small>Seller</small><strong>{seller?.userNick || "Fenzo Store"}</strong></div>
+              <div>
+                <small>Seller</small>
+                <strong
+                  onClick={handleSellerProfile}
+                  style={{
+                    cursor: sellerProfileId ? "pointer" : "default",
+                    textDecoration: sellerProfileId ? "underline" : "none",
+                  }}
+                >
+                  {seller?.userNick || "Fenzo Store"}
+                </strong>
+              </div>
               <div><small>Category</small><strong>{product.productCollection}</strong></div>
             </div>
 
