@@ -71,9 +71,9 @@ export function Footer() {
           {/* 4. KONTAKT */}
           <Box className="footer-col">
             <h3 className="footer-title">{t("contactUs")}</h3>
-            <p className="footer-text">123 Street, Tashkent, Uzbekistan</p>
+            <p className="footer-text">Bongeunsa-ro 86-gil, Seoul, South Korea</p>
             <p className="footer-text">Email: support@fenzo.uz</p>
-            <p className="footer-text">Phone: +998 90 123 45 67</p>
+            <p className="footer-text">Phone: +821047799495</p>
             
             {/* Newsletter Input (Vizual) */}
             <div className="newsletter-box">
@@ -86,7 +86,7 @@ export function Footer() {
 
         {/* --- PASTKI QISM (COPYRIGHT) --- */}
         <Box className="footer-bottom">
-          <p>© 2024 FENZO. {t("allRightsReserved")}</p>
+          <p>© 2026 FENZO. {t("allRightsReserved")}</p>
             <div className="payment-cards">
                 <span>Visa</span>
                 <span>Mastercard</span>

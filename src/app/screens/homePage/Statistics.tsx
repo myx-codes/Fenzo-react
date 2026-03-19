@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Box, Typography } from "@mui/material";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 // FENZO MARKETPLACE STATISTIKALARI
 const staticStats = [
@@ -30,6 +31,10 @@ const staticStats = [
 ];
 
 export default function Statistics() {
+  const { isMobile } = useDeviceType();
+
+  if (isMobile) return null;
+
   return (
     <div className="stats-section">
       <Container>

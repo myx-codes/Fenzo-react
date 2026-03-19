@@ -103,7 +103,7 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 30px;
 }
 
@@ -428,8 +428,7 @@
 /* Grid tuzilmasi */
 .sellers-grid {
   display: grid;
-  /* Kartalar ixcham bo'lgani uchun enini ham sal qisqartiramiz (250px -> 220px) */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 50px;
 }
 
@@ -807,7 +806,14 @@
   }
 
   .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
+  }
+
+  .btn-cart,
+  .btn-buy {
+    font-size: 0.78rem !important;
+    padding: 6px 0 !important;
   }
 
   .product-image-box {
@@ -850,6 +856,18 @@
 
   .product-card {
     border-radius: 10px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .btn-cart,
+  .btn-buy {
+    font-size: 0.68rem !important;
+    padding: 5px 0 !important;
+    min-height: 28px;
   }
 
   .product-image-box {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import {
   Container,
@@ -10,20 +10,14 @@ import {
   Tab,
   Tabs,
   Card,
-  Chip,
   Divider,
   TextField,
   CircularProgress,
   IconButton,
   Pagination,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 import PersonIcon from "@mui/icons-material/Person";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -37,14 +31,11 @@ import { useWishlistContext } from "../../context/WishlistContext";
 import { useCart } from "../../context/CartContext";
 import { serverApi } from "../../../lib/config";
 import UserService from "../../services/UserService";
-import OrderService from "../../services/OrderService";
 import { UserUpdateInput } from "../../../lib/types/user";
-import { Order } from "../../../lib/types/order";
 import { Messages } from "../../../lib/config";
 import { sweetAlert } from "../../../lib/sweetalert";
 
 const userService = new UserService();
-const orderService = new OrderService();
 
 export function MyPage() {
   const history = useHistory();
@@ -57,7 +48,7 @@ export function MyPage() {
   const [tabValue, setTabValue] = useState(
     tabFromUrl === "wishlist" ? "wishlist" : 
     tabFromUrl === "info" ? "info" : 
-    tabFromUrl === "address" ? "address" : "orders"
+    tabFromUrl === "address" ? "address" : "wishlist"
   );
 
   // --- Pagination States (Wishlist) ---
@@ -102,70 +93,12 @@ export function MyPage() {
   const [infoSaving, setInfoSaving] = useState(false);
   const [infoError, setInfoError] = useState("");
 
-  const [myOrders, setMyOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(false);
-  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
-  const [orderStatusFilter, setOrderStatusFilter] = useState<string>("ALL");
-  const [ordersPage, setOrdersPage] = useState(1);
-  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
-
-  const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"] as const;
-  const ORDERS_PER_PAGE = 6;
-
-  const sortedOrders = useMemo(() => {
-    let list = [...myOrders];
-    if (orderStatusFilter !== "ALL") {
-      list = list.filter((o) => (o.status || o.orderStatus || "").toUpperCase() === orderStatusFilter);
-    }
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return list;
-  }, [myOrders, orderStatusFilter]);
-
-  const ordersTotalPages = Math.max(1, Math.ceil(sortedOrders.length / ORDERS_PER_PAGE));
-  const paginatedOrders = useMemo(
-    () => sortedOrders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE),
-    [sortedOrders, ordersPage]
-  );
-
-  useEffect(() => {
-    if (ordersPage > ordersTotalPages && ordersTotalPages > 0) setOrdersPage(1);
-  }, [ordersTotalPages, ordersPage]);
-
-  useEffect(() => {
-    setOrdersPage(1);
-  }, [orderStatusFilter]);
-
   useEffect(() => {
     if (tabFromUrl === "wishlist") setTabValue("wishlist");
     else if (tabFromUrl === "info") setTabValue("info");
     else if (tabFromUrl === "address") setTabValue("address");
-    else setTabValue("orders");
+    else setTabValue("wishlist");
   }, [tabFromUrl]);
-
-  const fetchMyOrders = () => {
-    setOrdersLoading(true);
-    orderService
-      .getMyOrders({ page: 1, limit: 50 })
-      .then(setMyOrders)
-      .catch(() => setMyOrders([]))
-      .finally(() => setOrdersLoading(false));
-  };
-
-  useEffect(() => {
-    if (tabValue === "orders") fetchMyOrders();
-  }, [tabValue]);
-
-  const handleCancelOrder = (orderId: string) => {
-    const id = typeof orderId === "string" ? orderId : String((orderId as any)?._id ?? orderId);
-    setCancellingOrderId(id);
-    orderService
-      .updateOrder(id, "CANCELLED")
-      .then(() => fetchMyOrders())
-      .catch((err) => {
-        console.error("Cancel order failed", err?.response?.data ?? err);
-      })
-      .finally(() => setCancellingOrderId(null));
-  };
 
   const populateUserData = () => {
     if (authUser) {
@@ -356,7 +289,6 @@ export function MyPage() {
                     }
                   }}
                 >
-                  <Tab label="My Orders" value="orders" icon={<LocalMallIcon />} iconPosition="start" />
                   <Tab label="Wishlist" value="wishlist" icon={<FavoriteIcon />} iconPosition="start" />
                   <Tab label="Personal Info" value="info" icon={<PersonIcon />} iconPosition="start" />
                   <Tab label="Address" value="address" icon={<LocationOnIcon />} iconPosition="start" />
@@ -382,245 +314,7 @@ export function MyPage() {
 
           {/* --- RIGHT CONTENT --- */}
           <Grid size={{ xs: 12, md: 8, lg: 9 }}>
-            
-            {/* 1. ORDERS TAB */}
-            {tabValue === "orders" && (
-              <Stack spacing={3}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: "#333" }}>My Orders</Typography>
-                {ordersLoading ? (
-                  <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-                    <CircularProgress sx={{ color: "#0d6efd" }} />
-                  </Box>
-                ) : myOrders.length === 0 ? (
-                  <Card sx={{ ...fenzoCardStyle, textAlign: "center", py: 8 }}>
-                    <Box sx={{ width: 80, height: 80, bgcolor: "#f4f7fb", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 3 }}>
-                      <LocalMallIcon sx={{ fontSize: 40, color: "#a0b2c6" }} />
-                    </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "#333", mb: 1 }}>No orders yet</Typography>
-                    <Typography variant="body2" sx={{ color: "#777", mb: 4, maxWidth: 300, mx: "auto" }}>
-                      When you click Buy Now on a product, your orders will appear here.
-                    </Typography>
-                    <Button 
-                      variant="contained" 
-                      onClick={() => history.push("/products/ALL")}
-                      sx={{ bgcolor: "#2a5298", color: "white", borderRadius: 2, textTransform: "none", fontWeight: 600, px: 4, py: 1.2, boxShadow: "none" }}
-                    >
-                      Start Shopping
-                    </Button>
-                  </Card>
-                ) : (
-                  <Stack spacing={1.5}>
-                    <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 0.5 }}>
-                      <FormControl size="small" sx={{ minWidth: 160 }}>
-                        <InputLabel id="order-status-filter-label">Status</InputLabel>
-                        <Select
-                          labelId="order-status-filter-label"
-                          value={orderStatusFilter}
-                          label="Status"
-                          onChange={(e) => setOrderStatusFilter(e.target.value)}
-                        >
-                          <MenuItem value="ALL">All</MenuItem>
-                          {ORDER_STATUSES.map((s) => (
-                            <MenuItem key={s} value={s}>{s}</MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
-                    {/* Table header — fixed column widths */}
-                    <Box
-                      sx={{
-                        display: "grid",
-                        gridTemplateColumns: "200px 48px 100px 100px 100px 100px 1fr",
-                        gap: 2,
-                        alignItems: "center",
-                        px: 2,
-                        py: 1,
-                        borderBottom: "2px solid",
-                        borderColor: "divider",
-                      }}
-                    >
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Product</Typography>
-                      <Box />
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5 }}>Order #</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Date</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Status</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, marginLeft: "20px" }}>Total</Typography>
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#666", textTransform: "uppercase", letterSpacing: 0.5, justifySelf: "end" }}>Action</Typography>
-                    </Box>
-                    {paginatedOrders.map((order) => {
-                      const orderDate = typeof order.createdAt === "string" ? new Date(order.createdAt) : (order.createdAt as Date);
-                      const orderIdShort = order._id.slice(-8).toUpperCase();
-                      const items = order.orderItems ?? [];
-                      const maxThumbs = 4;
-                      const visibleItems = items.slice(0, maxThumbs);
-                      const extraCount = items.length > maxThumbs ? items.length - maxThumbs : 0;
-                      const isExpanded = expandedOrderId === order._id;
-                      return (
-                        <Card
-                          key={order._id}
-                          sx={{
-                            ...fenzoCardStyle,
-                            p: 0,
-                            overflow: "hidden",
-                          }}
-                        >
-                          <Box
-                            onClick={() => setExpandedOrderId((id) => (id === order._id ? null : order._id))}
-                            sx={{
-                              display: "grid",
-                              gridTemplateColumns: "200px 48px 100px 100px 100px 100px 1fr",
-                              gap: 2,
-                              alignItems: "center",
-                              px: 2,
-                              py: 1.5,
-                              cursor: "pointer",
-                              "&:hover": { bgcolor: "action.hover" },
-                            }}
-                          >
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                              {items.length > 0 ? (
-                                <>
-                                  {visibleItems.map((item) => (
-                                    <Box key={item.productId} sx={{ position: "relative", flexShrink: 0 }}>
-                                      <img
-                                        src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
-                                        alt={item.productName || ""}
-                                        style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
-                                        onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
-                                      />
-                                      <Typography
-                                        component="span"
-                                        sx={{
-                                          position: "absolute",
-                                          bottom: 0,
-                                          right: 0,
-                                          bgcolor: "rgba(0,0,0,0.75)",
-                                          color: "#fff",
-                                          fontSize: "0.65rem",
-                                          fontWeight: 700,
-                                          px: 0.4,
-                                          borderRadius: 0.5,
-                                          lineHeight: 1.2,
-                                        }}
-                                      >
-                                        ×{item.itemQuantity}
-                                      </Typography>
-                                    </Box>
-                                  ))}
-                                  {extraCount > 0 && (
-                                    <Box
-                                      sx={{
-                                        width: 48,
-                                        height: 48,
-                                        borderRadius: 8,
-                                        bgcolor: "grey.200",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        flexShrink: 0,
-                                      }}
-                                    >
-                                      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.secondary" }}>
-                                        +{extraCount}
-                                      </Typography>
-                                    </Box>
-                                  )}
-                                </>
-                              ) : (
-                                <Box sx={{ width: 48, height: 48, bgcolor: "#f0f0f0", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <LocalMallIcon sx={{ fontSize: 24, color: "#999" }} />
-                                </Box>
-                              )}
-                            </Box>
-                            <Box />
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: "#333" }}>
-                              #{orderIdShort}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: "#777", marginLeft: "20px" }}>
-                              {orderDate.toLocaleDateString(undefined, { dateStyle: "medium" })}
-                            </Typography>
-                            <Chip label={order.status || "Pending"} size="small" color="primary" variant="outlined" sx={{ fontWeight: 600, height: 22, width: "fit-content", marginLeft: "20px" }} />
-                            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#0d6efd", marginLeft: "20px" }}>
-                              ${Number(order.total).toLocaleString()}
-                            </Typography>
-                            <Box onClick={(e) => e.stopPropagation()} sx={{ justifySelf: "end", alignSelf: "start" }}>
-                              {(order.status || order.orderStatus || "").toUpperCase() === "PENDING" && (
-                                <Button
-                                  size="small"
-                                  color="error"
-                                  variant="outlined"
-                                  disabled={cancellingOrderId === order._id}
-                                  onClick={() => handleCancelOrder(String(order._id))}
-                                  sx={{ textTransform: "none", fontWeight: 600, fontSize: "0.75rem" }}
-                                >
-                                  {cancellingOrderId === order._id ? "..." : "Cancel"}
-                                </Button>
-                              )}
-                            </Box>
-                          </Box>
-                          {isExpanded && items.length > 0 && (
-                            <Box
-                              sx={{
-                                borderTop: "1px solid",
-                                borderColor: "divider",
-                                bgcolor: "grey.50",
-                                p: 2,
-                              }}
-                            >
-                              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#666", mb: 1.5 }}>
-                                All products in this order ({items.length})
-                              </Typography>
-                              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                                {items.map((item) => {
-                                  const name = item.productName || "Product";
-                                  const shortName = name.length > 15 ? name.slice(0, 15) + "…" : name;
-                                  return (
-                                  <Box
-                                    key={item.productId}
-                                    sx={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                      width: 100,
-                                    }}
-                                  >
-                                    <img
-                                      src={item.productImage ? `${serverApi}/${item.productImage}` : "/img/placeholder.jpg"}
-                                      alt={item.productName || ""}
-                                      style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10 }}
-                                      onError={(e) => { (e.target as HTMLImageElement).src = "/img/placeholder.jpg"; }}
-                                    />
-                                    <Typography variant="caption" sx={{ mt: 0.5, textAlign: "center", fontWeight: 600 }} noWrap title={name}>
-                                      {shortName}
-                                    </Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                      ×{item.itemQuantity} · ${Number(item.itemPrice).toFixed(2)}
-                                    </Typography>
-                                  </Box>
-                                ); })}
-                              </Box>
-                            </Box>
-                          )}
-                        </Card>
-                      );
-                    })}
-                    {ordersTotalPages > 1 && (
-                      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                        <Pagination
-                          count={ordersTotalPages}
-                          page={ordersPage}
-                          onChange={(_, page) => setOrdersPage(page)}
-                          color="primary"
-                          shape="rounded"
-                        />
-                      </Box>
-                    )}
-                  </Stack>
-                )}
-              </Stack>
-            )}
-
-            {/* 2. WISHLIST TAB */}
+            {/* 1. WISHLIST TAB */}
             {tabValue === "wishlist" && (
               <Stack spacing={3}>
                 <Typography variant="h5" sx={{ fontWeight: 700, color: "#333" }}>My Wishlist</Typography>
@@ -643,7 +337,7 @@ export function MyPage() {
                     {/* Grid qismi: To'liq Grid2 size usuliga o'tkazildi (12 / 4 = 3) */}
                     <Grid container spacing={3}>
                       {currentWishlistItems.map((item) => (
-                        <Grid key={item._id} size={{ xs: 12, sm: 6, md: 3 }}>
+                        <Grid key={item._id} size={{ xs: 6, sm: 6, md: 3 }}>
                           <Card sx={{ borderRadius: 3, boxShadow: "0 4px 15px rgba(0,0,0,0.04)", border: "1px solid #eaeaea", position: "relative", height: "100%" }}>
                             <Box sx={{ position: "relative", overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
                               <img src={item.image ? `${serverApi}/${item.image}` : "/img/placeholder.jpg"} alt={item.name} style={{ width: "100%", height: 180, objectFit: "cover" }} />
@@ -679,7 +373,7 @@ export function MyPage() {
               </Stack>
             )}
 
-            {/* 3. PERSONAL INFO TAB */}
+            {/* 2. PERSONAL INFO TAB */}
             {tabValue === "info" && (
               <Stack spacing={3}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -790,7 +484,7 @@ export function MyPage() {
               </Stack>
             )}
 
-            {/* 4. ADDRESS TAB */}
+            {/* 3. ADDRESS TAB */}
             {tabValue === "address" && (
               <Stack spacing={3}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

@@ -60,6 +60,19 @@ type TranslationMap = {
   addCart: string;
   buyNow: string;
   noProductsFound: string;
+  orders: string;
+  status: string;
+  myOrdersTitle: string;
+  myOrdersSubtitle: string;
+  noOrdersYet: string;
+  noOrdersForFilter: string;
+  startShopping: string;
+  order: string;
+  qty: string;
+  total: string;
+  support: string;
+  cancelling: string;
+  cancel: string;
 };
 
 const en: TranslationMap = {
@@ -114,6 +127,19 @@ const en: TranslationMap = {
   addCart: "Add Cart",
   buyNow: "Buy Now",
   noProductsFound: "No products found.",
+  orders: "Orders",
+  status: "Status",
+  myOrdersTitle: "My Orders",
+  myOrdersSubtitle: "Track and manage all your orders from one place.",
+  noOrdersYet: "No orders yet",
+  noOrdersForFilter: "You have no matching orders for this filter.",
+  startShopping: "Start shopping",
+  order: "Order",
+  qty: "Qty",
+  total: "Total",
+  support: "Support",
+  cancelling: "Cancelling...",
+  cancel: "Cancel",
 };
 
 const uz: TranslationMap = {
@@ -129,7 +155,7 @@ const uz: TranslationMap = {
   profile: "Profil",
   logout: "Chiqish",
   login: "Kirish",
-  signUp: "Ro'yxatdan o'tish",
+  signUp: "Azo bolish",
   bestQualityBestPrices: "Eng yaxshi sifat, eng yaxshi narxlar.",
   bigSalesElectronics: "Elektronika uchun katta chegirmalar",
   shopNow: "Hozir xarid qiling",
@@ -168,6 +194,19 @@ const uz: TranslationMap = {
   addCart: "Savatga qo'shish",
   buyNow: "Hozir sotib olish",
   noProductsFound: "Mahsulot topilmadi.",
+  orders: "Buyurtmalar",
+  status: "Holat",
+  myOrdersTitle: "Buyurtmalarim",
+  myOrdersSubtitle: "Barcha buyurtmalaringizni bir joydan kuzating va boshqaring.",
+  noOrdersYet: "Hali buyurtmalar yo'q",
+  noOrdersForFilter: "Ushbu filter uchun mos buyurtma topilmadi.",
+  startShopping: "Xaridni boshlash",
+  order: "Buyurtma",
+  qty: "Soni",
+  total: "Jami",
+  support: "Yordam",
+  cancelling: "Bekor qilinmoqda...",
+  cancel: "Bekor qilish",
 };
 
 const ko: TranslationMap = {
@@ -222,6 +261,19 @@ const ko: TranslationMap = {
   addCart: "장바구니 추가",
   buyNow: "지금 구매",
   noProductsFound: "상품을 찾을 수 없습니다.",
+  orders: "주문",
+  status: "상태",
+  myOrdersTitle: "내 주문",
+  myOrdersSubtitle: "한 곳에서 모든 주문을 추적하고 관리하세요.",
+  noOrdersYet: "아직 주문이 없습니다",
+  noOrdersForFilter: "이 필터에 맞는 주문이 없습니다.",
+  startShopping: "쇼핑 시작",
+  order: "주문",
+  qty: "수량",
+  total: "합계",
+  support: "지원",
+  cancelling: "취소 중...",
+  cancel: "취소",
 };
 
 export const translations: Record<SupportedLanguage, TranslationMap> = {

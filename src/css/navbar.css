@@ -26,7 +26,7 @@
 .logo-box { cursor: pointer; }
 
 .logo-img {
-    height: 100px;
+  height: 110px;
     filter: brightness(0) invert(1)
 }
 
@@ -305,7 +305,7 @@
   }
 
   .logo-img {
-    height: 70px;
+    height: 76px;
   }
 
   .search-box {
@@ -338,7 +338,7 @@
   }
 
   .logo-img {
-    height: 56px;
+    height: 62px;
   }
 
   .search-box {
