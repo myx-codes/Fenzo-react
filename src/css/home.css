@@ -496,6 +496,16 @@
   background-color: #2c3e50 !important;
   color: #fff !important;
 }
+
+.sellers-track {
+  display: none;
+}
+
+.seller-card-mobile {
+  border-radius: 24px;
+  padding: 18px 14px;
+  min-width: 0;
+}
  /* BIGSALES*/
 .events-section {
   padding: 80px 0;
@@ -787,6 +797,20 @@
   .ad-title {
     font-size: 2.4rem !important;
   }
+
+  .sellers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .seller-avatar {
+    width: 130px !important;
+    height: 130px !important;
+  }
+
+  .seller-name {
+    font-size: 18px !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -843,6 +867,53 @@
   .slide {
     width: 120px;
   }
+
+  .sellers-grid {
+    display: none;
+  }
+
+  .sellers-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 74vw);
+    gap: 14px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding: 4px 2px 6px;
+  }
+
+  .sellers-track::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .sellers-track::-webkit-scrollbar-thumb {
+    background: rgba(44, 62, 80, 0.3);
+    border-radius: 999px;
+  }
+
+  .sellers-track .seller-card {
+    scroll-snap-align: start;
+    border-radius: 20px;
+    min-height: 260px;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .sellers-track .seller-avatar {
+    width: 98px !important;
+    height: 98px !important;
+  }
+
+  .sellers-track .seller-name {
+    font-size: 16px !important;
+  }
+
+  .sellers-track .visit-btn {
+    min-width: 104px;
+    font-size: 0.76rem !important;
+    padding: 6px 14px !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -856,6 +927,20 @@
 
   .product-card {
     border-radius: 10px;
+  }
+
+  .sellers-track {
+    grid-auto-columns: minmax(196px, 82vw);
+  }
+
+  .sellers-track .seller-card {
+    min-height: 238px;
+    padding: 16px 12px;
+  }
+
+  .sellers-track .seller-avatar {
+    width: 82px !important;
+    height: 82px !important;
   }
 
   .products-grid {
