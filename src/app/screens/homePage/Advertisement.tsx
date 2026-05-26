@@ -2,8 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 
-const videoSrc = "./video/apple-watch.mp4"; 
-
+const videoSrc = `/video/apple-watch-h264.mp4`;
 export default function Advertisement() {
   return (
     <div className="ad-section">

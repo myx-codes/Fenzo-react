@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  fenzo_nginx:
+    container_name: fenzo_nginx
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - fenzo_network
+
+networks:
+  fenzo_network:
+    external: true
+    name: fenzo_stack_network

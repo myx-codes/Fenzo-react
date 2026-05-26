@@ -1,4 +1,17 @@
-export const serverApi: string = `${process.env.REACT_APP_API_URL}`;
+const configuredApiUrl = process.env.REACT_APP_API_URL || "";
+
+export function getApiBaseUrl(): string {
+    if (typeof window !== "undefined") {
+        const host = window.location.hostname;
+        if (host === "fenzo.me" || host === "www.fenzo.me") {
+            return window.location.origin;
+        }
+    }
+
+    return configuredApiUrl;
+}
+
+export const serverApi: string = getApiBaseUrl();
 
 export const Messages = {
     // --- General System Errors ---

@@ -31,7 +31,7 @@ const events = [
     description: "Limited edition sneakers event",
     discount: "80% OFF",
     date: "Ends Mar 05",
-    img: "/img/nike-sneakers.avif",
+    img: "/img/Nike-sneakers.avif",
   },
   {
     id: 3,
@@ -63,7 +63,7 @@ const events = [
     description: "Limited edition sneakers event",
     discount: "80% OFF",
     date: "Ends Mar 05",
-    img: "/img/nike-sneakers.avif",
+    img: "/img/Nike-sneakers.avif",
   },
   {
     id: 7,
