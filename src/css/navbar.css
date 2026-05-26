@@ -77,34 +77,111 @@
 .action-box {
     display: flex;
     align-items: center;
-    gap: 15px;
-    min-width: 180px;
+    gap: 10px;
+    min-width: auto;
     justify-content: flex-end;
+    flex: 0 0 auto;
 }
 
-.lang-select {
-  height: 34px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.15);
+.language-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.language-icon {
+  position: absolute;
+  left: 12px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.82);
+  pointer-events: none;
+}
+
+.home-navbar .lang-select,
+.other-navbar .lang-select {
+  height: 38px;
+  min-width: 124px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background-color: rgba(255, 255, 255, 0.12);
+  background-image:
+    linear-gradient(45deg, transparent 50%, #fff 50%),
+    linear-gradient(135deg, #fff 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 16px,
+    calc(100% - 12px) 16px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
   color: #fff;
-  padding: 0 10px;
+  padding: 0 34px 0 38px;
   font-size: 13px;
+  font-weight: 700;
+  line-height: 38px;
   outline: none;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.home-navbar .lang-select:hover,
+.home-navbar .lang-select:focus,
+.other-navbar .lang-select:hover,
+.other-navbar .lang-select:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.66);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
 }
 
 .lang-select option {
   color: #222;
 }
-.login-btn {
-    background-color: white !important;
-    color: #1e3c72 !important;
-    border-radius: 25px !important;
-    padding: 8px 25px !important;
-    font-weight: bold !important;
-    height: 30px;
-  width: 96px;
+
+.home-navbar .login-btn,
+.other-navbar .login-btn,
+.home-navbar .signup-btn,
+.other-navbar .signup-btn {
+  height: 38px !important;
+  min-width: 88px !important;
+  border-radius: 999px !important;
+  padding: 0 18px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+}
+
+.home-navbar .login-btn,
+.other-navbar .login-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
+}
+
+.home-navbar .login-btn:hover,
+.other-navbar .login-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.home-navbar .signup-btn,
+.other-navbar .signup-btn {
+  min-width: 104px !important;
+  background: #fff !important;
+  color: #17396c !important;
+  border: 1px solid rgba(255, 255, 255, 0.88) !important;
+}
+
+.home-navbar .signup-btn:hover,
+.other-navbar .signup-btn:hover {
+  background: #ffca28 !important;
+  color: #122d55 !important;
+  border-color: #ffca28 !important;
 }
 
 /* --- 2-QATOR: MENU HAVOLALARI --- */

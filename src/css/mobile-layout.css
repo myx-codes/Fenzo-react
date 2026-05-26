@@ -23,54 +23,94 @@
 .mobile-actions {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mobile-language-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.mobile-language-icon {
+  position: absolute;
+  left: 9px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px !important;
+  pointer-events: none;
 }
 
 .mobile-lang-select {
-  height: 22px;
-  min-width: 46px;
-  color: #17396c !important;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  height: 32px;
+  min-width: 68px;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.98);
-  font-size: 0.6rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   backdrop-filter: blur(6px);
 }
 
 .mobile-lang-select .MuiSelect-icon {
-  color: #17396c;
-  font-size: 0.95rem;
-  right: 2px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1rem;
+  right: 5px;
 }
 
 .mobile-lang-select .MuiSelect-select {
-  padding-top: 1px !important;
-  padding-bottom: 1px !important;
-  padding-left: 6px !important;
-  padding-right: 14px !important;
+  display: flex;
+  align-items: center;
+  min-height: 0 !important;
+  height: 32px !important;
+  box-sizing: border-box;
+  padding: 0 24px 0 30px !important;
+  line-height: 1 !important;
+}
+
+.mobile-lang-select .MuiOutlinedInput-notchedOutline {
+  border: 0 !important;
 }
 
 .mobile-auth-btn {
-  min-width: 70px;
-  height: 30px;
+  min-width: auto;
+  height: 32px;
   text-transform: none !important;
-  font-size: 0.74rem !important;
+  font-size: 0.72rem !important;
   font-weight: 800 !important;
   border-radius: 999px !important;
-  padding: 0 12px !important;
+  padding: 0 11px !important;
   box-shadow: none !important;
+  line-height: 1 !important;
+  white-space: nowrap;
 }
 
-.mobile-auth-btn-unified {
-  background: #ffffff !important;
-  color: #1b3f77 !important;
-  border: 1px solid rgba(27, 63, 119, 0.2) !important;
+.mobile-login-btn {
+  min-width: 56px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
 }
 
-.mobile-auth-btn-unified:hover {
-  background: #f3f8ff !important;
+.mobile-login-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.mobile-signup-btn {
+  min-width: 78px !important;
+  background: #fff !important;
+  color: #17396c !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+}
+
+.mobile-signup-btn:hover {
+  background: #ffca28 !important;
+  color: #122d55 !important;
 }
 
 .mobile-search-row {
@@ -95,16 +135,33 @@
   }
 
   .mobile-lang-select {
-    min-width: 42px;
-    height: 20px;
-    font-size: 0.56rem;
+    min-width: 60px;
+    height: 30px;
+    font-size: 0.66rem;
+  }
+
+  .mobile-language-icon {
+    left: 8px;
+    font-size: 15px !important;
+  }
+
+  .mobile-lang-select .MuiSelect-select {
+    height: 30px !important;
+    padding: 0 21px 0 27px !important;
   }
 
   .mobile-auth-btn {
-    min-width: 60px;
-    height: 28px;
-    font-size: 0.66rem !important;
+    height: 30px;
+    font-size: 0.64rem !important;
     padding: 0 8px !important;
+  }
+
+  .mobile-login-btn {
+    min-width: 50px !important;
+  }
+
+  .mobile-signup-btn {
+    min-width: 72px !important;
   }
 }
 

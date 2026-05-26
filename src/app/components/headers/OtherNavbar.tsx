@@ -13,6 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import LanguageIcon from "@mui/icons-material/Language";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Basket from "./Basket";
 import Logout from "@mui/icons-material/Logout";
@@ -79,18 +80,21 @@ export function OtherNavbar() {
           </Box>
 
           <Box className="action-box">
-            <select
-              aria-label={t("language")}
-              className="lang-select"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-            >
-              {languageOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <Box className="language-control">
+              <LanguageIcon className="language-icon" fontSize="small" />
+              <select
+                aria-label={t("language")}
+                className="lang-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+              >
+                {languageOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Box>
 
             {authUser ? (
               <>
