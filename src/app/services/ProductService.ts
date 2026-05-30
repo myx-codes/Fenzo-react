@@ -39,6 +39,33 @@ import { Product, ProductInquiry } from "../../lib/types/product";
         }
     }
 
+    public async getRecommendedProducts(page = 1, limit = 10): Promise<Product[]> {
+        try {
+            const url = `${this.path}/customer/product/recommendations?page=${page}&limit=${limit}`;
+            const result = await axios.get(url);
+            const data = result.data;
+            if (Array.isArray(data)) return data;
+            const list = (data as any)?.value?.products ?? (data as any)?.products ?? (data as any)?.value ?? data;
+            return Array.isArray(list) ? list : [];
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    public async getSimilarProducts(productId: string, page = 1, limit = 10): Promise<Product[]> {
+        try {
+            if (!productId) return [];
+            const url = `${this.path}/customer/product/${productId}/similar?page=${page}&limit=${limit}`;
+            const result = await axios.get(url);
+            const data = result.data;
+            if (Array.isArray(data)) return data;
+            const list = (data as any)?.value?.products ?? (data as any)?.products ?? (data as any)?.value ?? data;
+            return Array.isArray(list) ? list : [];
+        } catch (err) {
+            throw err;
+        }
+    }
+
     /** Fetches all products from the database by requesting every page until none left. */
     public async getAllProducts(opts?: { order?: string; productCollection?: string; search?: string }): Promise<Product[]> {
         const limit = 100;

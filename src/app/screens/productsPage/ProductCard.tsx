@@ -147,25 +147,18 @@ const handleQuantity = (type: "inc" | "dec") => {
 
 // when a product is loaded, fetch up to 4 other random products in same collection
 useEffect(() => {
-  if (!product || !product.productCollection) {
+  if (!product || !product._id) {
     setRelated([]);
     return;
   }
-  const service = new ProductService();
-  service
-    .getAllProducts({ productCollection: String(product.productCollection) })
-    .then((all) => {
-      const others = all.filter((p) => p._id !== product._id);
-      // shuffle
-      for (let i = others.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [others[i], others[j]] = [others[j], others[i]];
-      }
-      setRelated(others.slice(0, 4));
+  const svc = new ProductService();
+  svc
+    .getSimilarProducts(product._id, 1, 8)
+    .then((items) => {
+      const filtered = Array.isArray(items) ? items.filter((p) => p._id !== product._id) : [];
+      setRelated(filtered.slice(0, 8));
     })
-    .catch(() => {
-      setRelated([]);
-    });
+    .catch(() => setRelated([]));
 }, [product]);
 
 if (loading) {

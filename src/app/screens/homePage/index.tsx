@@ -1,4 +1,5 @@
 import Statistics from "./Statistics";
+import RecommendedProducts from "./RecommendedProducts";
 import { FeaturedProducts } from "./FeaturedProducts";
 import { TopBrands} from "./TopBrands";
 import Advertisement from "./Advertisement";
@@ -52,6 +53,7 @@ export default function HomePage() {
 
   return <div className="homepage">
     <Statistics/>
+    <RecommendedProducts/>
     <FeaturedProducts/>
     <BestProducts />
     <TopBrands/>
