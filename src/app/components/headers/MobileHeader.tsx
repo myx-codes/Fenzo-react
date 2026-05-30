@@ -6,13 +6,7 @@ import { NavLink } from "react-router-dom";
 import Basket from "./Basket";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { useGlobals } from "../../hooks/useGlobals";
-import { languageOptions, SupportedLanguage } from "../../i18n/translations";
-
-const languageCodes: Record<SupportedLanguage, string> = {
-  en: "EN",
-  uz: "UZ",
-  ko: "KO",
-};
+import { languageCodes, languageOptions, SupportedLanguage } from "../../i18n/translations";
 
 export function MobileHeader() {
   const { wishlistItems } = useWishlistContext();

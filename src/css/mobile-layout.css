@@ -46,7 +46,8 @@
 
 .mobile-lang-select {
   height: 32px;
-  min-width: 68px;
+  width: 62px;
+  min-width: 62px;
   color: #fff !important;
   border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 999px;
@@ -58,9 +59,7 @@
 }
 
 .mobile-lang-select .MuiSelect-icon {
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 1rem;
-  right: 5px;
+  display: none;
 }
 
 .mobile-lang-select .MuiSelect-select {
@@ -69,7 +68,7 @@
   min-height: 0 !important;
   height: 32px !important;
   box-sizing: border-box;
-  padding: 0 24px 0 30px !important;
+  padding: 0 8px 0 29px !important;
   line-height: 1 !important;
 }
 

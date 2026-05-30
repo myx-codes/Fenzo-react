@@ -8,6 +8,12 @@ export const languageOptions: Array<{ value: SupportedLanguage; label: string }>
   { value: "ko", label: "한국어" },
 ];
 
+export const languageCodes: Record<SupportedLanguage, string> = {
+  en: "EN",
+  uz: "UZ",
+  ko: "KO",
+};
+
 type TranslationMap = {
   language: string;
   search: string;

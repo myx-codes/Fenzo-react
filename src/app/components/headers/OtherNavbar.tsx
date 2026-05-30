@@ -11,6 +11,7 @@ import {
   Avatar,
   ListItemIcon,
   Divider,
+  Select,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -22,7 +23,7 @@ import { NavLink, useHistory } from "react-router-dom";
 import { useGlobals } from "../../hooks/useGlobals";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { serverApi } from "../../../lib/config";
-import { languageOptions, SupportedLanguage } from "../../i18n/translations";
+import { languageCodes, languageOptions, SupportedLanguage } from "../../i18n/translations";
 
 export function OtherNavbar() {
   const { authUser, logout, language, setLanguage, t } = useGlobals();
@@ -31,6 +32,10 @@ export function OtherNavbar() {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const [searchValue, setSearchValue] = useState("");
+  const handleSearchSubmit = () => {
+    const encoded = encodeURIComponent(searchValue.trim());
+    history.push(`/products/ALL?q=${encoded}`);
+  };
 
   const menuItems = [
     { label: t("home"), path: "/" },
@@ -67,13 +72,13 @@ export function OtherNavbar() {
             <SearchIcon className="search-icon" />
             <input
               type="text"
-              placeholder={t("search")}
+              placeholder="red shoes under 50 newest"
               className="search-input"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  history.push(`/products/ALL?search=${searchValue}`);
+                  handleSearchSubmit();
                 }
               }}
             />
@@ -82,18 +87,20 @@ export function OtherNavbar() {
           <Box className="action-box">
             <Box className="language-control">
               <LanguageIcon className="language-icon" fontSize="small" />
-              <select
+              <Select
                 aria-label={t("language")}
                 className="lang-select"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+                renderValue={(selected) => languageCodes[selected as SupportedLanguage]}
+                size="small"
               >
                 {languageOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
+              </Select>
             </Box>
 
             {authUser ? (

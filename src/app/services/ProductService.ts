@@ -25,6 +25,20 @@ import { Product, ProductInquiry } from "../../lib/types/product";
         }
     }
 
+    public async aiSearchProducts(input: { query: string; page: number; limit: number }): Promise<Product[]> {
+        try {
+            const encodedQuery = encodeURIComponent(input.query ?? "");
+            const url = `${this.path}/customer/product/ai-search?q=${encodedQuery}&page=${input.page}&limit=${input.limit}`;
+            const result = await axios.get(url);
+            const data = result.data;
+            if (Array.isArray(data)) return data;
+            const list = (data as any)?.value?.products ?? (data as any)?.products ?? (data as any)?.value ?? (data as any)?.product;
+            return Array.isArray(list) ? list : [];
+        } catch (err) {
+            throw err;
+        }
+    }
+
     /** Fetches all products from the database by requesting every page until none left. */
     public async getAllProducts(opts?: { order?: string; productCollection?: string; search?: string }): Promise<Product[]> {
         const limit = 100;

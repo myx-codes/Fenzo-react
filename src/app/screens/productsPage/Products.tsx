@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { 
   Container, 
   Box, 
@@ -12,12 +12,10 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   Collapse,
   Radio,
   RadioGroup,
+    FormControlLabel,
   FormControl,
   CircularProgress 
 } from "@mui/material";
@@ -30,14 +28,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SortIcon from '@mui/icons-material/Sort';
 import { useParams, useLocation, useHistory } from "react-router-dom";
 
-// Redux
-import { retrieveProducts } from "./selector";
-import { createSelector } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Product } from "../../../lib/types/product";
 import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist";
 import { serverApi } from "../../../lib/config";
+import ProductService from "../../services/ProductService";
+import { setProducts } from "./slice";
 import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { useCreateOrder } from "../../hooks/useCreateOrder";
@@ -54,83 +51,96 @@ const categories: Array<{ name: string; labelKey: TranslationKey }> = [
     { name: "PARFUM", labelKey: "categoryParfum"},
 ];
 
-/** REDUX SELECTOR */
-const ProductsRetriever = createSelector(
-    retrieveProducts,
-    (Products) => ({ Products })
-);
+const AI_PAGE_LIMIT = 20;
 
 export function Products() {
     const { t } = useGlobals();
-  const { onAdd: addToCart } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlistContext();
-  const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
-  const { Products } = useSelector(ProductsRetriever);
-  const productsList = Array.isArray(Products) ? Products : [];
+    const dispatch = useDispatch();
+    const { onAdd: addToCart } = useCart();
+    const { toggleWishlist, isInWishlist } = useWishlistContext();
+    const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
 
-  // Global searching
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const searchQuery = queryParams.get("search") || "";
+    // Global searching
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const searchQuery = queryParams.get("q") ?? queryParams.get("search") ?? "";
 
-  // State
-  const { collection } = useParams<{ collection: string }>();
-  const [selectedCategory, setSelectedCategory] = useState(
-    collection ? collection.toUpperCase() : "ALL"
-  );
+    // State
+    const { collection } = useParams<{ collection: string }>();
+    const [selectedCategory, setSelectedCategory] = useState(
+        collection ? collection.toUpperCase() : "ALL"
+    );
 
-  const history = useHistory();
-  const [visibleCount, setVisibleCount] = useState(9999); 
-  const [sortOption, setSortOption] = useState("newest");
-  const [onlySale, setOnlySale] = useState(false); 
-  const [openCategory, setOpenCategory] = useState(true); 
-  const [openSort, setOpenSort] = useState(true);
-  
-  // Observer reference
-  const observerTarget = useRef(null); 
+    const history = useHistory();
+    const [sortOption, setSortOption] = useState("newest");
+    const [openCategory, setOpenCategory] = useState(true); 
+    const [openSort, setOpenSort] = useState(true);
+    const [products, setProductsState] = useState<Product[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  // --- HANDLERs ---
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setVisibleCount(9999); 
-    // MUHIM: URLni yangilaymiz. Bu search queryni avtomatik olib tashlaydi.
-    history.push(`/products/${category}`);
-  };
-  const handleToggleCategory = () => setOpenCategory(!openCategory);
-  const handleToggleSort = () => setOpenSort(!openSort);
-  const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSortOption(event.target.value);
-  };
+    // --- HANDLERs ---
+    const handleCategoryChange = (category: string) => {
+        setSelectedCategory(category);
+        const encodedQuery = encodeURIComponent(searchQuery);
+        const querySuffix = searchQuery ? `?q=${encodedQuery}` : "";
+        history.push(`/products/${category}${querySuffix}`);
+    };
+    const handleToggleCategory = () => setOpenCategory(!openCategory);
+    const handleToggleSort = () => setOpenSort(!openSort);
+    const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSortOption(event.target.value);
+    };
 
+    const handleProductCard = (id: string) => {
+        history.push(`/products/detail/${id}`);
+    };
 
-  const handleProductCard = (id: string) => {
-    history.push(`/products/detail/${id}`);
-  }
+    const buildAiQuery = useCallback((baseQuery: string) => {
+        const parts: string[] = [];
+        const trimmed = baseQuery.trim();
+        if (trimmed) parts.push(trimmed);
+        if (selectedCategory !== "ALL") {
+            parts.push(selectedCategory.replace(/-/g, " ").toLowerCase());
+        }
+        if (sortOption === "newest") parts.push("newest");
+        if (sortOption === "price-asc") parts.push("cheap");
+        if (sortOption === "price-desc") parts.push("expensive");
+        return parts.join(" ").replace(/\s+/g, " ").trim();
+    }, [selectedCategory, sortOption]);
 
-  // --- FILTRLASH ---
-  const filteredData = productsList.filter((product: Product) => {
-    const matchesCategory = selectedCategory === "ALL" || product.productCollection ===selectedCategory;
-    const matchesSearch =product.productName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+    const fetchAiProducts = useCallback(async (targetPage: number, mode: "replace" | "append") => {
+        setLoading(true);
+        setError(null);
+        const service = new ProductService();
+        try {
+            const queryText = buildAiQuery(searchQuery);
+            const data = await service.aiSearchProducts({
+                query: queryText,
+                page: targetPage,
+                limit: AI_PAGE_LIMIT,
+            });
+            setProductsState((prev) => {
+                const next = mode === "append" ? [...prev, ...data] : data;
+                dispatch(setProducts(next));
+                return next;
+            });
+            setHasMore(data.length === AI_PAGE_LIMIT);
+            setPage(targetPage);
+        } catch (err) {
+            setError("Failed to load products.");
+            setHasMore(false);
+        } finally {
+            setLoading(false);
+        }
+    }, [buildAiQuery, dispatch, searchQuery]);
 
-  // --- SARALASH ---
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (sortOption === "newest") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-    if (sortOption === "price-asc") {
-        return a.productPrice - b.productPrice;
-    }
-    if (sortOption === "price-desc") {
-        return b.productPrice - a.productPrice;
-    }
-    return 0; 
-  });
-
-  const productsToShow = sortedData.slice(0, visibleCount);
+    const handleLoadMore = () => {
+        if (loading || !hasMore) return;
+        fetchAiProducts(page + 1, "append");
+    };
 
   // URL collection effect
   useEffect(() => {
@@ -138,25 +148,11 @@ export function Products() {
     } else {setSelectedCategory("ALL");}
   }, [collection]);
 
-  // INFINITE SCROLL
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          if (visibleCount < sortedData.length) {
-            setVisibleCount((prev) => prev + 4);
-          }
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-        const currentTarget = observerTarget.current;
-        if (currentTarget) {observer.observe(currentTarget);}
-    return () => {
-            if (currentTarget) {observer.unobserve(currentTarget);}
-    };
-    }, [visibleCount, sortedData.length]);
+    useEffect(() => {
+        setPage(1);
+        setHasMore(true);
+        fetchAiProducts(1, "replace");
+    }, [fetchAiProducts]);
 
 
   return (
@@ -254,11 +250,14 @@ export function Products() {
             <Grid size={{xs:12, md:9, lg:9.5}}>
                 {/* PRODUCT GRID */}
                 <div className="products-grid-container">
-                    {productsToShow.length > 0 ? (
-                        productsToShow.map((product) => {
+                    {products.length > 0 ? (
+                        products.map((product) => {
                             const imagePath = product.productImages && product.productImages.length > 0
                                 ? `${serverApi}/${product.productImages[0]}`
                                 : "/img/placeholder.jpg"; 
+                            const collectionLabel = String(product.productCollection ?? "").replace(/-/g, " ");
+                            const ratingValue = Number(product.productRating ?? 0);
+                            const safeRating = Number.isFinite(ratingValue) ? ratingValue : 0;
 
                             return (
                                 <div 
@@ -293,10 +292,16 @@ export function Products() {
                                             {product.productName}
                                         </Typography>
 
+                                        {collectionLabel && (
+                                            <Typography className="product-collection">
+                                                {collectionLabel}
+                                            </Typography>
+                                        )}
+
                                         <div className="rating-views-box">
                                             <div className="product-rating">
-                                                <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
-                                                <span className="review-count">({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})</span>
+                                                <Rating value={safeRating} precision={0.5} readOnly size="small" />
+                                                <span className="review-count">({safeRating.toFixed(1)})</span>
                                             </div>
 
                                             <Box className="views-box">
@@ -344,6 +349,14 @@ export function Products() {
                                 </div>
                             );
                         })
+                    ) : loading ? (
+                        <Box className="no-products">
+                            <CircularProgress size={30} sx={{color: '#1e3c72'}} />
+                        </Box>
+                    ) : error ? (
+                        <Box className="no-products">
+                            <Typography variant="h6" color="text.secondary">{error}</Typography>
+                        </Box>
                     ) : (
                         <Box className="no-products">
                             <Typography variant="h5" color="text.secondary">{t("noProductsFound")}</Typography>
@@ -351,14 +364,15 @@ export function Products() {
                     )}
                 </div>
 
-                {/* OBSERVER ELEMENT */}
-                {visibleCount < sortedData.length && (
-                    <Box 
-                        ref={observerTarget} 
-                        className="load-more-container" 
-                        sx={{ mt: 3, display: 'flex', justifyContent: 'center', width: '100%', py: 2 }}
-                    >
-                        <CircularProgress size={30} sx={{color: '#1e3c72'}} />
+                {hasMore && products.length > 0 && (
+                    <Box className="load-more-container">
+                        <Button
+                            className="load-more-btn"
+                            disabled={loading}
+                            onClick={handleLoadMore}
+                        >
+                            {loading ? "Loading..." : "Load more"}
+                        </Button>
                     </Box>
                 )}
             </Grid>
