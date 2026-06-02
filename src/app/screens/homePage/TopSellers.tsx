@@ -1,22 +1,17 @@
 import React from "react";
 import { Container, Typography, Avatar, Button, Rating } from "@mui/material";
 import { Link } from "react-router-dom";
-
-// Redux va Config importlari
-import { retrieveTopSellers } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import { retrieveTopSellers } from "./selector";
 import { serverApi } from "../../../lib/config";
 import { User } from "../../../lib/types/user";
 import { useDeviceType } from "../../hooks/useDeviceType";
 
-/** REDUX SELECTOR */
-// Selector faylidan kelgan funksiyani o'rab olamiz
 const topSellerRetriever = createSelector(
   retrieveTopSellers,
   (topSellers) => ({ topSellers })
 );
-
 
 export function TopSellers() {
   const { topSellers } = useSelector(topSellerRetriever);
@@ -25,21 +20,30 @@ export function TopSellers() {
 
   return (
     <div className="sellers-section">
-      <Container>
-        <Typography variant="h2" className="section-title">
-          Top Sellers
-        </Typography>
-        <div className={isTouchLayout ? "sellers-track" : "sellers-grid"}>
+      <Container maxWidth="xl">
+        <div className="lp-section-head">
+          <div>
+            <Typography className="lp-section-title">Top Sellers</Typography>
+            <Typography className="lp-section-sub">
+              Verified stores with the highest ratings
+            </Typography>
+          </div>
+          <Button
+            component={Link}
+            to="/products/ALL"
+            className="lp-see-all-btn"
+          >
+            View all →
+          </Button>
+        </div>
+
+        <div className={isTouchLayout ? "sellers-scroll" : "sellers-grid"}>
           {list.map((seller: User) => {
             const imagePath = `${serverApi}/${seller.userImage}`;
             const sellerId = seller._id || (seller as any).userId;
             if (!sellerId) return null;
-            const sellerPath = `/user/seller/${sellerId}`;
             return (
-              <div
-                key={String(sellerId)}
-                className={`seller-card ${isTouchLayout ? "seller-card-mobile" : ""}`.trim()}
-              >
+              <div key={String(sellerId)} className="seller-card">
                 <Avatar
                   src={imagePath}
                   alt={seller.userNick}
@@ -53,12 +57,12 @@ export function TopSellers() {
                   precision={0.1}
                   readOnly
                   size={isMobile ? "small" : "medium"}
+                  sx={{ "& .MuiRating-iconFilled": { color: "var(--gold)" } }}
                 />
                 <Button
                   component={Link}
-                  to={sellerPath}
+                  to={`/user/seller/${sellerId}`}
                   className="visit-btn"
-                  style={{ textDecoration: "none" }}
                 >
                   Visit Store
                 </Button>

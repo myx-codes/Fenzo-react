@@ -28,6 +28,8 @@ import "../css/basket.css";
 import "../css/seller.css";
 import "../css/order.css";
 import "../css/mobile-layout.css";
+import "../css/help.css";
+import "../css/check-out.css";
 
 function App() {
   const location = useLocation();

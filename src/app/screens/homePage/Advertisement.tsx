@@ -1,38 +1,43 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
-
+import { Box, Button, Typography } from "@mui/material";
+import { useHistory } from "react-router-dom";
 
 const videoSrc = `/video/apple-watch-h264.mp4`;
+
 export default function Advertisement() {
+  const history = useHistory();
+
   return (
     <div className="ad-section">
-      
-      {/* 1. Orqa fon videosi */}
-      <video 
-        className="ad-video" 
-        autoPlay 
-        loop 
-        muted // Brauzerlar avtomatik o'ynashga ruxsat berishi uchun ovozsiz bo'lishi shart
-        playsInline
-      >
+      <video className="ad-video" autoPlay loop muted playsInline>
         <source src={videoSrc} type="video/mp4" />
       </video>
+      <div className="ad-overlay" />
 
-      {/* 2. Qoramtir parda (Overlay) */}
-      <div className="ad-overlay"></div>
-
-      {/* 3. Yozuv va Tugma */}
       <Box className="ad-content">
+        <span className="ad-eyebrow">Curated Collection</span>
         <Typography variant="h1" className="ad-title">
-          {/* New Collection 2024 */}
+          Smart Luxury<br />Edit
         </Typography>
-        
-        <Typography variant="h6" className="ad-subtitle">
-          {/* Experience the comfort and style tailored just for you. 
-          Limited edition available now. */}
+        <Typography className="ad-subtitle">
+          Signature devices, refined accessories, and daily
+          essentials selected for a cleaner shopping experience.
         </Typography>
+        <Box className="ad-actions">
+          <Button
+            className="ad-btn-primary"
+            onClick={() => history.push("/products/ELECTRONICS")}
+          >
+            Discover Electronics
+          </Button>
+          <Button
+            className="ad-btn-ghost"
+            onClick={() => history.push("/products/ALL")}
+          >
+            View All Products
+          </Button>
+        </Box>
       </Box>
-      
     </div>
   );
 }

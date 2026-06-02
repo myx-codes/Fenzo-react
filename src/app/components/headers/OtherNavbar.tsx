@@ -72,7 +72,7 @@ export function OtherNavbar() {
             <SearchIcon className="search-icon" />
             <input
               type="text"
-              placeholder="red shoes under 50 newest"
+              placeholder="search"
               className="search-input"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -107,7 +107,7 @@ export function OtherNavbar() {
               <>
                 <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
                   <Badge badgeContent={wishlistItems.length} color="error">
-                    <FavoriteBorderIcon style={{ color: "white" }} />
+                    <FavoriteBorderIcon className="wishlist-trigger-icon" />
                   </Badge>
                 </IconButton>
                 <Basket iconButtonClassName="nav-icon-btn" />
@@ -175,7 +175,7 @@ export function OtherNavbar() {
 
         <Box className="navbar-menu">
           {menuItems.map((item) => (
-            <Button key={item.label} component={NavLink} to={item.path} className="nav-link">
+            <Button key={item.label} component={NavLink} to={item.path} exact={item.path === "/"} className="nav-link">
               {item.label}
             </Button>
           ))}

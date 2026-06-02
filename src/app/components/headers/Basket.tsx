@@ -52,7 +52,7 @@ export default function Basket({ iconButtonClassName }: BasketProps = {}) {
         className={iconButtonClassName || "basket-trigger"}
       >
         <Badge badgeContent={cartItems.length} color="error" className="basket-badge">
-          <ShoppingCartIcon className="basket-trigger-icon" sx={iconButtonClassName ? { color: "#fff" } : undefined} />
+          <ShoppingCartIcon className="basket-trigger-icon" sx={iconButtonClassName ? { color: "inherit" } : undefined} />
         </Badge>
       </IconButton>
 

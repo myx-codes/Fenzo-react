@@ -1,13 +1,16 @@
 import React from "react";
-import { Container, Box, Typography, Button, IconButton, Rating } from "@mui/material";
+import {
+  Container, Box, Typography, Button, IconButton, Rating, Tooltip,
+} from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import StarIcon from "@mui/icons-material/Star";
 import { useHistory } from "react-router-dom";
-
-import { retrieveBestProducts } from "./selector";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import { retrieveBestProducts } from "./selector";
 import { Product } from "../../../lib/types/product";
 import { CartItem } from "../../../lib/types/cart";
 import { WishlistItem } from "../../../lib/types/wishlist";
@@ -16,9 +19,7 @@ import { useCart } from "../../context/CartContext";
 import { useWishlistContext } from "../../context/WishlistContext";
 import { useCreateOrder } from "../../hooks/useCreateOrder";
 
-/** REDUX SELECTOR */
-// Selector faylidan kelgan funksiyani o'rab olamiz
-const bestProductsRetriever = createSelector(
+const bestRetriever = createSelector(
   retrieveBestProducts,
   (bestProducts) => ({ bestProducts })
 );
@@ -28,113 +29,158 @@ export function BestProducts() {
   const { onAdd: addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistContext();
   const { handleBuyNow, loading: buyNowLoading } = useCreateOrder();
-  const { bestProducts } = useSelector(bestProductsRetriever);
+  const { bestProducts } = useSelector(bestRetriever);
   const products = Array.isArray(bestProducts) ? bestProducts : [];
 
-  const handleProductCard = (id: string) => history.push(`/products/detail/${id}`);
-
   return (
-    <div className="featured-section">
-      <Container>
-        <Typography variant="h2" className="section-title">
-          Popular Products
-        </Typography>
+    <div className="lp-products-section alt-bg">
+      <Container maxWidth="xl">
+        <div className="lp-section-head">
+          <div>
+            <Typography className="lp-section-title">Popular Products</Typography>
+          </div>
+          <Button
+            className="lp-see-all-btn"
+            onClick={() => history.push("/products/ALL")}
+          >
+            See all →
+          </Button>
+        </div>
 
-        <div className="products-grid">
+        <div className="pp-grid">
           {products.map((product: Product) => {
-            const imagePath =
-              product.productImages && product.productImages.length > 0
-                ? `${serverApi}/${product.productImages[0]}`
-                : "https://via.placeholder.com/300";
-            const wishlistItem: WishlistItem = {
-              _id: product._id,
-              name: product.productName,
-              price: product.productPrice,
-              image: product.productImages?.[0] ?? "",
-              collection: String(product.productCollection),
-            };
+            const img = product.productImages?.[0]
+              ? `${serverApi}/${product.productImages[0]}`
+              : "/img/placeholder.jpg";
+
+            const wished     = isInWishlist(product._id);
+            const ratingVal  = Number(product.productViews || 0);
+            const safeRating = Math.min(ratingVal / 20, 5);
+            const reviews    = ratingVal > 10 ? Math.floor(ratingVal / 10) : 0;
+            const collLabel  = String(product.productCollection ?? "")
+              .replace(/-/g, " ");
 
             return (
               <Box
                 key={product._id}
-                className="product-card"
-                onClick={() => handleProductCard(product._id)}
-                sx={{ cursor: "pointer" }}
+                className="pp-card"
+                onClick={() => history.push(`/products/detail/${product._id}`)}
               >
-                <div className="product-image-box">
+                <Box className="pp-card-img-wrap">
                   <img
-                    src={imagePath}
+                    src={img}
                     alt={product.productName}
-                    className="product-img"
+                    className="pp-card-img"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/300";
+                      (e.target as HTMLImageElement).src = "/img/placeholder.jpg";
                     }}
                   />
-                  <IconButton
-                    className="like-btn"
-                    aria-label={isInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWishlist(wishlistItem);
-                    }}
-                    sx={isInWishlist(product._id) ? { color: "red" } : undefined}
-                  >
-                    {isInWishlist(product._id) ? (
-                      <FavoriteIcon fontSize="small" />
-                    ) : (
-                      <FavoriteBorderIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </div>
 
-                <div className="product-info">
-                  <Typography className="product-name">{product.productName}</Typography>
-
-                  <div className="product-meta">
-                    <div className="product-rating">
-                      <Rating value={product.productViews || 0} precision={0.5} readOnly size="small" />
-                      <span className="review-count">
-                        ({product.productViews > 10 ? Math.floor(product.productViews / 10) : 0})
-                      </span>
-                    </div>
-                    <Box className="product-views">
-                      <VisibilityIcon sx={{ fontSize: 16 }} />
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                        {product.productViews}
-                      </Typography>
-                    </Box>
-                  </div>
-
-                  <Typography className="product-price">${product.productPrice}</Typography>
-
-                  <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                  <Box className="pp-card-overlay">
                     <Button
-                      variant="outlined"
-                      className="btn-cart"
-                      onClick={() => {
-                        const cartItem: CartItem = {
+                      className="pp-card-quick-add"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart({
                           _id: product._id,
                           name: product.productName,
                           price: product.productPrice,
                           quantity: 1,
                           image: product.productImages?.[0] ?? "",
                           collection: String(product.productCollection),
-                        };
-                        addToCart(cartItem);
+                        });
                       }}
                     >
-                      Add Cart
+                      Quick Add
                     </Button>
-                    <Button
-                      variant="contained"
-                      className="btn-buy"
-                      disabled={buyNowLoading}
-                      onClick={() => handleBuyNow(product, 1)}
+                  </Box>
+
+                  <IconButton
+                    className={`pp-card-wish ${wished ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const item: WishlistItem = {
+                        _id: product._id,
+                        name: product.productName,
+                        price: product.productPrice,
+                        image: product.productImages?.[0] ?? "",
+                        collection: String(product.productCollection),
+                      };
+                      toggleWishlist(item);
+                    }}
+                  >
+                    {wished
+                      ? <FavoriteIcon sx={{ fontSize: 16 }} />
+                      : <FavoriteBorderIcon sx={{ fontSize: 16 }} />}
+                  </IconButton>
+                </Box>
+
+                <Box className="pp-card-info">
+                  {collLabel && (
+                    <Typography className="pp-card-collection">
+                      {collLabel}
+                    </Typography>
+                  )}
+
+                  <Typography className="pp-card-name" title={product.productName}>
+                    {product.productName}
+                  </Typography>
+
+                  <Box className="pp-card-rating-row">
+                    <Rating
+                      value={safeRating}
+                      precision={0.5}
+                      readOnly
+                      size="small"
+                      icon={<StarIcon sx={{ fontSize: 13, color: "var(--gold)" }} />}
+                      emptyIcon={<StarIcon sx={{ fontSize: 13, opacity: 0.2 }} />}
+                    />
+                    <Typography className="pp-card-review-count">
+                      ({reviews})
+                    </Typography>
+                    <Box className="pp-card-views">
+                      <VisibilityIcon sx={{ fontSize: 12 }} />
+                      <span>{product.productViews}</span>
+                    </Box>
+                  </Box>
+
+                  <Box className="pp-card-bottom">
+                    <Typography className="pp-card-price">
+                      ${product.productPrice.toLocaleString()}
+                    </Typography>
+
+                    <Box
+                      className="pp-card-actions"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Buy Now
-                    </Button>
-                  </div>
-                </div>
+                      <Tooltip title="Add to cart">
+                        <IconButton
+                          className="pp-card-cart-btn"
+                          onClick={() =>
+                            addToCart({
+                              _id: product._id,
+                              name: product.productName,
+                              price: product.productPrice,
+                              quantity: 1,
+                              image: product.productImages?.[0] ?? "",
+                              collection: String(product.productCollection),
+                            })
+                          }
+                        >
+                          <ShoppingCartIcon sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Button
+                        className="pp-card-buy-btn"
+                        disabled={buyNowLoading}
+                        onClick={() => handleBuyNow(product, 1)}
+                      >
+                        Buy Now
+                      </Button>
+                    </Box>
+                  </Box>
+                </Box>
               </Box>
             );
           })}

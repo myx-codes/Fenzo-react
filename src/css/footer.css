@@ -1,161 +1,208 @@
-/* UMUMIY FOOTER FON VA TUZILISHI */
 .footer {
     width: 100%;
-    /* Header bilan bir xil gradient */
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: white;
-    padding-top: 60px;
-    margin-top: auto; /* Sahifaning eng tagiga tushirish uchun */
+    margin-top: auto;
+    padding-top: 76px;
+    color: #1a1714;
+    background:
+        radial-gradient(circle at 15% 0%, rgba(184,134,11,0.12), transparent 32%),
+        linear-gradient(180deg, #fffdf9 0%, #f8f6f2 100%);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 -18px 45px rgba(0,0,0,0.06);
     position: relative;
-    box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
 .footer-container {
     display: flex;
     flex-direction: column;
+    max-width: 1240px;
 }
 
-/* --- YUQORI QISM (GRID) --- */
 .footer-top {
-    display: flex;
-    flex-wrap: wrap; /* Mobil versiyada pastga tushib ketishi uchun */
-    justify-content: space-between;
-    gap: 40px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Yupqa chiziq */
+    display: grid;
+    grid-template-columns: 1.35fr 0.85fr 0.9fr 1.15fr;
+    gap: 42px;
+    padding-bottom: 54px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
-/* USTUNLAR (Columns) */
 .footer-col {
-    flex: 1;
-    min-width: 200px; /* Juda kichrayib ketmasin */
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    min-width: 0;
+    gap: 12px;
 }
 
-/* LOGO & MATN */
 .footer-logo {
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: 1px;
     margin: 0;
+    color: #1a1714;
+    font-size: 42px;
+    font-weight: 950;
+    line-height: 1;
+    letter-spacing: 0;
 }
 
 .footer-desc, .footer-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
     margin: 0;
+    color: #6b6460;
+    font-size: 14px;
+    line-height: 1.75;
 }
 
-/* SARLAVHALAR */
+.footer-desc {
+    max-width: 310px;
+    margin-top: 8px;
+}
+
 .footer-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #fff;
+    margin: 0 0 12px;
+    color: #b8860b;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-/* LINKLAR */
 .footer-link {
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    transition: all 0.3s ease;
+    width: fit-content;
+    color: #6b6460;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    transition: color 0.22s ease, transform 0.22s ease;
 }
 
 .footer-link:hover {
-    color: #ffca28; /* Headerdagi tugma rangi (sariq) */
-    transform: translateX(5px); /* O'ngga biroz siljiydi */
+    color: #b8860b;
+    transform: translateX(5px);
 }
 
-/* SOCIAL MEDIA */
 .footer-socials {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 18px;
 }
 
 .social-btn {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    transition: 0.3s !important;
+    width: 42px;
+    height: 42px;
+    color: #1a1714 !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease !important;
 }
 
 .social-btn:hover {
-    background: #ffca28 !important;
-    color: #1e3c72 !important;
+    background: #b8860b !important;
+    color: #ffffff !important;
     transform: translateY(-3px);
 }
 
-/* NEWSLETTER INPUT */
 .newsletter-box {
     display: flex;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    height: 48px;
+    margin-top: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(184,134,11,0.24);
+    border-radius: 999px;
     overflow: hidden;
-    margin-top: 10px;
-    border: 1px solid rgba(255,255,255,0.2);
 }
 
 .newsletter-box input {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
-    padding: 10px;
-    color: white;
+    padding: 0 18px;
+    color: #1a1714;
+    font-size: 14px;
+    font-weight: 700;
     outline: none;
 }
 
 .newsletter-box input::placeholder {
-    color: rgba(255,255,255,0.5);
+    color: #a09890;
 }
 
 .newsletter-box button {
-    background: #ffca28;
-    color: #1e3c72;
+    width: 52px;
+    background: #1a1714;
+    color: #ffffff;
     border: none;
-    padding: 0 15px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 900;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.22s ease;
 }
 
 .newsletter-box button:hover {
-    background: white;
+    background: #b8860b;
 }
 
-/* --- PASTKI QISM (COPYRIGHT) --- */
 .footer-bottom {
-    padding: 20px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: rgba(255, 255, 255, 0.5);
+    gap: 18px;
+    padding: 22px 0;
+    color: #8d8475;
     font-size: 13px;
+    font-weight: 700;
     flex-wrap: wrap;
-    gap: 15px;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.payment-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .payment-cards span {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    font-weight: bold;
-    color: white;
+    margin-left: 0;
+    padding: 7px 12px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 999px;
+    color: #6b6460;
+    font-size: 12px;
+    font-weight: 900;
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .footer-top {
-        flex-direction: column;
-        gap: 30px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 36px 28px;
     }
-    
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding-top: 52px;
+    }
+
+    .footer-top {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding-bottom: 36px;
+    }
+
+    .footer-logo {
+        font-size: 34px;
+    }
+
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+        align-items: flex-start;
+    }
+
+    .payment-cards {
+        justify-content: flex-start;
     }
 }

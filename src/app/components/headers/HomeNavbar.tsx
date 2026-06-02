@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -29,26 +29,8 @@ export function HomeNavbar() {
   const { authUser, logout, language, setLanguage, t } = useGlobals();
   const { wishlistItems } = useWishlistContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [activeSlide, setActiveSlide] = useState(0);
 
   const open = Boolean(anchorEl);
-
-  const heroSlides = [
-    {
-      id: 1,
-      title: "",
-      subtitle: t("bestQualityBestPrices"),
-      btn: t("shopNow"),
-      image: "/img/image.jpg",
-    },
-    {
-      id: 2,
-      title: "",
-      subtitle: t("bigSalesElectronics"),
-      btn: t("explore"),
-      image: "/img/sale.jpg",
-    },
-  ];
 
   const menuItems = [
     { label: t("home"), path: "/" },
@@ -59,15 +41,6 @@ export function HomeNavbar() {
     { label: t("kids"), path: "/products/KIDS" },
     { label: t("help"), path: "/help" },
   ];
-
-  // ===== HERO CAROUSEL AUTO SLIDE =====
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [heroSlides.length]);
 
   const handleClose = () => setAnchorEl(null);
 
@@ -101,7 +74,7 @@ export function HomeNavbar() {
             <SearchIcon className="search-icon" />
             <input
               type="text"
-              placeholder="red shoes under 50 newest"
+              placeholder="search"
               className="search-input"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -136,7 +109,7 @@ export function HomeNavbar() {
               <>
                 <IconButton className="nav-icon-btn" component={NavLink} to="/profile?tab=wishlist">
                   <Badge badgeContent={wishlistItems.length} color="error">
-                    <FavoriteBorderIcon sx={{ color: "#fff" }} />
+                    <FavoriteBorderIcon className="wishlist-trigger-icon" />
                   </Badge>
                 </IconButton>
 
@@ -146,7 +119,13 @@ export function HomeNavbar() {
                   <Avatar
                     alt={authUser.userNick}
                     src={authUser.userImage ? `${serverApi}/${authUser.userImage}` : undefined}
-                    sx={{ width: 35, height: 35, bgcolor: "#ffca28", color: "#1e3c72" }}
+                    sx={{
+                      width: 35,
+                      height: 35,
+                      bgcolor: "#f4f2ee",
+                      color: "#1a1714",
+                      border: "1px solid rgba(184,134,11,0.28)",
+                    }}
                   >
                     {(authUser.userNick || "U").charAt(0).toUpperCase()}
                   </Avatar>
@@ -207,36 +186,13 @@ export function HomeNavbar() {
 
         <Box className="navbar-menu">
           {menuItems.map((item) => (
-            <Button key={item.label} component={NavLink} to={item.path} className="nav-link">
+            <Button key={item.label} component={NavLink} to={item.path} exact={item.path === "/"} className="nav-link">
               {item.label}
             </Button>
           ))}
         </Box>
       </Container>
 
-      <div className="carousel-container">
-        <Box
-          className="hero-carousel"
-          sx={{
-            height: { xs: "400px", md: "400px", lg: "600px" },
-            backgroundImage: `url(${heroSlides[activeSlide].image})`,
-          }}
-        >
-          <Box className="hero-content-wrapper" marginTop={"350px"}>
-            <Typography variant="h4" className="hero-title">
-              {heroSlides[activeSlide].title}
-            </Typography>
-
-            <Typography component="div" className="hero-subtitle">
-              {heroSlides[activeSlide].subtitle}
-            </Typography>
-
-            <Button variant="contained" className="hero-btn">
-              {heroSlides[activeSlide].btn}
-            </Button>
-          </Box>
-        </Box>
-      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { TopSellers } from "./TopSellers";
 import { BigSales } from "./BigSales";
 import React , { useEffect } from "react";
 import { BestProducts } from "./BestProducts";
+import HomeHero from "./HomeHero";
 
 import { useDispatch} from "react-redux";
 import { setBestProducts, setFeaturedProducts, setTopSellers } from "./slice";
@@ -52,6 +53,7 @@ export default function HomePage() {
 
 
   return <div className="homepage">
+    <HomeHero/>
     <Statistics/>
     <RecommendedProducts/>
     <FeaturedProducts/>
