@@ -44,3 +44,21 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+Commands to run Fenzo project
+
+# bir marta bo‘ladi, network yo‘q bo‘lsa
+docker network create web
+
+# shared edge proxy
+cd /home/muhammad95/infra/nginx
+docker-compose up -d
+
+# FENZO frontend
+cd /home/muhammad95/FENZO/fenzo-react
+docker-compose up -d
+
+# FENZO backend
+cd /home/muhammad95/FENZO/fenzo
+docker-compose up -d
