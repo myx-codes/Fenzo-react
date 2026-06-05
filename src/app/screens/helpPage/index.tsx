@@ -80,10 +80,6 @@ export function HelpPage() {
           <Stack spacing={2} alignItems="center">
             <Typography className="help-kicker">Customer Support</Typography>
 
-            <Typography className="help-title">
-              How can we help you?
-            </Typography>
-
             <Typography className="help-subtitle">
               Find answers to common questions or contact our support team.
             </Typography>
