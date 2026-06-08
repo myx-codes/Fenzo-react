@@ -4,6 +4,7 @@ import HomePage from "./screens/homePage";
 import { ProductsPage } from "./screens/productsPage";
 import { OrdersPage } from "./screens/ordersPage";
 import { HelpPage } from "./screens/helpPage";
+import { LinkReviewPage } from "./screens/linkReviewPage";
 import { MyPage } from "./screens/myPage";
 import CheckoutPage from "./screens/checkoutPage/CheckoutPage";
 import { Login, Signup } from "./components/Auth";
@@ -30,6 +31,7 @@ import "../css/order.css";
 import "../css/mobile-layout.css";
 import "../css/help.css";
 import "../css/check-out.css";
+import "../css/link-review.css";
 
 function App() {
   const location = useLocation();
@@ -56,6 +58,7 @@ function App() {
             <Route path="/products" component={ProductsPage} />
             <Route path="/orders" component={OrdersPage} />
             <Route path="/help" component={HelpPage} />
+            <Route path="/link-review" component={LinkReviewPage} />
             <Route path="/profile" component={MyPage} />
             <Route path="/checkout" component={CheckoutPage} />
             <Route path="/user/seller/:id" component={SellerPage} />
