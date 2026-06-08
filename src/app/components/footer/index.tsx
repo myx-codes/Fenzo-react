@@ -59,10 +59,6 @@ export function Footer() {
               {t("trackOrder")}
             </NavLink>
 
-            <NavLink to="/link-review" className="footer-link">
-              Link Review
-            </NavLink>
-            
             <NavLink to="/terms" className="footer-link">
               {t("termsAndConditions")}
             </NavLink>
